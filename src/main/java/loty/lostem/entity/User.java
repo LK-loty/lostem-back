@@ -2,6 +2,7 @@ package loty.lostem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import loty.lostem.dto.UserDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,4 +57,19 @@ public class User{
 
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications = new ArrayList<>();
+
+
+
+    public static User createUser(UserDTO userDTO) {
+        return User.builder()
+                .name(userDTO.getName())
+                .nickname(userDTO.getNickname())
+                .id(userDTO.getId())
+                .password(userDTO.getPassword())
+                .phone(userDTO.getPhone())
+                .profile(userDTO.getProfile())
+                .star(userDTO.getStar())
+                .tag(userDTO.getTag())
+                .build();
+    }
 }

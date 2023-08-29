@@ -2,6 +2,7 @@ package loty.lostem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import loty.lostem.dto.PostDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,4 +62,24 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     private List<PostReport> postReports = new ArrayList<>();
+
+
+
+    public static Post createPost(PostDTO postDTO, User user) {
+        return Post.builder()
+                .user(user)
+                .title(postDTO.getTitle())
+                .image(postDTO.getImage())
+                .type(postDTO.getType())
+                .period(postDTO.getPeriod())
+                .place(postDTO.getPlace())
+                .item(postDTO.getItem())
+                .explain(postDTO.getExplain())
+                .state(postDTO.getStorage())
+                .report(postDTO.getReport())
+                .time(postDTO.getTime())
+                .category(postDTO.getCategory())
+                .storage(postDTO.getStorage())
+                .build();
+    }
 }
