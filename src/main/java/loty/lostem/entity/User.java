@@ -32,6 +32,9 @@ public class User{
     private String phone;
 
     @Column
+    private String profile;
+
+    @Column
     private float star;
 
     @Column
