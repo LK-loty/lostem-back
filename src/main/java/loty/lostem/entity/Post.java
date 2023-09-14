@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 @Getter
 public class Post {
+    private static Post post;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long post_id;
@@ -29,10 +30,13 @@ public class Post {
     private String image;
 
     @Column
-    private String type;
+    private String category;
 
     @Column
     private String period;
+
+    @Column
+    private String field;
 
     @Column
     private String place;
@@ -47,13 +51,13 @@ public class Post {
     private String state;
 
     @Column
-    private String category;
+    private int report;
+
+    @Column
+    private String type;
 
     @Column
     private String storage;
-
-    @Column
-    private int report;
 
     @Column
     private LocalDateTime time;

@@ -12,15 +12,16 @@ public class PostDTO {
     private Long post_id;
     private String title;
     private String image;
-    private String type;
+    private String category;
     private String period;
+    private String field;
     private String place;
     private String item;
     private String explain;
     private String state;
-    private String category;
-    private String storage;
     private int report;
+    private String type;
+    private String storage;
 
     private LocalDateTime time;
 }
