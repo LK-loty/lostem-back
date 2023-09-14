@@ -86,4 +86,21 @@ public class Post {
                 .storage(postDTO.getStorage())
                 .build();
     }
+
+    public static void updatePostFields(Post post, PostDTO postDTO) { // 수정이 안 된 부분은?
+        post.title = postDTO.getTitle();
+        post.image = postDTO.getImage();
+        post.category = postDTO.getCategory();
+        post.period = postDTO.getPeriod();
+        post.field = postDTO.getField();
+        post.place = postDTO.getPlace();
+        post.item = postDTO.getItem();
+        post.explain = postDTO.getExplain();
+        post.state = postDTO.getState();
+        post.time = LocalDateTime.now();
+        post.type = postDTO.getType();
+        post.storage = postDTO.getStorage();
+    }
+
+    // 상태 변경 메소드, 신고 메소드 따로
 }

@@ -23,6 +23,24 @@ public class PostService {
         return createdDTO;
     }
 
+    public PostDTO readPost(Long postId) {
+        Post selectPost = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
+        PostDTO selectedDTO = postToDTO(selectPost);
+        return selectedDTO;
+    }
+
+    @Transactional
+    public PostDTO updatePost(Long postId, PostDTO postDTO) {
+        Post selectedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
+        selectedPost.updatePostFields(selectedPost, postDTO);
+        postRepository.save(selectedPost);
+        PostDTO changedDTO = postToDTO(selectedPost);
+        return changedDTO;
+    }
+    // 조회로 키 먼저 찾고 덮어쓰기? / read 후 상태에서 수정/삭제?
+
 
 
 
