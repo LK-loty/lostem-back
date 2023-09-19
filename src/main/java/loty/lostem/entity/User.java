@@ -75,4 +75,10 @@ public class User{
                 .tag(userDTO.getTag())
                 .build();
     }
+
+    public static void updateUserFields(User user, UserDTO userDTO) {
+        user.nickname = userDTO.getNickname();
+        user.password = userDTO.getPassword();
+        user.profile = userDTO.getProfile();
+    }
 }
