@@ -39,8 +39,15 @@ public class PostService {
         PostDTO changedDTO = postToDTO(selectedPost);
         return changedDTO;
     }
-    // 조회로 키 먼저 찾고 덮어쓰기? / read 후 상태에서 수정/삭제?
 
+    @Transactional
+    public PostDTO deletePost(Long postId) {
+        Post selectedPost = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
+        PostDTO selectedDTO = postToDTO(selectedPost);
+        postRepository.deleteById(postId);
+        return selectedDTO;
+    }
 
 
 
