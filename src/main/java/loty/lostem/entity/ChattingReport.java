@@ -20,6 +20,9 @@ public class ChattingReport {
     private Chatting chatting;
 
     @Column
+    private String title;
+
+    @Column
     private String contents;
 
     @Column

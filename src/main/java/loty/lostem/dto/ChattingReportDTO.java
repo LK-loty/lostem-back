@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ChattingReportDTO {
     private Long chatting_report_id;
+    private String title;
     private String contents;
 
     private LocalDateTime time;

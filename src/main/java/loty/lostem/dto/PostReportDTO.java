@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class PostReportDTO {
     private Long post_report_id;
+    private String title;
     private String contents;
 
     private LocalDateTime time;

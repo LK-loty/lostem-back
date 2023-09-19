@@ -39,6 +39,9 @@ public class User{
     private float star;
 
     @Column
+    private int start_count;
+
+    @Column
     private String tag;
 
 

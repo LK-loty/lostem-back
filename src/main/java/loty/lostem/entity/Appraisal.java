@@ -18,5 +18,8 @@ public class Appraisal {
     private User user;
 
     @Column
+    private Long appraisal_user;
+
+    @Column
     private String contents;
 }

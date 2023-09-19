@@ -15,5 +15,6 @@ public class UserDTO {
     private String phone;
     private String profile;
     private float star;
+    private int start_count;
     private String tag;
 }

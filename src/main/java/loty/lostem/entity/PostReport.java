@@ -20,6 +20,9 @@ public class PostReport {
     private Post post;
 
     @Column
+    private String title;
+
+    @Column
     private String contents;
 
     @Column
