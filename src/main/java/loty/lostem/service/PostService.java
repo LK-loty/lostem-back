@@ -9,6 +9,7 @@ import loty.lostem.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +24,26 @@ public class PostService {
         return createdDTO;
     }
 
+    // 하나의 게시물에 대한 정보 리턴
     public PostDTO readPost(Long postId) {
         Post selectPost = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         PostDTO selectedDTO = postToDTO(selectPost);
         return selectedDTO;
+    }
+
+    // 전체 목록 보기
+    public List<PostDTO> allPosts() {
+        return postRepository.findAll().stream()
+                .map(this::postToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 검색 필터를 받아서 결과 게시물들 리턴. 구현 필요
+    public List<PostDTO> searchPost(PostDTO postDTO) {
+        return postRepository.findAll().stream()
+                .map(this::postToDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
