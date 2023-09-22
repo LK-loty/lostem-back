@@ -20,7 +20,7 @@ public class UserService {
         return createdDTO;
     }
 
-    public UserDTO readUser(Long userId) {
+    public UserDTO readUser(Long userId) { // 프로필 정보 확인 창
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         UserDTO selectedDTO = userToDTO(selectedUser);
