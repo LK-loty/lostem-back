@@ -3,6 +3,7 @@ package loty.lostem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import loty.lostem.dto.UserDTO;
+import loty.lostem.security.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,10 @@ public class User{
     private String tag;
 
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
@@ -72,13 +77,29 @@ public class User{
                 .phone(userDTO.getPhone())
                 .profile(userDTO.getProfile())
                 .star(userDTO.getStar())
+                .start_count(userDTO.getStart_count())
                 .tag(userDTO.getTag())
+                .role(UserRole.USER)
                 .build();
     }
 
     public static void updateUserFields(User user, UserDTO userDTO) {
+        user.name = userDTO.getName();
         user.nickname = userDTO.getNickname();
-        user.password = userDTO.getPassword();
+        user.phone = userDTO.getPhone();
         user.profile = userDTO.getProfile();
+    }
+
+    public static void updatePassword(User user, UserDTO userDTO) {
+        user.password = userDTO.getPassword();
+    }
+
+    public static void updateStar(User user, UserDTO userDTO) {
+        user.start_count++;
+        user.star = (( user.star + userDTO.getStar() ) / user.start_count);
+    }
+
+    public String getRole() {
+        return this.getRole();
     }
 }
