@@ -1,0 +1,142 @@
+package loty.lostem.config;
+
+import lombok.RequiredArgsConstructor;
+import loty.lostem.jwt.JwtAccessDeniedHandler;
+import loty.lostem.jwt.JwtAuthenticationEntryPoint;
+import loty.lostem.jwt.JwtSecurityConfig;
+import loty.lostem.jwt.TokenProvider;
+import loty.lostem.security.UserRole;
+import loty.lostem.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.filter.CorsFilter;
+
+@Configuration
+@EnableWebSecurity   // 기본적인 web 보완 활성화(스프링 시큐리티 필터(SecurityConfig)가 스프링 체인필터에 등록됨 >> 시큐리티 컴퓨터에 내가 이제부터 등록할 필터가 기본 필터체인에 통보됨)
+//@EnableMethodSecurity   // @EnableGlobalMethodSecurity(prePostEnabled = true)도 deprecated 되므로 해결용으로 사용. EnableGlobal~~ 이 secured 어노테이션 활성화(컨트롤러에 @Secured("ROLE_USER")로 간단하게 사용, prePostEnabled는 @prePostEnabled 어노테이션 활성화("hasRole('USER')"), postAuthorize도 같이 활성화
+@RequiredArgsConstructor
+public class SecurityConfig {
+    private final CustomUserDetailsService userDetailsService;
+    private final CorsFilter corsFilter;
+    private final TokenProvider tokenProvider;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Bean
+    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Autowired  // 시큐리티가 로그인 과정에서 password 가로챌 때 어떤 해쉬로 암호화했는지 확인
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                //.csrf(csrf -> csrf.disable())
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(
+                                "/api/post/read/**", "/api/user/read"
+                        )
+                        .permitAll()
+
+                        .requestMatchers(
+                                "/admin/**"
+                        )
+                        .hasRole(UserRole.ADMIN.name())
+
+                        .requestMatchers(
+                                "/post/**"
+                        )
+                        .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
+                        .anyRequest().authenticated()
+
+                )
+                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
+
+                .authorizeHttpRequests(request -> request.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        //.requestMatchers(staticPath.toArray(new String[0])).permitAll()
+                        .requestMatchers("/", "/inventory/**").permitAll()
+                        .requestMatchers("/admin").hasAnyRole(UserRole.USER.name(),UserRole.ADMIN.name())
+                        .requestMatchers("/manage/**").hasAnyRole().anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
+                .apply(new JwtSecurityConfig(tokenProvider));
+                
+                return http.build();
+    }
+
+    /*@Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        *//* @formatter:off *//*
+        http
+                .authorizeHttpRequests().requestMatchers("/").permitAll()
+                .requestMatchers("/post/write").hasRole("USER")
+                //.authorizeRequests()
+                //.antMatchers("/", "/home", "/signUp").permitAll() // 설정한 리소스의 접근을 인증절차 없이 허용
+                .anyRequest().authenticated() // 그 외 모든 리소스를 의미하며 인증 필요
+                .and() // 로그인 설정
+                .formLogin().permitAll()
+                .loginPage("/login") // 기본 로그인 페이지
+                .and() // 로그아웃 설정
+                .logout().permitAll()
+                // .logoutUrl("/logout") // 로그아웃 URL (기본 값 : /logout)
+                // .logoutSuccessUrl("/login?logout") // 로그아웃 성공 URL (기본 값 : "/login?logout")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // 주소창에 요청해도 포스트로 인식하여 로그아웃
+                .deleteCookies("JSESSIONID") // 로그아웃 시 JSESSIONID 제거
+                .invalidateHttpSession(true) // 로그아웃 시 세션 종료
+                .clearAuthentication(true); // 로그아웃 시 권한 제거
+
+        http.userDetailsService(userDetailsService);
+
+        return http.build();
+        *//* @formatter:on *//*
+    }*/
+    /*
+    @Bean
+    @Order(SecurityProperties.BASIC_AUTH_ORDER)
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .headers().frameOptions().disable()
+                .and()
+                .authorizeRequests()
+                .antMatchers("/", "/css/**", "/images/**",
+                        "/js/**", "/h2-console/**").permitAll()
+                .antMatchers("/api/v1/**").hasRole(Role. USER.name())
+                .anyRequest().authenticated()
+                .and()
+                .logout()
+                .logoutSuccessUrl("/")
+                .and()
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService);
+
+        return http.build();
+    }*/
+}
