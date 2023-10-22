@@ -5,15 +5,19 @@ import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.entity.User;
 import loty.lostem.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
+        String encoded = bCryptPasswordEncoder.encode(userDTO.getPassword());
+        UserDTO.setPasswordEncode(userDTO, encoded);
         User created = User.createUser(userDTO);
         userRepository.save(created);
         UserDTO createdDTO = userToDTO(created);

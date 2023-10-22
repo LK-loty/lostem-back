@@ -17,4 +17,8 @@ public class UserDTO {
     private float star;
     private int start_count;
     private String tag;
+
+    public static void setPasswordEncode(UserDTO userDTO, String encode) {
+        userDTO.password = encode;
+    }
 }
