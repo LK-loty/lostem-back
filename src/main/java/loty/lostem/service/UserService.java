@@ -57,7 +57,7 @@ public class UserService {
                 .user_id(user.getUser_id())
                 .name(user.getName())
                 .nickname(user.getNickname())
-                .id(user.getId())
+                .username(user.getUsername())
                 .password(user.getPassword())
                 .phone(user.getPhone())
                 .profile(user.getProfile())

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 외부에서의 생성을 열어 둘 필요가 없을 때 / 보안적으로 권장
 @Builder
 @Getter
 public class User{
@@ -25,7 +25,7 @@ public class User{
     private String nickname;
 
     @Column
-    private String id;
+    private String username; // id
 
     @Column
     private String password;
@@ -72,7 +72,7 @@ public class User{
         return User.builder()
                 .name(userDTO.getName())
                 .nickname(userDTO.getNickname())
-                .id(userDTO.getId())
+                .username(userDTO.getUsername())
                 .password(userDTO.getPassword())
                 .phone(userDTO.getPhone())
                 .profile(userDTO.getProfile())

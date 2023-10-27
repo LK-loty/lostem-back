@@ -10,7 +10,7 @@ public class UserDTO {
     private Long user_id;
     private String name;
     private String nickname;
-    private String id;
+    private String username;
     private String password;
     private String phone;
     private String profile;
