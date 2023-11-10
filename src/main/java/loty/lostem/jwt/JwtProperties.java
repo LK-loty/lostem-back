@@ -21,6 +21,9 @@ public class JwtProperties implements InitializingBean {
     @Value("${jwt.token-validity-in-seconds}")
     private long tokenValidityInMilliseconds;
 
+    @Value(("${jwt.token-validity-in-seconds}"))
+    private long refreshTokenValidity;
+
     @Value("${jwt.header}")
     private String header;
 
