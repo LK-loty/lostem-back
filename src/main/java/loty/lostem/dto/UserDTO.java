@@ -13,11 +13,12 @@ public class UserDTO {
     private String username;
     private String password;
     private String phone;
+    private String email;
     private String profile;
     private float star;
     private int start_count;
     private String tag;
-
+    
     public static void setPasswordEncode(UserDTO userDTO, String encode) {
         userDTO.password = encode;
     }

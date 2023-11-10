@@ -34,6 +34,9 @@ public class User{
     private String phone;
 
     @Column
+    private String email;
+
+    @Column
     private String profile;
 
     @Column
@@ -75,6 +78,7 @@ public class User{
                 .username(userDTO.getUsername())
                 .password(userDTO.getPassword())
                 .phone(userDTO.getPhone())
+                .email(userDTO.getEmail())
                 .profile(userDTO.getProfile())
                 .star(userDTO.getStar())
                 .start_count(userDTO.getStart_count())
@@ -87,6 +91,7 @@ public class User{
         user.name = userDTO.getName();
         user.nickname = userDTO.getNickname();
         user.phone = userDTO.getPhone();
+        user.email = userDTO.getEmail();
         user.profile = userDTO.getProfile();
     }
 
