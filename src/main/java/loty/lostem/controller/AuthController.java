@@ -1,5 +1,6 @@
 package loty.lostem.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +34,19 @@ public class AuthController {
     public ResponseEntity<TokenDTO> login(@PathVariable LoginDTO loginDTO) {
         UserDTO userDTO = userService.loginUser(loginDTO);
 
-        String AccessToken = tokenService.createAccessToken(userDTO);
-        String RefreshToken = tokenService.createRefreshToken(userDTO);
+        String accessToken = tokenService.createAccessToken(userDTO);
+        String refreshToken = tokenService.createRefreshToken(userDTO);
+
+        // AccessToken 응답 헤더에 추가
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", accessToken);
+
+        // RefreshToken 쿠키에 담기
+        headers.add(HttpHeaders.SET_COOKIE, "refreshToken=" + refreshToken + "; HttpOnly");
+
         return ResponseEntity.ok()
-                .header("Authorization", AccessToken)
-                .header("Authorization-Refresh", RefreshToken)
-                .build();
+                .headers(headers)
+                .body(new TokenDTO(refreshToken));
     }
 
     @GetMapping("/logout")
