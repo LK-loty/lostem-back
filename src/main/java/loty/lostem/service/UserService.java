@@ -2,6 +2,7 @@ package loty.lostem.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.entity.User;
 import loty.lostem.repository.UserRepository;
@@ -29,6 +30,14 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         UserDTO selectedDTO = userToDTO(selectedUser);
         return selectedDTO;
+    }
+
+    public UserDTO loginUser(LoginDTO loginDTO) {
+        User loginUser = userRepository.findByUsernameAndPassWord(loginDTO.getUsername(), loginDTO.getPassword())
+                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided data"));
+
+        UserDTO userDTO = userToDTO(loginUser);
+        return userDTO;
     }
 
     @Transactional
