@@ -1,7 +1,11 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import loty.lostem.dto.ChattingDTO;
+import loty.lostem.dto.PostDTO;
+import loty.lostem.dto.UserDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +21,7 @@ public class Chatting {
     private Long chatting_id;
 
     @Column
+    @Size(max = 2)
     private int report;
 
     @ManyToOne

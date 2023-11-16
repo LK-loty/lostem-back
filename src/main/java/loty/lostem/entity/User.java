@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.security.UserRole;
@@ -19,33 +20,42 @@ public class User{
     private Long user_id;
 
     @Column
+    @Size(max = 10)
     private String name;
 
     @Column
+    @Size(max = 20)
     private String nickname;
 
     @Column
+    @Size(max = 20)
     private String username; // id
 
     @Column
+    @Size(max = 20)
     private String password;
 
     @Column
+    @Size(max = 11)
     private String phone;
 
     @Column
+    @Size(max = 20)
     private String email;
 
     @Column
     private String profile;
 
     @Column
+    @Size(max = 2)
     private float star;
 
     @Column
+    @Size(max = 4)
     private int start_count;
 
     @Column
+    @Size(max = 4)
     private String tag;
 
 
@@ -94,6 +104,11 @@ public class User{
         user.email = userDTO.getEmail();
         user.profile = userDTO.getProfile();
     }
+
+    /*public void modify(String nickname, String password) {
+        this.nickname = nickname;
+        this.password = password;
+    }*/
 
     public static void updatePassword(User user, UserDTO userDTO) {
         user.password = userDTO.getPassword();

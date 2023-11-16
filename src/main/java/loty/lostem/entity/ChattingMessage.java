@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class ChattingMessage {
     private Chatting chatting;
 
     @Column
+    @Size(max = 1000)
     private String message;
 
     @Column

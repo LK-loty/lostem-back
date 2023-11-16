@@ -1,7 +1,11 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import loty.lostem.dto.AppraisalDTO;
+
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -21,5 +25,9 @@ public class Appraisal {
     private Long appraisal_user;
 
     @Column
+    @Size(max = 100)
     private String contents;
+
+    @Column
+    private LocalDateTime time;
 }

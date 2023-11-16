@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
@@ -18,5 +19,6 @@ public class Keyword {
     private User user;
 
     @Column
+    @Size(max = 10)
     private String keyword;
 }

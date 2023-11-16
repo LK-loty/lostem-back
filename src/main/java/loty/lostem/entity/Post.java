@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.PostDTO;
 
@@ -24,39 +25,50 @@ public class Post {
     private User user;
 
     @Column
+    @Size(max = 20)
     private String title;
 
     @Column
     private String image;
 
     @Column
+    @Size(max = 4)
     private String category;
 
     @Column
+    @Size(max = 20)
     private String period;
 
     @Column
+    @Size(max = 100)
     private String field;
 
     @Column
+    @Size(max = 100)
     private String place;
 
     @Column
+    @Size(max = 30)
     private String item;
 
     @Column
+    @Size(max = 500)
     private String explain;
 
     @Column
+    @Size(max = 5)
     private String state;
 
     @Column
+    @Size(max = 2)
     private int report;
 
     @Column
+    @Size(max = 10)
     private String type;
 
     @Column
+    @Size(max = 50)
     private String storage;
 
     @Column

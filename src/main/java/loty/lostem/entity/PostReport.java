@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,9 +21,11 @@ public class PostReport {
     private Post post;
 
     @Column
+    @Size(max = 20)
     private String title;
 
     @Column
+    @Size(max = 50)
     private String contents;
 
     @Column
