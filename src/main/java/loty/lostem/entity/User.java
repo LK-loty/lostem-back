@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.UserDTO;
@@ -20,26 +21,32 @@ public class User{
     private Long user_id;
 
     @Column
+    @NotNull
     @Size(max = 10)
     private String name;
 
     @Column
+    @NotNull
     @Size(max = 20)
     private String nickname;
 
     @Column
+    @NotNull
     @Size(max = 20)
     private String username; // id
 
     @Column
+    @NotNull
     @Size(max = 20)
     private String password;
 
     @Column
+    @NotNull
     @Size(max = 11)
     private String phone;
 
     @Column
+    @NotNull
     @Size(max = 20)
     private String email;
 
@@ -47,14 +54,17 @@ public class User{
     private String profile;
 
     @Column
+    @NotNull
     @Size(max = 2)
     private float star;
 
     @Column
+    @NotNull
     @Size(max = 4)
     private int start_count;
 
     @Column
+    @NotNull
     @Size(max = 4)
     private String tag;
 

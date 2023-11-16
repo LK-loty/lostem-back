@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.PostDTO;
@@ -20,11 +21,12 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long post_id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Column
+    @NotNull
     @Size(max = 20)
     private String title;
 
@@ -32,14 +34,17 @@ public class Post {
     private String image;
 
     @Column
+    @NotNull
     @Size(max = 4)
     private String category;
 
     @Column
+    @NotNull
     @Size(max = 20)
     private String period;
 
     @Column
+    @NotNull
     @Size(max = 100)
     private String field;
 
@@ -48,22 +53,27 @@ public class Post {
     private String place;
 
     @Column
+    @NotNull
     @Size(max = 30)
     private String item;
 
     @Column
+    @NotNull
     @Size(max = 500)
     private String explain;
 
     @Column
+    @NotNull
     @Size(max = 5)
     private String state;
 
     @Column
+    @NotNull
     @Size(max = 2)
     private int report;
 
     @Column
+    @NotNull
     @Size(max = 10)
     private String type;
 
@@ -72,6 +82,7 @@ public class Post {
     private String storage;
 
     @Column
+    @NotNull
     private LocalDateTime time;
 
 

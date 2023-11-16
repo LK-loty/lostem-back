@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.ChattingDTO;
@@ -21,14 +22,15 @@ public class Chatting {
     private Long chatting_id;
 
     @Column
+    @NotNull
     @Size(max = 2)
     private int report;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 

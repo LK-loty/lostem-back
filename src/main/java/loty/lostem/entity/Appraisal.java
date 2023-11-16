@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.AppraisalDTO;
@@ -17,17 +18,20 @@ public class Appraisal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appraisal_id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Column
+    @NotNull
     private Long appraisal_user;
 
     @Column
+    @NotNull
     @Size(max = 100)
     private String contents;
 
     @Column
+    @NotNull
     private LocalDateTime time;
 }
