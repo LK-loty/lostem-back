@@ -69,14 +69,15 @@ public class PostService {
 
     public PostDTO postToDTO(Post post) {
         return PostDTO.builder()
-                .post_id(post.getPost_id())
+                .postId(post.getPostId())
                 .title(post.getTitle())
-                .image(post.getImage())
+                .images(post.getImages())
                 .type(post.getType())
                 .period(post.getPeriod())
+                .area(post.getArea())
                 .place(post.getPlace())
                 .item(post.getItem())
-                .explain(post.getExplain())
+                .contents(post.getContents())
                 .state(post.getStorage())
                 .report(post.getReport())
                 .time(post.getTime())

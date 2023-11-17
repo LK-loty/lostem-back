@@ -11,18 +11,19 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false)
     private Long id;
 
     @Column
-    private Long user_id;
+    private Long userId;
 
     @Column
     private String refreshToken;
 
 
 
-    public RefreshToken(Long user_id, String refreshToken) {
-        this.user_id = user_id;
+    public RefreshToken(Long userId, String refreshToken) {
+        this.userId = userId;
         this.refreshToken = refreshToken;
     }
 

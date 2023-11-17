@@ -33,7 +33,7 @@ public class UserService {
     }
 
     public UserDTO loginUser(LoginDTO loginDTO) {
-        User loginUser = userRepository.findByUsernameAndPassWord(loginDTO.getUsername(), loginDTO.getPassword())
+        User loginUser = userRepository.findByUsernameAndPassword(loginDTO.getUsername(), loginDTO.getPassword())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided data"));
 
         UserDTO userDTO = userToDTO(loginUser);
@@ -63,7 +63,7 @@ public class UserService {
 
     public UserDTO userToDTO(User user) {
         return UserDTO.builder()
-                .user_id(user.getUser_id())
+                .userId(user.getUserId())
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .username(user.getUsername())
