@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class NotificationDTO {
-    private Long notification_id;
+    private Long notificationId;
     private String notification;
 
     private LocalDateTime time;

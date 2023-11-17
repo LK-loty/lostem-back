@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class AppraisalDTO {
-    private Long appraisal_id;
-    private Long appraisal_user;
+    private Long appraisalId;
+    private Long appraisalUser;
     private String contents;
     private LocalDateTime time;
 }

@@ -19,10 +19,10 @@ public class Post {
     private static Post post;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_id;
+    private Long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @Column
@@ -31,7 +31,7 @@ public class Post {
     private String title;
 
     @Column
-    private String image;
+    private String images;
 
     @Column
     @NotNull
@@ -46,7 +46,7 @@ public class Post {
     @Column
     @NotNull
     @Size(max = 100)
-    private String field;
+    private String area;
 
     @Column
     @Size(max = 100)
@@ -60,7 +60,7 @@ public class Post {
     @Column
     @NotNull
     @Size(max = 500)
-    private String explain;
+    private String contents;
 
     @Column
     @NotNull
@@ -96,12 +96,13 @@ public class Post {
         return Post.builder()
                 .user(user)
                 .title(postDTO.getTitle())
-                .image(postDTO.getImage())
+                .images(postDTO.getImages())
                 .type(postDTO.getType())
                 .period(postDTO.getPeriod())
+                .area(postDTO.getArea())
                 .place(postDTO.getPlace())
                 .item(postDTO.getItem())
-                .explain(postDTO.getExplain())
+                .contents(postDTO.getContents())
                 .state(postDTO.getStorage())
                 .report(postDTO.getReport())
                 .time(postDTO.getTime())
@@ -112,13 +113,13 @@ public class Post {
 
     public static void updatePostFields(Post post, PostDTO postDTO) { // 수정이 안 된 부분은?
         post.title = postDTO.getTitle();
-        post.image = postDTO.getImage();
+        post.images = postDTO.getImages();
         post.category = postDTO.getCategory();
         post.period = postDTO.getPeriod();
-        post.field = postDTO.getField();
+        post.area = postDTO.getArea();
         post.place = postDTO.getPlace();
         post.item = postDTO.getItem();
-        post.explain = postDTO.getExplain();
+        post.contents = postDTO.getContents();
         post.state = postDTO.getState();
         post.time = LocalDateTime.now();
         post.type = postDTO.getType();

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class ChattingReportDTO {
-    private Long chatting_report_id;
+    private Long chattingReportId;
     private String title;
     private String contents;
 

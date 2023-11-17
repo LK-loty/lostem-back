@@ -19,7 +19,7 @@ import java.util.List;
 public class Chatting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chatting_id;
+    private Long chattingId;
 
     @Column
     @NotNull
@@ -27,11 +27,11 @@ public class Chatting {
     private int report;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "postId")
     private Post post;
 
 
@@ -41,4 +41,14 @@ public class Chatting {
 
     @OneToMany(mappedBy = "chatting")
     private List<ChattingMessage> chattingMessages = new ArrayList<>();
+
+
+
+    public static Chatting createChatting(ChattingDTO chattingDTO, User madeBy, Post invited) {
+        return Chatting.builder()
+                .report(0)
+                .user(madeBy)
+                .post(invited)
+                .build();
+    }
 }

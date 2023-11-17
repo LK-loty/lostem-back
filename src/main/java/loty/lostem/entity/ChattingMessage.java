@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 public class ChattingMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chatting_message_id;
+    private Long chattingMessageId;
 
     @ManyToOne
-    @JoinColumn(name = "chatting_id")
+    @JoinColumn(name = "chattingId")
+
     private Chatting chatting;
 
     @Column

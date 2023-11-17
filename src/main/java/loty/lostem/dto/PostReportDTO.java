@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class PostReportDTO {
-    private Long post_report_id;
+    private Long postReportId;
     private String title;
     private String contents;
 

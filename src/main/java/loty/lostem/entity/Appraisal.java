@@ -16,15 +16,16 @@ import java.time.LocalDateTime;
 public class Appraisal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long appraisal_id;
+    private Long appraisalId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId", nullable = false)
+    @NotNull
     private User user;
 
     @Column
     @NotNull
-    private Long appraisal_user;
+    private Long appraisalUser;
 
     @Column
     @NotNull
@@ -34,4 +35,12 @@ public class Appraisal {
     @Column
     @NotNull
     private LocalDateTime time;
+
+    public static Appraisal createAppraisal(AppraisalDTO appraisalDTO, User user) {
+        return Appraisal.builder()
+                .user(user)
+                .appraisalUser(user.getUserId())
+                .contents(appraisalDTO.getContents())
+                .build();
+    }
 }

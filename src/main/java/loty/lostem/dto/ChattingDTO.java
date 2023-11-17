@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 @Getter
 public class ChattingDTO {
-    private Long chatting_id;
+    private Long chattingId;
     private int report;
 }

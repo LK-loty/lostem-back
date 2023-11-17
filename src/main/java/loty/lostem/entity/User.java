@@ -18,7 +18,7 @@ import java.util.List;
 public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
 
     @Column
     @NotNull
@@ -61,7 +61,7 @@ public class User{
     @Column
     @NotNull
     @Size(max = 4)
-    private int start_count;
+    private int starCount;
 
     @Column
     @NotNull
@@ -77,7 +77,7 @@ public class User{
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Appraisal> appraisals = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
@@ -101,7 +101,7 @@ public class User{
                 .email(userDTO.getEmail())
                 .profile(userDTO.getProfile())
                 .star(userDTO.getStar())
-                .start_count(userDTO.getStart_count())
+                .starCount(userDTO.getStarCount())
                 .tag(userDTO.getTag())
                 .role(UserRole.USER)
                 .build();
@@ -125,8 +125,8 @@ public class User{
     }
 
     public static void updateStar(User user, UserDTO userDTO) {
-        user.start_count++;
-        user.star = (( user.star + userDTO.getStar() ) / user.start_count);
+        user.starCount++;
+        user.star = (( user.star + userDTO.getStar() ) / user.starCount);
     }
 
     public String getRole() {

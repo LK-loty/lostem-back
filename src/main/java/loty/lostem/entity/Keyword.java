@@ -13,10 +13,10 @@ import lombok.*;
 public class Keyword {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long keyword_id;
+    private Long keywordId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @Column

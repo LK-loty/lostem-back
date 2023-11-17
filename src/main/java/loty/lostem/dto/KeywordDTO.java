@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 @Getter
 public class KeywordDTO {
-    private Long keyword_id;
+    private Long keywordId;
     private String keyword;
 }

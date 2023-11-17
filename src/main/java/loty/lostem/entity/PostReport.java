@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 public class PostReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_report_id;
+    private Long postReportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "postId")
     private Post post;
 
     @Column

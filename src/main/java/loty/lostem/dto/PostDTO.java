@@ -9,15 +9,15 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class PostDTO {
-    private Long post_id;
+    private Long postId;
     private String title;
-    private String image;
+    private String images;
     private String category;
     private String period;
-    private String field;
+    private String area;
     private String place;
     private String item;
-    private String explain;
+    private String contents;
     private String state;
     private int report;
     private String type;

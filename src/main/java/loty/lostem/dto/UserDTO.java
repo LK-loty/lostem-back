@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @Getter
 public class UserDTO {
-    private Long user_id;
+    private Long userId;
     private String name;
     private String nickname;
     private String username;
@@ -16,9 +16,17 @@ public class UserDTO {
     private String email;
     private String profile;
     private float star;
-    private int start_count;
+    private int starCount;
     private String tag;
-    
+
+    /*public UserSessionDto(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.nickname = user.getNickname();
+        this.role = user.getRole();
+        this.modifiedDate = user.getModifiedDate();
+    }*/
+
     public static void setPasswordEncode(UserDTO userDTO, String encode) {
         userDTO.password = encode;
     }
