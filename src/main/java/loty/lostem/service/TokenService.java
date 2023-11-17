@@ -59,7 +59,7 @@ public class TokenService {
 	// 왜냐하면 @AuthenticationPrincipal은 UserDetailsService에서 리턴될 때 만들어지기 때문이다.
         */
 
-        User user = userRepository.findById(userDTO.getUser_id())
+        User user = userRepository.findById(userDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for provided data"));
 
         return tokenProvider.createToken(user);
@@ -68,7 +68,7 @@ public class TokenService {
     public String createRefreshToken(UserDTO userDTO) {
         String token = tokenProvider.createRefreshToken(userDTO.getUsername());
 
-        RefreshToken refreshToken = new RefreshToken(userDTO.getUser_id(), token);
+        RefreshToken refreshToken = new RefreshToken(userDTO.getUserId(), token);
         refreshTokenRepository.save(refreshToken);
         return token;
     }
@@ -79,7 +79,7 @@ public class TokenService {
             throw new IllegalArgumentException("Unexpected token");
         }
 
-        Long userId = findByRefreshToken(refreshToken).getUser_id();
+        Long userId = findByRefreshToken(refreshToken).getUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected User"));
 

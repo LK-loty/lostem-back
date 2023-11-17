@@ -18,10 +18,10 @@ public class JwtProperties implements InitializingBean {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.token-validity-in-seconds}")
-    private long tokenValidityInMilliseconds;
+    @Value("${jwt.token-validity}")
+    private long tokenValidity;
 
-    @Value(("${jwt.token-validity-in-seconds}"))
+    @Value(("${jwt.refresh-validity}"))
     private long refreshTokenValidity;
 
     @Value("${jwt.header}")
