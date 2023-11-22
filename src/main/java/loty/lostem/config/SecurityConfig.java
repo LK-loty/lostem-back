@@ -62,7 +62,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/api/post/read/**", "/api/search", "/api/user/read", "/api/users/signup"
+                                "/api/post/read/**", "/api/search", "/api/user/read", "/api/users/signup","/api/login"
                         )
                         .permitAll()
 
@@ -77,9 +77,7 @@ public class SecurityConfig {
                         .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
                         .anyRequest().authenticated()
                 )
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/api/login")
-                        .defaultSuccessUrl("/"))
+                .formLogin(formLogin -> formLogin.disable())
                 .logout((logout) -> logout
                         //.logoutUrl("/api/logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
