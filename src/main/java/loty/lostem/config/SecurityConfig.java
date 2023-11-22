@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import loty.lostem.jwt.*;
 import loty.lostem.security.UserRole;
 import loty.lostem.service.CustomUserDetailsService;
+import loty.lostem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
-    //private final CorsFilter corsFilter;
+    private final CorsConfig corsConfig;
     private final TokenProvider tokenProvider;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -36,13 +37,6 @@ public class SecurityConfig {
     @Bean
     public static BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        // CORS 구성 설정 필요. 임시
-        return new CorsFilter(request -> corsConfiguration);
     }
 
     @Autowired  // 시큐리티가 로그인 과정에서 password 가로챌 때 어떤 해쉬로 암호화했는지 확인
@@ -55,7 +49,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 //.csrf(csrf -> csrf.disable())
-                .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsConfig.corsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
 
                 .exceptionHandling(exceptionHandling -> exceptionHandling
@@ -68,7 +62,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/api/post/read/**", "/api/user/read"
+                                "/api/post/read/**", "/api/search", "/api/user/read", "/api/users/signup"
                         )
                         .permitAll()
 
