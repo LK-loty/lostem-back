@@ -48,7 +48,7 @@ public class User{
 
     @Column
     @NotNull
-    @Size(max = 20)
+    @Size(max = 30)
     private String email;
 
     @Column
