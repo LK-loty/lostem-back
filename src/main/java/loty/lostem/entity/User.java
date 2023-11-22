@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -37,7 +38,7 @@ public class User{
 
     @Column
     @NotNull
-    @Size(max = 20)
+    //@Size(max = 20) bCryptPasswordEncoder 사용하므로 필요 없음
     private String password;
 
     @Column
@@ -55,16 +56,15 @@ public class User{
 
     @Column
     @NotNull
-    @Size(max = 2)
+    @Max(2)
     private float star;
 
     @Column
     @NotNull
-    @Size(max = 4)
+    @Max(4)
     private int starCount;
 
     @Column
-    @NotNull
     @Size(max = 4)
     private String tag;
 
