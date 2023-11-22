@@ -31,7 +31,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@PathVariable LoginDTO loginDTO) {
+    public ResponseEntity<TokenDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         UserDTO userDTO = userService.loginUser(loginDTO);
 
         String accessToken = tokenService.createAccessToken(userDTO);
