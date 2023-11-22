@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users") // 세션은 따로 /login
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> selectUser(@PathVariable Long id) {
@@ -28,4 +28,16 @@ public class UserController {
         userService.createUser(userDTO);
         return ResponseEntity.ok("회원가입 완료");
     }
+
+    /*@GetMapping("/user")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<UserDTO> getMyUserInfo(HttpServletRequest request) {
+        return ResponseEntity.ok(userService.getMyUserWithAuthorities());
+    }
+
+    @GetMapping("/user/{username}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<UserDTO> getUserInfo(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getUserWithAuthorities(username));
+    }*/
 }
