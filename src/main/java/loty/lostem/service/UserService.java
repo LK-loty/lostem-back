@@ -33,11 +33,15 @@ public class UserService {
     }
 
     public UserDTO loginUser(LoginDTO loginDTO) {
-        User loginUser = userRepository.findByUsernameAndPassword(loginDTO.getUsername(), loginDTO.getPassword())
-                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided data"));
+        User loginUser = userRepository.findByUsername(loginDTO.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided username"));
 
-        UserDTO userDTO = userToDTO(loginUser);
-        return userDTO;
+        if (bCryptPasswordEncoder.matches(loginDTO.getPassword(), loginUser.getPassword())) {
+            UserDTO userDTO = userToDTO(loginUser);
+            return userDTO;
+        } else {
+            throw new IllegalArgumentException("Incorrect password");
+        }
     }
 
     @Transactional
