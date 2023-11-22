@@ -46,6 +46,7 @@ public class TokenProvider {
                 //.setExpiration(new Date(now.getTime() + Duration.ofHours(2).toMillis()))
                 .setSubject(user.getUsername())  // (내용) sub : user 이름(user 를 식별하는 값)
                 .claim(AUTHORITIES_KEY, user.getUsername()) // (클레임) auth : 권한들
+                //.claim("id", user.getId())
                 // 서명
                 .signWith(jwtProperties.getKey(), SignatureAlgorithm.HS512) // 암호화된 비밀키 값 + 해시를 HS512 방식으로 암호화 (사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅
                 .setExpiration(validity)
@@ -57,12 +58,20 @@ public class TokenProvider {
         Claims claims = getClaims(token); // 토큰을 파라미터로 받아 토큰을 클레임으로 만들고
 
         // 클레임에서 권한 정보 빼내서
-        Collection<? extends GrantedAuthority> authorities =
+        /*Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList());*/
         /*Set<SimpleGrantedAuthority> authoritySet = Collections.singleton(new SimpleGrantedAuthority("USER"));
         return new UsernamePasswordAuthenticationToken(new User(claims.getSubject(), "", authoritySet), token, authorities);*/
+        Collection<? extends GrantedAuthority> authorities = null;
+        if (claims.get(AUTHORITIES_KEY) != null) {
+            authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        } else {
+            authorities = Collections.emptyList(); // 권한 정보가 없는 경우 빈 리스트로 설정
+        }
 
         // 권한 정보로 유저 객체 만들기(userDetails 의 user)
         User principal = new User(claims.getSubject(), "", authorities);
@@ -71,11 +80,20 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
+    // 토큰 기반 유저 id 가져오기
+    public Long getUserId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("id", Long.class);
+    }
+
     // 토큰을 파라미터로 받아 파싱해보고 발생하는 익셉션들 캐치, 문제 없으면 true (jwt 토큰 유효성 검사)
     public boolean validateToken(String token) {
         try { // setSigningKey : 비밀 값으로 복호화
-            Jwts.parserBuilder().setSigningKey(jwtProperties.getKey()).build().parseClaimsJws(token);
-            return true;
+            Claims claims = getClaims(token);
+            if (claims != null) {
+                Jwts.parserBuilder().setSigningKey(jwtProperties.getKey()).build().parseClaimsJws(token);
+                return true;
+            }
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             logger.info("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
