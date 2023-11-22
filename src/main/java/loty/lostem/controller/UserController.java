@@ -29,6 +29,12 @@ public class UserController {
         return ResponseEntity.ok("회원가입 완료");
     }
 
+    @PostMapping("/update")
+    public ResponseEntity<String> update(@RequestBody @Valid UserDTO userDTO) {
+        userService.updateUser(userDTO);
+        return ResponseEntity.ok("정보 수정 완료");
+    }
+
     /*@GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<UserDTO> getMyUserInfo(HttpServletRequest request) {

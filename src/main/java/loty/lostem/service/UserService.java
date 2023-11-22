@@ -45,8 +45,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO updateUser(Long userId, UserDTO userDTO) {
-        User selectedUser = userRepository.findById(userId)
+    public UserDTO updateUser(UserDTO userDTO) {
+        User selectedUser = userRepository.findByUsername(userDTO.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         selectedUser.updateUserFields(selectedUser, userDTO);
         userRepository.save(selectedUser);
