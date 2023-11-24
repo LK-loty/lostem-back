@@ -31,7 +31,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<UserDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         UserDTO userDTO = userService.loginUser(loginDTO);
 
         String accessToken = tokenService.createAccessToken(userDTO);
@@ -46,7 +46,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(new TokenDTO(refreshToken));
+                .body(userDTO);
     }
 
     @GetMapping("/logout")

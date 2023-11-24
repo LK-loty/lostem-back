@@ -38,6 +38,7 @@ public class UserService {
 
         if (bCryptPasswordEncoder.matches(loginDTO.getPassword(), loginUser.getPassword())) {
             UserDTO userDTO = userToDTO(loginUser);
+            UserDTO.setPasswordNull(userDTO);
             return userDTO;
         } else {
             throw new IllegalArgumentException("Incorrect password");
@@ -73,8 +74,10 @@ public class UserService {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .phone(user.getPhone())
+                .email(user.getEmail())
                 .profile(user.getProfile())
                 .star(user.getStar())
+                .starCount(user.getStarCount())
                 .tag(user.getTag())
                 .build();
     }

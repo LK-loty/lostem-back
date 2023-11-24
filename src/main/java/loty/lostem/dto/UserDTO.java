@@ -30,4 +30,7 @@ public class UserDTO {
     public static void setPasswordEncode(UserDTO userDTO, String encode) {
         userDTO.password = encode;
     }
+    public static void setPasswordNull(UserDTO userDTO) {
+        userDTO.password = null;
+    }
 }
