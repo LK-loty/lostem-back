@@ -6,6 +6,7 @@ import loty.lostem.dto.PostDTO;
 import loty.lostem.entity.Post;
 import loty.lostem.entity.User;
 import loty.lostem.repository.PostRepository;
+import loty.lostem.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +16,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public PostDTO createPost(PostDTO getDTO, User user) {  // userDTO를 받아서 user 엔티티로 변환하고 전달할 것인가
+    public PostDTO createPost(PostDTO getDTO) {
+        User user = userRepository.findById(getDTO.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         Post created = Post.createPost(getDTO, user);  // 변환하여 전달하려면 user 쪽의 변환 메소드 사용??
         postRepository.save(created);
         PostDTO createdDTO = postToDTO(created);

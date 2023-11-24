@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
 public class PostController {
-    private PostService postService;
+    private final PostService postService;
 
     @GetMapping("/read")
     public ResponseEntity<List<PostDTO>> allPost() {
@@ -42,11 +42,11 @@ public class PostController {
 
     @PostMapping("/create")
     public ResponseEntity<PostDTO> createPost(@PathVariable PostDTO postDTO) {
-        PostDTO dto = postDTO;
-        if (dto != null) {
-            return ResponseEntity.ok(dto);
+        postService.createPost(postDTO);
+        if (postDTO != null) {
+            return ResponseEntity.ok(postDTO);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 }
