@@ -24,41 +24,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TokenService {
     private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
-
-    /*public String authorize(LoginDTO loginDTO) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
-
-        // authenticationToken 이용해서 authentication 객체 생성 후 authenticate 메소드 실행될 때 loadUserByUsername 메소드 실행. 이 객체를 securityContext에 저장 후 인증 객체를 통해 토큰 생성
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.createToken(authentication);
-
-        // 토큰을 헤더와 dto를 통해 바디에도 넣어 전송
-        //HttpHeaders httpHeaders = new HttpHeaders();
-        //httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.TOKEN_PREFIX + jwt);
-
-        return jwt;
-    }*/
 
     public String createAccessToken(UserDTO userDTO) {
-        // 로그인 바로 되는 것이 아니니까
-        /*UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // +++
-        // Tip : JWT를 사용하면 UserDetailsService를 호출하지 않기 때문에 @AuthenticationPrincipal 사용 불가능.
-	// 왜냐하면 @AuthenticationPrincipal은 UserDetailsService에서 리턴될 때 만들어지기 때문이다.
-        */
-
         User user = userRepository.findById(userDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for provided data"));
 
@@ -66,11 +35,27 @@ public class TokenService {
     }
 
     public String createRefreshToken(UserDTO userDTO) {
-        String token = tokenProvider.createRefreshToken(userDTO.getUsername());
+        // 사용자의 리프레시 토큰 가져오기
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByUserId(userDTO.getUserId()).orElse(null);
 
-        RefreshToken refreshToken = new RefreshToken(userDTO.getUserId(), token);
-        refreshTokenRepository.save(refreshToken);
-        return token;
+        if (refreshTokenEntity == null) {
+            // 처음 로그인하는 경우
+            String newRefreshToken = tokenProvider.createRefreshToken(userDTO.getUsername());
+            refreshTokenEntity = new RefreshToken(userDTO.getUserId(), newRefreshToken);
+            refreshTokenRepository.save(refreshTokenEntity);
+            return newRefreshToken;
+        } else {
+            String refreshToken = refreshTokenEntity.getRefreshToken();
+            if (tokenProvider.validateToken(refreshToken)) {
+                return refreshToken;
+            } else {
+                // 리프레시 토큰이 만료된 경우 새로 발급하여 업데이트
+                String newRefreshToken = tokenProvider.createRefreshToken(userDTO.getUsername());
+                refreshTokenEntity.update(newRefreshToken);
+                refreshTokenRepository.save(refreshTokenEntity);
+                return newRefreshToken;
+            }
+        }
     }
 
 
@@ -78,6 +63,10 @@ public class TokenService {
         if (!tokenProvider.validateToken(refreshToken)) {
             throw new IllegalArgumentException("Unexpected token");
         }
+
+        // 리프레시 토큰으로 사용자 정보 가져오기
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new IllegalArgumentException("Refresh Token not found"));
 
         Long userId = findByRefreshToken(refreshToken).getUserId();
         User user = userRepository.findById(userId)
