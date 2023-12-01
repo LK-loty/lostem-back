@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
+import loty.lostem.security.UserRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,15 +42,15 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // (헤더) type: JWT
-                .setIssuer(jwtProperties.getIssuer()) // (내용) iss
+                //.setIssuer(jwtProperties.getIssuer()) // (내용) iss
                 .setIssuedAt(now) // 토큰 발행 시간
+                .setExpiration(validity)
                 //.setExpiration(new Date(now.getTime() + Duration.ofHours(2).toMillis()))
                 .setSubject(user.getUsername())  // (내용) sub : user 이름(user 를 식별하는 값)
-                .claim(AUTHORITIES_KEY, user.getUsername()) // (클레임) auth : 권한들
+                .claim(AUTHORITIES_KEY, user.getRole()) // (클레임) auth : 권한들
                 //.claim("id", user.getId())
                 // 서명
                 .signWith(jwtProperties.getKey(), SignatureAlgorithm.HS512) // 암호화된 비밀키 값 + 해시를 HS512 방식으로 암호화 (사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅
-                .setExpiration(validity)
                 .compact();
     }
 
