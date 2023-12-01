@@ -6,6 +6,7 @@ import loty.lostem.dto.PostDTO;
 import loty.lostem.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/create")
-    public ResponseEntity<PostDTO> createPost(@RequestBody @Valid PostDTO postDTO) {
+    public ResponseEntity<PostDTO> createPost(@RequestPart("data") @Valid PostDTO postDTO, @RequestPart("image") MultipartFile[] images) {
         postService.createPost(postDTO);
         if (postDTO != null) {
             return ResponseEntity.ok(postDTO);
