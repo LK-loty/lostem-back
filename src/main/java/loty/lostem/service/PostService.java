@@ -43,6 +43,12 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    public List<PostDTO> userPost(Long id) {
+        return postRepository.findByUser_UserId(id).stream()
+                .map(this::postToDTO)
+                .collect(Collectors.toList());
+    }
+
     // 검색 필터를 받아서 결과 게시물들 리턴. 구현 필요
     public List<PostDTO> searchPost(PostDTO postDTO) {
         return postRepository.findAll().stream()
@@ -51,8 +57,8 @@ public class PostService {
     }
 
     @Transactional
-    public PostDTO updatePost(Long postId, PostDTO postDTO) {
-        Post selectedPost = postRepository.findById(postId)
+    public PostDTO updatePost(PostDTO postDTO) {
+        Post selectedPost = postRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         selectedPost.updatePostFields(selectedPost, postDTO);
         postRepository.save(selectedPost);
@@ -82,7 +88,7 @@ public class PostService {
                 .place(post.getPlace())
                 .item(post.getItem())
                 .contents(post.getContents())
-                .state(post.getStorage())
+                .state(post.getState())
                 .report(post.getReport())
                 .time(post.getTime())
                 .category(post.getCategory())
