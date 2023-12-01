@@ -1,6 +1,7 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -69,7 +70,7 @@ public class Post {
 
     @Column
     @NotNull
-    @Size(max = 2)
+    @Max(2)
     private int report;
 
     @Column
@@ -103,9 +104,9 @@ public class Post {
                 .place(postDTO.getPlace())
                 .item(postDTO.getItem())
                 .contents(postDTO.getContents())
-                .state(postDTO.getStorage())
-                .report(postDTO.getReport())
-                .time(postDTO.getTime())
+                .state(postDTO.getState())
+                .report(0)
+                .time(LocalDateTime.now())
                 .category(postDTO.getCategory())
                 .storage(postDTO.getStorage())
                 .build();
