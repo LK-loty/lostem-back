@@ -9,9 +9,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users") // 세션은 따로 /login
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> signUp(@RequestBody @Valid UserDTO userDTO) {
+        userService.createUser(userDTO);
+        return ResponseEntity.ok("회원가입 완료");
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> selectUser(@PathVariable Long id) {
@@ -23,27 +29,23 @@ public class UserController {
         }
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody @Valid UserDTO userDTO) {
-        userService.createUser(userDTO);
-        return ResponseEntity.ok("회원가입 완료");
-    }
-
-    @PostMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<String> update(@RequestBody @Valid UserDTO userDTO) {
-        userService.updateUser(userDTO);
-        return ResponseEntity.ok("정보 수정 완료");
+        UserDTO dto = userService.updateUser(userDTO);
+        if (dto != null) {
+            return ResponseEntity.ok("정보 수정 완료");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    /*@GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<UserDTO> getMyUserInfo(HttpServletRequest request) {
-        return ResponseEntity.ok(userService.getMyUserWithAuthorities());
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        UserDTO dto = userService.deleteUser(id);
+        if (dto != null) {
+            return ResponseEntity.ok("유저 삭제 완료");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
-
-    @GetMapping("/user/{username}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<UserDTO> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUserWithAuthorities(username));
-    }*/
 }
