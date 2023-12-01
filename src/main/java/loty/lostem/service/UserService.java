@@ -6,6 +6,7 @@ import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.entity.User;
 import loty.lostem.repository.UserRepository;
+import loty.lostem.security.UserRole;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +22,7 @@ public class UserService {
         UserDTO.setPasswordEncode(userDTO, encoded);
         User created = User.createUser(userDTO);
         userRepository.save(created);
-        UserDTO createdDTO = userToDTO(created);
-        return createdDTO;
+        return userDTO;
     }
 
     public UserDTO readUser(Long userId) { // 프로필 정보 확인 창
@@ -79,6 +79,7 @@ public class UserService {
                 .star(user.getStar())
                 .starCount(user.getStarCount())
                 .tag(user.getTag())
+                .role(UserRole.valueOf(user.getRole()))
                 .build();
     }
 }
