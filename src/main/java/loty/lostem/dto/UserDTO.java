@@ -1,6 +1,7 @@
 package loty.lostem.dto;
 
 import lombok.*;
+import loty.lostem.security.UserRole;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -18,6 +19,7 @@ public class UserDTO {
     private float star;
     private int starCount;
     private String tag;
+    private UserRole role;
 
     /*public UserSessionDto(User user) {
         this.id = user.getId();
@@ -32,5 +34,8 @@ public class UserDTO {
     }
     public static void setPasswordNull(UserDTO userDTO) {
         userDTO.password = null;
+    }
+    public static void setRole(UserDTO userDTO) {
+        userDTO.role = UserRole.USER;
     }
 }

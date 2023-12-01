@@ -130,6 +130,6 @@ public class User{
     }
 
     public String getRole() {
-        return this.getRole();
+        return this.role.name();
     }
 }
