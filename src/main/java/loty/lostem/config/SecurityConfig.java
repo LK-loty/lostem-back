@@ -72,7 +72,7 @@ public class SecurityConfig {
                         .hasRole(UserRole.ADMIN.name())
 
                         .requestMatchers(
-                                "/api/posts/**", "/api/users"
+                                "/api/posts", "/api/users"
                         )
                         .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
                         .anyRequest().authenticated()
