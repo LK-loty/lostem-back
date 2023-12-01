@@ -62,7 +62,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
-                                "/api/posts/read/**", "/api/search", "/api/users/read", "/api/users/signup","/api/login"
+                                "/api/posts/read/**", "/api/search", "/api/users/**", "/api/users/signup","/api/login"
                         )
                         .permitAll()
 
