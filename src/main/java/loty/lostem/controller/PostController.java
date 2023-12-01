@@ -1,5 +1,6 @@
 package loty.lostem.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostDTO;
 import loty.lostem.service.PostService;
@@ -14,13 +15,17 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/read")
-    public ResponseEntity<List<PostDTO>> allPost() {
-        List<PostDTO> dtoList = postService.allPosts();
-        return ResponseEntity.ok(dtoList);
+    @PostMapping("/create")
+    public ResponseEntity<PostDTO> createPost(@RequestBody @Valid PostDTO postDTO) {
+        postService.createPost(postDTO);
+        if (postDTO != null) {
+            return ResponseEntity.ok(postDTO);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @GetMapping("/read/{id}")
+    @GetMapping("/read/{id}") // 해당 글에 대한 정보
     public ResponseEntity<PostDTO> selectPost(@PathVariable Long id) {
         PostDTO dto = postService.readPost(id);
         if (dto != null) {
@@ -30,7 +35,23 @@ public class PostController {
         }
     }
 
-    @GetMapping("/read/search")
+    @GetMapping("/read") // 전체 글 목록(10개 단위 나중에)
+    public ResponseEntity<List<PostDTO>> allPosts() {
+        List<PostDTO> dtoList = postService.allPosts();
+        return ResponseEntity.ok(dtoList);
+    }
+
+    @GetMapping("/read/user/{id}") // 사용자 관련 글 목록
+    public ResponseEntity<List<PostDTO>> userPost(@PathVariable Long id) {
+        List<PostDTO> dtoList = postService.userPost(id);
+        if (dtoList != null) {
+            return ResponseEntity.ok(dtoList);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/read/search") // 검색 필터 적용 후 글 목록
     public ResponseEntity<List<PostDTO>> searchPost(@PathVariable PostDTO postDTO) {
         List<PostDTO> dtoList = postService.searchPost(postDTO);
         if (dtoList != null) {
@@ -40,13 +61,23 @@ public class PostController {
         }
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<PostDTO> createPost(@PathVariable PostDTO postDTO) {
-        postService.createPost(postDTO);
-        if (postDTO != null) {
-            return ResponseEntity.ok(postDTO);
+    @PatchMapping("/update")
+    public ResponseEntity<String> update(@RequestBody @Valid PostDTO postDTO) {
+        PostDTO dto = postService.updatePost(postDTO);
+        if (dto != null) {
+            return ResponseEntity.ok("게시물 수정 완료");
         } else {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        PostDTO dto = postService.deletePost(id);
+        if (dto != null) {
+            return ResponseEntity.ok("게시물 삭제 완료");
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }
