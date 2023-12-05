@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import loty.lostem.dto.PostReportDTO;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +19,7 @@ public class PostReport {
     private Long postReportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
+    @JoinColumn(name = "postId", nullable = false)
     private Post post;
 
     @Column
@@ -34,4 +35,15 @@ public class PostReport {
     @Column
     @NotNull
     private LocalDateTime time;
+
+
+
+    public static PostReport createPostReport(PostReportDTO postReportDTO, Post post) {
+        return PostReport.builder()
+                .post(post)
+                .title(postReportDTO.getTitle())
+                .contents(postReportDTO.getContents())
+                .time(LocalDateTime.now())
+                .build();
+    }
 }
