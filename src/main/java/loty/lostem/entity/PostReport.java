@@ -24,6 +24,10 @@ public class PostReport {
 
     @Column
     @NotNull
+    private Long userId;
+
+    @Column
+    @NotNull
     @Size(max = 20)
     private String title;
 
@@ -41,6 +45,7 @@ public class PostReport {
     public static PostReport createPostReport(PostReportDTO postReportDTO, Post post) {
         return PostReport.builder()
                 .post(post)
+                .userId(postReportDTO.getUserId())
                 .title(postReportDTO.getTitle())
                 .contents(postReportDTO.getContents())
                 .time(LocalDateTime.now())
