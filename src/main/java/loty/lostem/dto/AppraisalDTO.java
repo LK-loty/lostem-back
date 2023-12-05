@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class AppraisalDTO {
     private Long appraisalId;
+    private Long userId;
     private Long appraisalUser;
     private String contents;
     private LocalDateTime time;
