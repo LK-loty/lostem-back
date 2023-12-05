@@ -41,6 +41,7 @@ public class Appraisal {
                 .user(user)
                 .appraisalUser(user.getUserId())
                 .contents(appraisalDTO.getContents())
+                .time(LocalDateTime.now())
                 .build();
     }
 }
