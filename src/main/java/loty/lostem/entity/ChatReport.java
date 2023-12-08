@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import loty.lostem.dto.ChatReportDTO;
 
 import java.time.LocalDateTime;
 
@@ -12,14 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class ChattingReport {
+public class ChatReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long chattingReportId;
+    private Long reportId;
 
     @ManyToOne
-    @JoinColumn(name = "chattingId")
-    private Chatting chatting;
+    @JoinColumn(name = "roomId")
+    private ChatRoom roomId;
 
     @Column
     @NotNull
@@ -34,4 +35,15 @@ public class ChattingReport {
     @Column
     @NotNull
     private LocalDateTime time;
+
+
+
+    public static ChatReport createChatReport(ChatReportDTO chatReportDTO, ChatRoom chatRoom) {
+        return ChatReport.builder()
+                .roomId(chatRoom)
+                .title(chatReportDTO.getTitle())
+                .contents(chatReportDTO.getContents())
+                .time(LocalDateTime.now())
+                .build();
+    }
 }

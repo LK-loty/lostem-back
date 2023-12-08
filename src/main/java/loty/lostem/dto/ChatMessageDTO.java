@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ChattingReportDTO {
-    private Long chattingReportId;
-    private String title;
-    private String contents;
+public class ChatMessageDTO {
+    private Long messageId;
+    private Long roomId;
+    private String message;
 
     private LocalDateTime time;
 }

@@ -6,7 +6,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ChattingDTO {
-    private Long chattingId;
+public class ChatRoomDTO {
+    private Long roomId;
+    private Long hostUserId;
+    private Long guestUserId;
     private int report;
 }
