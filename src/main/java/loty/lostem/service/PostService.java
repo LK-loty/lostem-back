@@ -19,13 +19,12 @@ public class PostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PostDTO createPost(PostDTO getDTO) {
-        User user = userRepository.findById(getDTO.getUserId())
+    public PostDTO createPost(PostDTO postDTO) {
+        User user = userRepository.findById(postDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
-        Post created = Post.createPost(getDTO, user);  // 변환하여 전달하려면 user 쪽의 변환 메소드 사용??
+        Post created = Post.createPost(postDTO, user);  // 변환하여 전달하려면 user 쪽의 변환 메소드 사용??
         postRepository.save(created);
-        PostDTO createdDTO = postToDTO(created);
-        return createdDTO;
+        return postDTO;
     }
 
     // 하나의 게시물에 대한 정보 리턴

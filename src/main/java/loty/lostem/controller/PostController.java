@@ -17,7 +17,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/create")
-    public ResponseEntity<PostDTO> createPost(@RequestPart("data") @Valid PostDTO postDTO, @RequestPart("image") MultipartFile[] images) {
+    public ResponseEntity<PostDTO> createPost(@Valid @RequestPart("data") PostDTO postDTO, @RequestPart("image") MultipartFile[] images) {
         postService.createPost(postDTO);
         if (postDTO != null) {
             return ResponseEntity.ok(postDTO);
@@ -63,7 +63,7 @@ public class PostController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<String> update(@RequestBody @Valid PostDTO postDTO) {
+    public ResponseEntity<String> update(@Valid @RequestBody PostDTO postDTO) {
         PostDTO dto = postService.updatePost(postDTO);
         if (dto != null) {
             return ResponseEntity.ok("게시물 수정 완료");
@@ -73,7 +73,7 @@ public class PostController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@Valid @PathVariable Long id) {
         PostDTO dto = postService.deletePost(id);
         if (dto != null) {
             return ResponseEntity.ok("게시물 삭제 완료");

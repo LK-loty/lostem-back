@@ -14,7 +14,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody @Valid UserDTO userDTO) {
+    public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
         userService.createUser(userDTO);
         return ResponseEntity.ok("회원가입 완료");
     }
@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<String> update(@RequestBody @Valid UserDTO userDTO) {
+    public ResponseEntity<String> update(@Valid @RequestBody UserDTO userDTO) {
         UserDTO dto = userService.updateUser(userDTO);
         if (dto != null) {
             return ResponseEntity.ok("정보 수정 완료");
@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@Valid @PathVariable Long id) {
         UserDTO dto = userService.deleteUser(id);
         if (dto != null) {
             return ResponseEntity.ok("유저 삭제 완료");
