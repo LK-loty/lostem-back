@@ -69,6 +69,11 @@ public class SecurityConfig {
                         .permitAll()
 
                         .requestMatchers(
+                                "/api/websocket"
+                        )
+                        .authenticated()
+
+                        .requestMatchers(
                                 "/admin/**"
                         )
                         .hasRole(UserRole.ADMIN.name())
