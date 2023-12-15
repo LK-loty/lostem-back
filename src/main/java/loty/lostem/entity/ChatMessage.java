@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import loty.lostem.dto.ChatMessageDTO;
 
 import java.time.LocalDateTime;
 
@@ -36,11 +37,11 @@ public class ChatMessage {
 
 
 
-    public static ChatMessage createChatMessage(ChatMessage chatMessage, ChatRoom chatRoom, User sender) {
+    public static ChatMessage createChatMessage(ChatMessageDTO chatMessageDTO, ChatRoom chatRoom, User sender) {
         return ChatMessage.builder()
                 .roomId(chatRoom)
                 .sender(sender)
-                .message(chatMessage.getMessage())
+                .message(chatMessageDTO.getMessage())
                 .time(LocalDateTime.now())
                 .build();
     }

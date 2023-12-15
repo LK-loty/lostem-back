@@ -21,11 +21,11 @@ public class ChatRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hostUserId")
-    private User hostUserId;
+    private User hostUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guestUserId")
-    private User guestUserId;
+    private User guestUser;
 
     @Column
     @NotNull
@@ -42,11 +42,11 @@ public class ChatRoom {
 
 
 
-    public static ChatRoom createChatRoom(ChatRoomDTO chatRoomDTO, User madeBy, User invited) {
+    public static ChatRoom createChatRoom(ChatRoomDTO chatRoomDTO, User host, User guest) {
         return ChatRoom.builder()
                 .report(0)
-                .hostUserId(madeBy)
-                .guestUserId(invited)
+                .hostUser(host)
+                .guestUser(guest)
                 .build();
     }
 }

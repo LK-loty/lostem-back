@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class ChatMessageDTO {
     private Long messageId;
     private Long roomId;
+    private Long sender;
     private String message;
 
     private LocalDateTime time;
