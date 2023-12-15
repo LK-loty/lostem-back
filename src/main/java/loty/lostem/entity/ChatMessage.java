@@ -20,7 +20,7 @@ public class ChatMessage {
 
     @ManyToOne
     @JoinColumn(name = "roomId")
-    private ChatRoom roomId;
+    private ChatRoom chatRoom;
 
     @ManyToOne
     @JoinColumn(name = "userId")
@@ -39,7 +39,7 @@ public class ChatMessage {
 
     public static ChatMessage createChatMessage(ChatMessageDTO chatMessageDTO, ChatRoom chatRoom, User sender) {
         return ChatMessage.builder()
-                .roomId(chatRoom)
+                .chatRoom(chatRoom)
                 .sender(sender)
                 .message(chatMessageDTO.getMessage())
                 .time(LocalDateTime.now())

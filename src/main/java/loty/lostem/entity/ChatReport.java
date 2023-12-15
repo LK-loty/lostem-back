@@ -20,7 +20,7 @@ public class ChatReport {
 
     @ManyToOne
     @JoinColumn(name = "roomId")
-    private ChatRoom roomId;
+    private ChatRoom chatRoom;
 
     @Column
     @NotNull
@@ -40,7 +40,7 @@ public class ChatReport {
 
     public static ChatReport createChatReport(ChatReportDTO chatReportDTO, ChatRoom chatRoom) {
         return ChatReport.builder()
-                .roomId(chatRoom)
+                .chatRoom(chatRoom)
                 .title(chatReportDTO.getTitle())
                 .contents(chatReportDTO.getContents())
                 .time(LocalDateTime.now())
