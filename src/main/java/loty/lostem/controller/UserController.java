@@ -20,7 +20,7 @@ public class UserController {
         return ResponseEntity.ok("회원가입 완료");
     }
 
-    @GetMapping
+    @GetMapping("/check")
     public ResponseEntity<UsernameCheckDTO> checkUsername(@RequestBody UsernameCheckDTO usernameCheckDTO) {
         UsernameCheckDTO dto = userService.checkUsername(usernameCheckDTO);
         if (dto != null) {
