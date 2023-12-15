@@ -81,7 +81,7 @@ public class User{
     private List<Appraisal> appraisals = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Chatting> chattingList = new ArrayList<>();
+    private List<ChatRoom> chatRoomList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<Keyword> keywords = new ArrayList<>();
