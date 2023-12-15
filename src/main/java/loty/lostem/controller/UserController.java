@@ -3,6 +3,7 @@ package loty.lostem.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.UserDTO;
+import loty.lostem.dto.UsernameCheckDTO;
 import loty.lostem.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,16 @@ public class UserController {
     public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
         userService.createUser(userDTO);
         return ResponseEntity.ok("회원가입 완료");
+    }
+
+    @GetMapping
+    public ResponseEntity<UsernameCheckDTO> checkUsername(@RequestBody UsernameCheckDTO usernameCheckDTO) {
+        UsernameCheckDTO dto = userService.checkUsername(usernameCheckDTO);
+        if (dto != null) {
+            return ResponseEntity.ok(usernameCheckDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}")

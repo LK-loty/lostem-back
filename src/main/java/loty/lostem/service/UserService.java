@@ -4,7 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
+import loty.lostem.dto.UsernameCheckDTO;
+import loty.lostem.entity.RefreshToken;
 import loty.lostem.entity.User;
+import loty.lostem.repository.RefreshTokenRepository;
 import loty.lostem.repository.UserRepository;
 import loty.lostem.security.UserRole;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
@@ -23,6 +27,15 @@ public class UserService {
         User created = User.createUser(userDTO);
         userRepository.save(created);
         return userDTO;
+    }
+
+    public UsernameCheckDTO checkUsername(UsernameCheckDTO usernameCheckDTO) {
+
+        if (userRepository.findByUsername(usernameCheckDTO.getUsername()) == null) {
+            return usernameCheckDTO;
+        } else {
+            return null;
+        }
     }
 
     public UserDTO readUser(Long userId) { // 프로필 정보 확인 창
@@ -43,6 +56,15 @@ public class UserService {
         } else {
             throw new IllegalArgumentException("Incorrect password");
         }
+    }
+
+    public Long loginData(String token) {
+        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided token"));
+        User loginUser = userRepository.findById(refreshToken.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No user data found for the provided token"));
+        UserDTO userDTO = userToDTO(loginUser);
+        return refreshToken.getUserId();
     }
 
     @Transactional
