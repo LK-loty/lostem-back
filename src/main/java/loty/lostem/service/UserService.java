@@ -29,9 +29,9 @@ public class UserService {
         return userDTO;
     }
 
-    public UsernameCheckDTO checkUsername(UsernameCheckDTO usernameCheckDTO) {
-        if (userRepository.findByUsername(usernameCheckDTO.getUsername()).isEmpty()) {
-            return usernameCheckDTO;
+    public String checkUsername(String username) {
+        if (userRepository.findByUsername(username).isEmpty()) {
+            return username;
         } else {
             return null;
         }

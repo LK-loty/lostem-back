@@ -21,10 +21,10 @@ public class UserController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UsernameCheckDTO> checkUsername(@RequestBody UsernameCheckDTO usernameCheckDTO) {
-        UsernameCheckDTO dto = userService.checkUsername(usernameCheckDTO);
-        if (dto != null) {
-            return ResponseEntity.ok(dto);
+    public ResponseEntity<String> checkUsername(@RequestParam String username) {
+        String checkUsername = userService.checkUsername(username);
+        if (checkUsername != null) {
+            return ResponseEntity.ok(checkUsername);
         } else {
             return ResponseEntity.notFound().build();
         }
