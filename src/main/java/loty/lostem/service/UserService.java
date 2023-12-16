@@ -30,8 +30,7 @@ public class UserService {
     }
 
     public UsernameCheckDTO checkUsername(UsernameCheckDTO usernameCheckDTO) {
-
-        if (userRepository.findByUsername(usernameCheckDTO.getUsername()) == null) {
+        if (userRepository.findByUsername(usernameCheckDTO.getUsername()).isEmpty()) {
             return usernameCheckDTO;
         } else {
             return null;

@@ -24,7 +24,7 @@ public class UserController {
     public ResponseEntity<UsernameCheckDTO> checkUsername(@RequestBody UsernameCheckDTO usernameCheckDTO) {
         UsernameCheckDTO dto = userService.checkUsername(usernameCheckDTO);
         if (dto != null) {
-            return ResponseEntity.ok(usernameCheckDTO);
+            return ResponseEntity.ok(dto);
         } else {
             return ResponseEntity.notFound().build();
         }
