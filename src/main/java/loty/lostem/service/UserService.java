@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
-import loty.lostem.dto.UsernameCheckDTO;
 import loty.lostem.entity.RefreshToken;
 import loty.lostem.entity.User;
 import loty.lostem.repository.RefreshTokenRepository;
@@ -62,7 +61,6 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided token"));
         User loginUser = userRepository.findById(refreshToken.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No user data found for the provided token"));
-        UserDTO userDTO = userToDTO(loginUser);
         return refreshToken.getUserId();
     }
 
