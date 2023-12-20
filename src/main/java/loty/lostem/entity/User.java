@@ -80,11 +80,11 @@ public class User{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Appraisal> appraisals = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hostUser")
-    private List<ChatRoom> hostedChatRooms = new ArrayList<>();
+    @OneToOne(mappedBy = "hostUser")
+    private ChatRoom hostedChatRoom;
 
-    @OneToMany(mappedBy = "guestUser")
-    private List<ChatRoom> joinedChatRooms = new ArrayList<>();
+    @OneToOne(mappedBy = "guestUser")
+    private ChatRoom joinedChatRoom;
 
     @OneToMany(mappedBy = "user")
     private List<Keyword> keywords = new ArrayList<>();

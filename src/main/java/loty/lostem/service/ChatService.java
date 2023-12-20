@@ -37,7 +37,7 @@ public class ChatService {
     }
 
     public List<ChatRoomDTO> getAllRooms(Long userId) {
-        return chatRoomRepository.findByHostUser_HostUserId(userId).stream()
+        return chatRoomRepository.findByHostUser_UserId(userId).stream()
                 .map(this::roomToDTO)
                 .collect(Collectors.toList());
     }

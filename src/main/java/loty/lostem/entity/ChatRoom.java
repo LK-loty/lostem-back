@@ -19,11 +19,11 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hostUserId")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
     private User hostUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guestUserId")
     private User guestUser;
 
