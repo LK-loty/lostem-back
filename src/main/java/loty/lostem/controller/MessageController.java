@@ -26,17 +26,25 @@ public class MessageController {
     public void message(@Payload ChatMessageDTO message, @Header("token") String token) { // (@Payload ChatRequest chatRequest, SimpMessageHeaderAccessor headerAccessor)
         // 토큰 검사하면서 유저 추출? 유효성 검사 로직 정리 필요
         Long userId = tokenProvider.getUserId(token);
-        chatService.createMessage(message);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/room/"+message.getRoomId(),message);
+        if (ChatMessageDTO.MessageType.TALK.equals(message.getType())) {
+            chatService.createMessage(message);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+        }
     }
 
-    /*@MessageMapping("/chat/enter") // 처음 입장 시 메세지 출력
-    public void enter(@Payload ChatMessageDTO message) {
-        if (ChatMessageDTO.MessageType.ENTER.equals(message.getType())) {
-            chatService.createRoom();
-            message.setMessage(message.getSender()+"님이 입장하였습니다.");
-        }
+    /*@MessageMapping("/chat/{id}")
+    public void sendMessage(@Payload MessageDTO messageDTO, @DestinationVariable Integer id){
+        this.simpMessagingTemplate.convertAndSend("/queue/addChatToClient/"+id,messageDTO);
     }*/
+
+    @MessageMapping("/chat/enter") // 처음 입장 시 메세지 출력
+    public void enter(@Payload ChatMessageDTO message, @Header("token") String token) {
+        Long userId = tokenProvider.getUserId(token);
+        if (ChatMessageDTO.MessageType.ENTER.equals(message.getType())) {
+            chatService.createMessage(message);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/room/"+message.getRoomId(),message.getSender()+"님이 입장하셨습니다");
+        }
+    }
     @GetMapping("/chat/get")
     public ResponseEntity<List<ChatMessageDTO>> getMessages(@PathVariable Long roomId) {
         // 채팅방에서의 모든 메시지를 가져오는 요청을 서비스에 전달하여 처리
