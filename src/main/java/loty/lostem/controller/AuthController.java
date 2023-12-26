@@ -5,14 +5,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.LoginDTO;
-import loty.lostem.dto.TokenDTO;
 import loty.lostem.dto.UserDTO;
-import loty.lostem.jwt.JwtFilter;
-import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.TokenService;
 import loty.lostem.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +28,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginDTO loginDTO) {
         UserDTO userDTO = userService.loginUser(loginDTO);
 
         String accessToken = tokenService.createAccessToken(userDTO);
@@ -46,16 +41,19 @@ public class AuthController {
         // RefreshToken 쿠키에 담기
         headers.add(HttpHeaders.SET_COOKIE, "refreshToken=" + refreshToken + "; HttpOnly");
 
-        TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(tokenDTO);
+        if (accessToken != null && refreshToken != null) {
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response,
                 SecurityContextHolder.getContext().getAuthentication());
+        // 쿠키, db 에서 refresh 삭제
     }
 }
