@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import loty.lostem.dto.PostDTO;
 import loty.lostem.dto.PostFoundDTO;
 
 import java.time.LocalDateTime;
@@ -41,7 +40,6 @@ public class PostFound {
 
     @Column
     @NotNull
-    @Size(max = 20)
     private String period;
 
     @Column
@@ -93,37 +91,35 @@ public class PostFound {
 
 
 
-    public static Post createPost(PostDTO postDTO, User user) {
-        return Post.builder()
+    public static PostFound createPost(PostFoundDTO postFoundDTO, User user) {
+        return PostFound.builder()
                 .user(user)
-                .title(postDTO.getTitle())
-                .images(postDTO.getImages())
-                .type(postDTO.getType())
-                .period(postDTO.getPeriod())
-                .area(postDTO.getArea())
-                .place(postDTO.getPlace())
-                .item(postDTO.getItem())
-                .contents(postDTO.getContents())
-                .state(postDTO.getState())
+                .title(postFoundDTO.getTitle())
+                .images(postFoundDTO.getImages())
+                .period(postFoundDTO.getPeriod())
+                .area(postFoundDTO.getArea())
+                .place(postFoundDTO.getPlace())
+                .item(postFoundDTO.getItem())
+                .contents(postFoundDTO.getContents())
+                .state(postFoundDTO.getState())
                 .report(0)
                 .time(LocalDateTime.now())
-                .category(postDTO.getCategory())
-                .storage(postDTO.getStorage())
+                .category(postFoundDTO.getCategory())
+                .storage(postFoundDTO.getStorage())
                 .build();
     }
 
-    public void updatePostFields(PostFoundDTO postDTO) {
-        this.title = postDTO.getTitle();
-        this.images = postDTO.getImages();
-        this.category = postDTO.getCategory();
-        this.period = postDTO.getPeriod();
-        this.area = postDTO.getArea();
-        this.place = postDTO.getPlace();
-        this.item = postDTO.getItem();
-        this.contents = postDTO.getContents();
-        this.state = postDTO.getState();
+    public void updatePostFields(PostFoundDTO postFoundDTO) {
+        this.title = postFoundDTO.getTitle();
+        this.images = postFoundDTO.getImages();
+        this.category = postFoundDTO.getCategory();
+        this.period = postFoundDTO.getPeriod();
+        this.area = postFoundDTO.getArea();
+        this.place = postFoundDTO.getPlace();
+        this.item = postFoundDTO.getItem();
+        this.contents = postFoundDTO.getContents();
+        this.state = postFoundDTO.getState();
         this.time = LocalDateTime.now();
-        this.type = postDTO.getType();
-        this.storage = postDTO.getStorage();
+        this.storage = postFoundDTO.getStorage();
     }
 }

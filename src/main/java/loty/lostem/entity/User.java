@@ -23,22 +23,21 @@ public class User{
 
     @Column
     @NotNull
-    @Size(max = 10)
+    @Size(min =2, max = 10)
     private String name;
 
     @Column
     @NotNull
-    @Size(max = 20)
+    @Size(min =2, max = 10)
     private String nickname;
 
     @Column
     @NotNull
-    @Size(max = 20)
-    private String username; // id
+    @Size(min =5, max = 20)
+    private String username;
 
     @Column
     @NotNull
-    //@Size(max = 20) bCryptPasswordEncoder 사용하므로 필요 없음
     private String password;
 
     @Column
@@ -60,8 +59,6 @@ public class User{
     private float star;
 
     @Column
-    @NotNull
-    @Max(4)
     private int starCount;
 
     @Column

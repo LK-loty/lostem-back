@@ -17,7 +17,6 @@ import java.util.List;
 @Builder
 @Getter
 public class Post {
-    private static Post post;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
@@ -41,7 +40,6 @@ public class Post {
 
     @Column
     @NotNull
-    @Size(max = 20)
     private String period;
 
     @Column
@@ -55,7 +53,7 @@ public class Post {
 
     @Column
     @NotNull
-    @Size(max = 30)
+    @Size(max = 20)
     private String item;
 
     @Column

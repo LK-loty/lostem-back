@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import loty.lostem.dto.PostDTO;
 import loty.lostem.dto.PostLostDTO;
 
 import java.time.LocalDateTime;
@@ -41,7 +40,6 @@ public class PostLost {
 
     @Column
     @NotNull
-    @Size(max = 20)
     private String period;
 
     @Column
@@ -84,35 +82,33 @@ public class PostLost {
 
 
 
-    public static Post createPost(PostDTO postDTO, User user) {
-        return Post.builder()
+    public static PostLost createPost(PostLostDTO postLostDTO, User user) {
+        return PostLost.builder()
                 .user(user)
-                .title(postDTO.getTitle())
-                .images(postDTO.getImages())
-                .type(postDTO.getType())
-                .period(postDTO.getPeriod())
-                .area(postDTO.getArea())
-                .place(postDTO.getPlace())
-                .item(postDTO.getItem())
-                .contents(postDTO.getContents())
-                .state(postDTO.getState())
+                .title(postLostDTO.getTitle())
+                .images(postLostDTO.getImages())
+                .period(postLostDTO.getPeriod())
+                .area(postLostDTO.getArea())
+                .place(postLostDTO.getPlace())
+                .item(postLostDTO.getItem())
+                .contents(postLostDTO.getContents())
+                .state(postLostDTO.getState())
                 .report(0)
                 .time(LocalDateTime.now())
-                .category(postDTO.getCategory())
-                .storage(postDTO.getStorage())
+                .category(postLostDTO.getCategory())
                 .build();
     }
 
-    public void updatePostFields(PostLostDTO postDTO) {
-        this.title = postDTO.getTitle();
-        this.images = postDTO.getImages();
-        this.category = postDTO.getCategory();
-        this.period = postDTO.getPeriod();
-        this.area = postDTO.getArea();
-        this.place = postDTO.getPlace();
-        this.item = postDTO.getItem();
-        this.contents = postDTO.getContents();
-        this.state = postDTO.getState();
+    public void updatePostFields(PostLostDTO postLostDTO) {
+        this.title = postLostDTO.getTitle();
+        this.images = postLostDTO.getImages();
+        this.category = postLostDTO.getCategory();
+        this.period = postLostDTO.getPeriod();
+        this.area = postLostDTO.getArea();
+        this.place = postLostDTO.getPlace();
+        this.item = postLostDTO.getItem();
+        this.contents = postLostDTO.getContents();
+        this.state = postLostDTO.getState();
         this.time = LocalDateTime.now();
     }
 }
