@@ -5,17 +5,16 @@ import lombok.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Getter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@NoArgsConstructor
+@Builder
+@Getter
 public class LoginDTO {
+    @NotNull
+    @Size(min = 3, max = 20)
+    private String username;  // 아이디
 
     @NotNull
-    @Size(min = 3, max = 50)
-    private String username;
-
-    @NotNull
-    @Size(min = 3, max = 100)
-    private String password;
+    @Size(min = 6, max = 20)
+    private String password;  // 비밀번호
 }

@@ -1,5 +1,7 @@
 package loty.lostem.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -8,5 +10,8 @@ import lombok.*;
 @Getter
 public class KeywordDTO {
     private Long keywordId;
-    private String keyword;
+
+    @NotNull
+    @Size(max = 10)
+    private String keyword;  // 키워드 문자
 }

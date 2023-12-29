@@ -1,5 +1,7 @@
 package loty.lostem.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,7 +12,10 @@ import java.time.LocalDateTime;
 @Getter
 public class NotificationDTO {
     private Long notificationId;
-    private String notification;
+
+    @NotNull
+    @Size(max = 20)
+    private String notification;  // 알림 내용
 
     private LocalDateTime time;
 }

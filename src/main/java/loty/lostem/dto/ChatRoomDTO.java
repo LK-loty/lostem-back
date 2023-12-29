@@ -8,7 +8,10 @@ import lombok.*;
 @Getter
 public class ChatRoomDTO {
     private Long roomId;
-    private Long hostUserId;
-    private Long guestUserId;
+
+    private Long hostUserId;  // 방 만든 사람
+
+    private Long guestUserId;  // 1:1 대화 상대
+
     private int report;
 }
