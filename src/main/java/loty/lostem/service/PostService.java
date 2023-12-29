@@ -3,8 +3,14 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostDTO;
+import loty.lostem.dto.PostFoundDTO;
+import loty.lostem.dto.PostLostDTO;
 import loty.lostem.entity.Post;
+import loty.lostem.entity.PostFound;
+import loty.lostem.entity.PostLost;
 import loty.lostem.entity.User;
+import loty.lostem.repository.PostFoundRepository;
+import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.PostRepository;
 import loty.lostem.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -16,6 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final PostLostRepository postLostRepository;
+    private final PostFoundRepository postFoundRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -25,6 +33,24 @@ public class PostService {
         Post created = Post.createPost(postDTO, user);  // 변환하여 전달하려면 user 쪽의 변환 메소드 사용??
         postRepository.save(created);
         return postDTO;
+    }
+
+    @Transactional
+    public PostLostDTO createPost(PostLostDTO postLostDTO) {
+        User user = userRepository.findById(postLostDTO.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
+        PostLost created = PostLost.createPost(postLostDTO, user);
+        postLostRepository.save(created);
+        return postLostDTO;
+    }
+
+    @Transactional
+    public PostFoundDTO createPost(PostFoundDTO postFoundDTO) {
+        User user = userRepository.findById(postFoundDTO.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
+        PostFound created = PostFound.createPost(postFoundDTO, user);
+        postFoundRepository.save(created);
+        return postFoundDTO;
     }
 
     // 하나의 게시물에 대한 정보 리턴
