@@ -77,8 +77,8 @@ public class PostLost {
 
 
 
-    @OneToMany(mappedBy = "post")
-    private List<PostReport> postReports = new ArrayList<>();
+    @OneToMany(mappedBy = "postLost")
+    private List<LostReport> lostReports = new ArrayList<>();
 
 
 
