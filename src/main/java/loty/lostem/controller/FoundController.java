@@ -19,7 +19,7 @@ public class FoundController {
     private final FoundService foundService;
 
     @PostMapping("/create")
-    public ResponseEntity<PostFoundDTO> createPost(@Valid @RequestPart("data") PostFoundDTO postFoundDTO, @RequestPart("image") MultipartFile[] images) {
+    public ResponseEntity<PostFoundDTO> createPost(@Valid @RequestPart("data") PostFoundDTO postFoundDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
         PostFoundDTO dto = foundService.createPost(postFoundDTO);
         if (dto != null) {
             return ResponseEntity.ok(dto);

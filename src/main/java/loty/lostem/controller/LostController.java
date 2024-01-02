@@ -17,7 +17,7 @@ public class LostController {
     private final LostService lostService;
 
     @PostMapping("/create")
-    public ResponseEntity<PostLostDTO> createPost(@Valid @RequestPart("data") PostLostDTO postLostDTO, @RequestPart("image") MultipartFile[] images) {
+    public ResponseEntity<PostLostDTO> createPost(@Valid @RequestPart("data") PostLostDTO postLostDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
         PostLostDTO dto = lostService.createPost(postLostDTO);
         if (dto != null) {
             return ResponseEntity.ok(dto);
