@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
                                 "/api/users/signup", "/api/users/**", "/api/users/check",
-                                "/api/posts/read/**", "/api/posts/search",
+                                "/api/posts/read/**", "/api/posts/search",  "/api/lost/read/**",  "/api/found/read/**",
                                 "/api/login", "/api/logout"
                         )
                         .permitAll()
@@ -79,7 +79,7 @@ public class SecurityConfig {
                         .hasRole(UserRole.ADMIN.name())
 
                         .requestMatchers(
-                                "/api/posts", "/api/users"
+                                "/api/posts", "/api/users", "/api/lost", "/api/found", "/api/reports"
                         )
                         .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
                         .anyRequest().authenticated()
