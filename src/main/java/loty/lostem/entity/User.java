@@ -74,6 +74,12 @@ public class User{
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<PostLost> postLosts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<PostFound> postFounds = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Appraisal> appraisals = new ArrayList<>();
 
