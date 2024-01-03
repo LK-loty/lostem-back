@@ -3,7 +3,11 @@ package loty.lostem.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostLostDTO;
+import loty.lostem.dto.PostLostListDTO;
 import loty.lostem.service.LostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,11 +39,12 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    @GetMapping("/read") // 전체 글 목록(10개 단위 나중에)
-    public ResponseEntity<List<PostLostDTO>> allPosts() {
-        List<PostLostDTO> dtoList = lostService.allPosts();
-        return ResponseEntity.ok(dtoList);
+    @GetMapping("/read")
+    public ResponseEntity<Page<PostLostListDTO>> allLists(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                          @RequestParam(value = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostLostListDTO> listDTOS = lostService.allLists(pageable);
+        return ResponseEntity.ok(listDTOS);
     }
 
     @GetMapping("/read/user/{id}") // 사용자 관련 글 목록

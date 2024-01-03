@@ -3,10 +3,13 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostLostDTO;
+import loty.lostem.dto.PostLostListDTO;
 import loty.lostem.entity.PostLost;
 import loty.lostem.entity.User;
 import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,10 +39,9 @@ public class LostService {
     }
 
     // 전체 목록 보기
-    public List<PostLostDTO> allPosts() {
-        return postLostRepository.findAll().stream()
-                .map(this::postToDTO)
-                .collect(Collectors.toList());
+    public Page<PostLostListDTO> allLists(Pageable pageable) {
+        return postLostRepository.findAll(pageable)
+                .map(this::listToDTO);
     }
 
     public List<PostLostDTO> userPost(Long id) {
@@ -83,6 +85,16 @@ public class LostService {
                 .report(post.getReport())
                 .time(post.getTime())
                 .category(post.getCategory())
+                .build();
+    }
+
+    public PostLostListDTO listToDTO(PostLost post) {
+        return PostLostListDTO.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .image(post.getImages())
+                .area(post.getArea())
+                .time(post.getTime())
                 .build();
     }
 }

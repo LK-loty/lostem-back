@@ -3,6 +3,7 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostFoundDTO;
+import loty.lostem.dto.PostFoundListDTO;
 import loty.lostem.dto.PostLostDTO;
 import loty.lostem.entity.PostFound;
 import loty.lostem.entity.PostLost;
@@ -10,6 +11,8 @@ import loty.lostem.entity.User;
 import loty.lostem.repository.PostFoundRepository;
 import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,10 +42,9 @@ public class FoundService {
     }
 
     // 전체 목록 보기
-    public List<PostFoundDTO> allPosts() {
-        return postFoundRepository.findAll().stream()
-                .map(this::postToDTO)
-                .collect(Collectors.toList());
+    public Page<PostFoundListDTO> allLists(Pageable pageable) {
+        return postFoundRepository.findAll(pageable)
+                .map(this::listToDTO);
     }
 
     public List<PostFoundDTO> userPost(Long id) {
@@ -86,6 +88,16 @@ public class FoundService {
                 .report(post.getReport())
                 .time(post.getTime())
                 .category(post.getCategory())
+                .build();
+    }
+
+    public PostFoundListDTO listToDTO(PostFound post) {
+        return PostFoundListDTO.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .image(post.getImages())
+                .area(post.getArea())
+                .time(post.getTime())
                 .build();
     }
 }
