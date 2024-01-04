@@ -4,17 +4,21 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
+import loty.lostem.dto.UserPreviewDTO;
 import loty.lostem.entity.RefreshToken;
 import loty.lostem.entity.User;
 import loty.lostem.repository.RefreshTokenRepository;
 import loty.lostem.repository.UserRepository;
 import loty.lostem.security.UserRole;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private static final String DEFAULT_IMAGE_URL = "static/basic.png";
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -23,6 +27,18 @@ public class UserService {
     public UserDTO createUser(UserDTO userDTO) {
         String encoded = bCryptPasswordEncoder.encode(userDTO.getPassword());
         UserDTO.setPasswordEncode(userDTO, encoded);
+
+        if (userDTO.getProfile() == null || userDTO.getProfile().isEmpty()) {
+            try {
+                ClassPathResource resource = new ClassPathResource(DEFAULT_IMAGE_URL);
+                byte[] defaultImageBytes = StreamUtils.copyToByteArray(resource.getInputStream());
+                String defaultImageBase64 = java.util.Base64.getEncoder().encodeToString(defaultImageBytes);
+                userDTO.defaultProfile("data:image/png;base64," + defaultImageBase64);
+            } catch (Exception e) {
+                e.printStackTrace();;
+            }
+        }
+
         User created = User.createUser(userDTO);
         userRepository.save(created);
         return userDTO;

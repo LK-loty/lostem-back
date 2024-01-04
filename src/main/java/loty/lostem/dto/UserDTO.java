@@ -64,4 +64,8 @@ public class UserDTO {
     public static void setRole(UserDTO userDTO) {
         userDTO.role = UserRole.USER;
     }
+
+    public void defaultProfile(String url) {
+        this.profile = url;
+    }
 }
