@@ -50,4 +50,10 @@ public class PostLostDTO {
     private int report;
 
     private LocalDateTime time;
+
+
+
+    public void defaultImage(String url) {
+        this.images = url;
+    }
 }

@@ -11,9 +11,11 @@ import loty.lostem.entity.User;
 import loty.lostem.repository.PostFoundRepository;
 import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FoundService {
+    private static final String DEFAULT_IMAGE_URL = "static/lotylostem.png";
     private final PostFoundRepository postFoundRepository;
     private final UserRepository userRepository;
 
@@ -28,6 +31,18 @@ public class FoundService {
     public PostFoundDTO createPost(PostFoundDTO postFoundDTO) {
         User user = userRepository.findById(postFoundDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
+
+        if (postFoundDTO.getImages() == null || postFoundDTO.getImages().isEmpty()) {
+            try {
+                ClassPathResource resource = new ClassPathResource(DEFAULT_IMAGE_URL);
+                byte[] defaultImageBytes = StreamUtils.copyToByteArray(resource.getInputStream());
+                String defaultImageBase64 = java.util.Base64.getEncoder().encodeToString(defaultImageBytes);
+                postFoundDTO.defaultImage("data:image/png;base64," + defaultImageBase64);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         PostFound created = PostFound.createPost(postFoundDTO, user);
         postFoundRepository.save(created);
         return postFoundDTO;

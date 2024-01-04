@@ -54,4 +54,10 @@ public class PostFoundDTO {
     private String storage;  // 보관 장소
 
     private LocalDateTime time;
+
+
+
+    public void defaultImage(String url) {
+        this.images = url;
+    }
 }
