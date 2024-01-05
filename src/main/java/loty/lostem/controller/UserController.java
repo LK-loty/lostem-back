@@ -1,10 +1,12 @@
 package loty.lostem.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.dto.UserPreviewDTO;
 import loty.lostem.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestPart("data") UserDTO userDTO, @RequestPart(value = "image", required = false)MultipartFile image) {
+        // 이미지가 null 인 경우 기본 url, 아닌 경우 이미지 저장 후 url 반환하는 서비스. DTO와 url 같이 createUser로 넘기기. userId 필요할 수도 있으니 userDTO로 넘겨서 바로 string 입력?
         userService.createUser(userDTO);
         return ResponseEntity.ok("회원가입 완료");
     }
@@ -32,8 +35,17 @@ public class UserController {
     }
 
     @GetMapping("/preview")
-    public ResponseEntity<UserPreviewDTO> userPreview(@PathVariable Long id) {
-        UserPreviewDTO userPreviewDTO = userService.readPreview(id);
+    public ResponseEntity<UserPreviewDTO> userPreview(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        UserPreviewDTO userPreviewDTO = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            try {
+                userPreviewDTO = userService.loginData(token);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
         if (userPreviewDTO != null) {
             return ResponseEntity.ok(userPreviewDTO);
         } else {

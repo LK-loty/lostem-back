@@ -40,13 +40,6 @@ public class UserService {
         }
     }
 
-    public UserPreviewDTO readPreview(Long userId) {
-        User selectedUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        UserPreviewDTO dto = previewToDTO(selectedUser);
-        return dto;
-    }
-
     public UserDTO readUser(Long userId) { // 프로필 정보 확인 창
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
@@ -67,12 +60,13 @@ public class UserService {
         }
     }
 
-    public Long loginData(String token) {
+    public UserPreviewDTO loginData(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided token"));
         User loginUser = userRepository.findById(refreshToken.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No user data found for the provided token"));
-        return refreshToken.getUserId();
+        UserPreviewDTO dto = previewToDTO(loginUser);
+        return dto;
     }
 
     @Transactional
