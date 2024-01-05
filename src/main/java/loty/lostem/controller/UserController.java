@@ -3,6 +3,7 @@ package loty.lostem.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.UserDTO;
+import loty.lostem.dto.UserPreviewDTO;
 import loty.lostem.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,16 @@ public class UserController {
         String checkUsername = userService.checkUsername(username);
         if (checkUsername != null) {
             return ResponseEntity.ok(checkUsername);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/preview")
+    public ResponseEntity<UserPreviewDTO> userPreview(@PathVariable Long id) {
+        UserPreviewDTO userPreviewDTO = userService.readPreview(id);
+        if (userPreviewDTO != null) {
+            return ResponseEntity.ok(userPreviewDTO);
         } else {
             return ResponseEntity.notFound().build();
         }

@@ -52,6 +52,13 @@ public class UserService {
         }
     }
 
+    public UserPreviewDTO readPreview(Long userId) {
+        User selectedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
+        UserPreviewDTO dto = previewToDTO(selectedUser);
+        return dto;
+    }
+
     public UserDTO readUser(Long userId) { // 프로필 정보 확인 창
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
@@ -115,6 +122,16 @@ public class UserService {
                 .starCount(user.getStarCount())
                 .tag(user.getTag())
                 .role(UserRole.valueOf(user.getRole()))
+                .build();
+    }
+
+    public UserPreviewDTO previewToDTO(User user) {
+        return UserPreviewDTO.builder()
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .profile(user.getProfile())
+                .star(user.getStar())
+                .tag(user.getTag())
                 .build();
     }
 }
