@@ -27,18 +27,6 @@ public class UserService {
     public UserDTO createUser(UserDTO userDTO) {
         String encoded = bCryptPasswordEncoder.encode(userDTO.getPassword());
         UserDTO.setPasswordEncode(userDTO, encoded);
-
-        if (userDTO.getProfile() == null || userDTO.getProfile().isEmpty()) {
-            try {
-                ClassPathResource resource = new ClassPathResource(DEFAULT_IMAGE_URL);
-                byte[] defaultImageBytes = StreamUtils.copyToByteArray(resource.getInputStream());
-                String defaultImageBase64 = java.util.Base64.getEncoder().encodeToString(defaultImageBytes);
-                userDTO.defaultProfile("data:image/png;base64," + defaultImageBase64);
-            } catch (Exception e) {
-                e.printStackTrace();;
-            }
-        }
-
         User created = User.createUser(userDTO);
         userRepository.save(created);
         return userDTO;

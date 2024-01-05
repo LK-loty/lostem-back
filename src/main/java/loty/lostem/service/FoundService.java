@@ -31,18 +31,6 @@ public class FoundService {
     public PostFoundDTO createPost(PostFoundDTO postFoundDTO) {
         User user = userRepository.findById(postFoundDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
-
-        if (postFoundDTO.getImages() == null || postFoundDTO.getImages().isEmpty()) {
-            try {
-                ClassPathResource resource = new ClassPathResource(DEFAULT_IMAGE_URL);
-                byte[] defaultImageBytes = StreamUtils.copyToByteArray(resource.getInputStream());
-                String defaultImageBase64 = java.util.Base64.getEncoder().encodeToString(defaultImageBytes);
-                postFoundDTO.defaultImage("data:image/png;base64," + defaultImageBase64);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         PostFound created = PostFound.createPost(postFoundDTO, user);
         postFoundRepository.save(created);
         return postFoundDTO;
