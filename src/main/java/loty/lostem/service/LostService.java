@@ -8,13 +8,12 @@ import loty.lostem.entity.PostLost;
 import loty.lostem.entity.User;
 import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +72,29 @@ public class LostService {
         return selectedDTO;
     }
 
+    public Page<PostLostListDTO> search(String title, String category, LocalDateTime date, String area, String place, String item, String content, String state, Pageable pageable){
+        Specification<PostLost> spec = (root, query, criteriaBuilder) -> null;
+        // Specification<PostLost> spec = Specification.where(LostSpecification.findByCategory(category));
+        if (title != null)
+            spec = spec.and(LostSpecification.includeTitle(title));
+        if (category != null)
+            spec = spec.and(LostSpecification.equalCategory(category));
+        if (date != null)
+            spec = spec.and(LostSpecification.equalDate(date));
+        if (area != null)
+            spec =spec.and(LostSpecification.equalArea(area));
+        if (place != null)
+            spec = spec.and(LostSpecification.includePlace(place));
+        if (item != null)
+            spec = spec.and(LostSpecification.equalItem(item));
+        if (content != null)
+            spec = spec.and(LostSpecification.includeContents(content));
+        if (state != null)
+            spec = spec.and(LostSpecification.equalState(state));
 
+        return postLostRepository.findAll(spec, pageable)
+                .map(this::listToDTO);
+    }
 
     public PostLostDTO postToDTO(PostLost post) {
         return PostLostDTO.builder()

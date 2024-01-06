@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -39,6 +40,7 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/read")
     public ResponseEntity<Page<PostLostListDTO>> allLists(@RequestParam(value = "page", defaultValue = "0") int page,
                                                           @RequestParam(value = "size", defaultValue = "10") int size) {
@@ -57,7 +59,7 @@ public class LostController {
         }
     }
 
-    /*@GetMapping("/read/search") // 검색 필터 적용 후 글 목록
+    /*@GetMapping("/read/search") // 검색 필터 적용 후 글 목록 ... >> 알림용 검색
     public ResponseEntity<List<PostLostDTO>> searchPost(@PathVariable PostLostDTO postDTO) {
         List<PostLostDTO> dtoList = lostService.searchPost(postDTO);
         if (dtoList != null) {
@@ -85,5 +87,23 @@ public class LostController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<PostLostListDTO>> searchLost(
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "period", required = false) LocalDateTime period,
+            @RequestParam(value = "area", required = false) String area,
+            @RequestParam(value = "place", required = false) String place,
+            @RequestParam(value = "item", required = false) String item,
+            @RequestParam(value = "contents", required = false) String contents,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostLostListDTO> listDTOS = lostService.search(title, category, period, area, place, item, contents, state, pageable);
+
+        return ResponseEntity.ok(listDTOS);
     }
 }
