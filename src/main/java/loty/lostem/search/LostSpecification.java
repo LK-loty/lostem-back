@@ -1,4 +1,4 @@
-package loty.lostem.service;
+package loty.lostem.search;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import loty.lostem.dto.PostLostDTO;
@@ -60,15 +60,11 @@ public class LostSpecification {
     /*public static Specification<PostDTO> equalStatus(String status) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("status"), StatusEnum.valueOf(status));
     }*/
-    public static Specification<PostLost> includeTitle(String title) {
+    public static Specification<PostLost> likeTitle(String title) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("title"),"%" + title + "%");
     }
-
     public static Specification<PostLost> equalCategory(String category) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("category"), category);
-    }
-    public static Specification<PostLost> betweenPeriod(LocalDateTime startDatetime, LocalDateTime endDatetime) {
-        return (root, query, CriteriaBuilder) -> CriteriaBuilder.between(root.get("period"),startDatetime, endDatetime);
     }
     public static Specification<PostLost> equalDate(LocalDateTime date) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("date"), date);
@@ -76,13 +72,13 @@ public class LostSpecification {
     public static Specification<PostLost> equalArea(String area) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("area"), area);
     }
-    public static Specification<PostLost> includePlace(String place) {
+    public static Specification<PostLost> likePlace(String place) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("place"), "%" + place + "%");
     }
     public static Specification<PostLost> equalItem(String item) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("item"), item);
     }
-    public static Specification<PostLost> includeContents(String contents) {
+    public static Specification<PostLost> likeContents(String contents) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("contents"), "%" + contents + "%");
     }
     public static Specification<PostLost> equalState(String state) {
