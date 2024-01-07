@@ -11,12 +11,15 @@ import loty.lostem.entity.User;
 import loty.lostem.repository.PostFoundRepository;
 import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
+import loty.lostem.search.FoundSpecification;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,6 +78,32 @@ public class FoundService {
         return selectedDTO;
     }
 
+    public Page<PostFoundListDTO> search(String title, String category, LocalDateTime start, LocalDateTime end,
+                                         String area, String place, String item, String contents, String state, String storage, Pageable pageable) {
+        Specification<PostFound> spec = (root, query, criteriaBuilder) -> null;
+
+        if (title != null)
+            spec = spec.and(FoundSpecification.likeTitle(title));
+        if (category != null)
+            spec = spec.and(FoundSpecification.equalCategory(category));
+        if (start != null || end != null)
+            spec = spec.and(FoundSpecification.betweenPeriod(start, end));
+        if (area != null)
+            spec = spec.and(FoundSpecification.equalArea(area));
+        if (place != null)
+            spec = spec.and(FoundSpecification.likePlace(place));
+        if (item != null)
+            spec = spec.and(FoundSpecification.equalItem(item));
+        if (contents != null)
+            spec = spec.and(FoundSpecification.likeContents(contents));
+        if (state != null)
+            spec = spec.and(FoundSpecification.equalState(state));
+        if (storage != null)
+            spec = spec.and(FoundSpecification.likeStorage(storage));
+
+        return postFoundRepository.findAll(spec, pageable)
+                .map(this::listToDTO);
+    }
 
 
     public PostFoundDTO postToDTO(PostFound post) {
