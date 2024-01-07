@@ -43,7 +43,7 @@ public class LostController {
 
     @GetMapping("/read")
     public ResponseEntity<Page<PostLostListDTO>> allLists(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                          @RequestParam(value = "size", defaultValue = "10") int size) {
+                                                          @RequestParam(value = "size", defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PostLostListDTO> listDTOS = lostService.allLists(pageable);
         return ResponseEntity.ok(listDTOS);

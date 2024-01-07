@@ -42,7 +42,7 @@ public class FoundController {
 
     @GetMapping("/read")
     public ResponseEntity<Page<PostFoundListDTO>> allLists(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                           @RequestParam(value = "size", defaultValue = "10") int size) {
+                                                           @RequestParam(value = "size", defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PostFoundListDTO> listDTOS = foundService.allLists(pageable);
         return ResponseEntity.ok(listDTOS);
