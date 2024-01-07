@@ -73,15 +73,16 @@ public class LostService {
         return selectedDTO;
     }
 
-    public Page<PostLostListDTO> search(String title, String category, LocalDateTime date, String area, String place, String item, String contents, String state, Pageable pageable){
+    public Page<PostLostListDTO> search(String title, String category, LocalDateTime start, LocalDateTime end,
+                                        String area, String place, String item, String contents, String state, Pageable pageable){
         Specification<PostLost> spec = (root, query, criteriaBuilder) -> null;
         // Specification<PostLost> spec = Specification.where(LostSpecification.findByCategory(category));
         if (title != null)
             spec = spec.and(LostSpecification.likeTitle(title));
         if (category != null)
             spec = spec.and(LostSpecification.equalCategory(category));
-        if (date != null)
-            spec = spec.and(LostSpecification.equalDate(date));
+        if (start != null || end != null)
+            spec = spec.and(LostSpecification.betweenPeriod(start, end));
         if (area != null)
             spec =spec.and(LostSpecification.equalArea(area));
         if (place != null)
@@ -102,7 +103,8 @@ public class LostService {
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .images(post.getImages())
-                .period(post.getPeriod())
+                .start(post.getStart())
+                .end((post.getEnd()))
                 .area(post.getArea())
                 .place(post.getPlace())
                 .item(post.getItem())

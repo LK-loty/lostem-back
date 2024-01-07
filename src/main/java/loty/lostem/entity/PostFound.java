@@ -39,8 +39,7 @@ public class PostFound {
     private String category;
 
     @Column
-    @NotNull
-    private String period;
+    private LocalDateTime date;
 
     @Column
     @NotNull
@@ -96,7 +95,7 @@ public class PostFound {
                 .user(user)
                 .title(postFoundDTO.getTitle())
                 .images(postFoundDTO.getImages())
-                .period(postFoundDTO.getPeriod())
+                .date(postFoundDTO.getDate())
                 .area(postFoundDTO.getArea())
                 .place(postFoundDTO.getPlace())
                 .item(postFoundDTO.getItem())
@@ -113,7 +112,7 @@ public class PostFound {
         this.title = postFoundDTO.getTitle();
         this.images = postFoundDTO.getImages();
         this.category = postFoundDTO.getCategory();
-        this.period = postFoundDTO.getPeriod();
+        this.date = postFoundDTO.getDate();
         this.area = postFoundDTO.getArea();
         this.place = postFoundDTO.getPlace();
         this.item = postFoundDTO.getItem();

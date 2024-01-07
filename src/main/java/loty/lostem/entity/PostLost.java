@@ -39,8 +39,10 @@ public class PostLost {
     private String category;
 
     @Column
-    @NotNull
-    private String period;
+    private LocalDateTime start;
+
+    @Column
+    private LocalDateTime end;
 
     @Column
     @NotNull
@@ -87,7 +89,8 @@ public class PostLost {
                 .user(user)
                 .title(postLostDTO.getTitle())
                 .images(postLostDTO.getImages())
-                .period(postLostDTO.getPeriod())
+                .start(postLostDTO.getStart())
+                .end(postLostDTO.getEnd())
                 .area(postLostDTO.getArea())
                 .place(postLostDTO.getPlace())
                 .item(postLostDTO.getItem())
@@ -103,7 +106,8 @@ public class PostLost {
         this.title = postLostDTO.getTitle();
         this.images = postLostDTO.getImages();
         this.category = postLostDTO.getCategory();
-        this.period = postLostDTO.getPeriod();
+        this.start = postLostDTO.getStart();
+        this.end = postLostDTO.getEnd();
         this.area = postLostDTO.getArea();
         this.place = postLostDTO.getPlace();
         this.item = postLostDTO.getItem();

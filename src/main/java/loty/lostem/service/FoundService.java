@@ -78,7 +78,7 @@ public class FoundService {
         return selectedDTO;
     }
 
-    public Page<PostFoundListDTO> search(String title, String category, LocalDateTime start, LocalDateTime end,
+    public Page<PostFoundListDTO> search(String title, String category, LocalDateTime date,
                                          String area, String place, String item, String contents, String state, String storage, Pageable pageable) {
         Specification<PostFound> spec = (root, query, criteriaBuilder) -> null;
 
@@ -86,8 +86,8 @@ public class FoundService {
             spec = spec.and(FoundSpecification.likeTitle(title));
         if (category != null)
             spec = spec.and(FoundSpecification.equalCategory(category));
-        if (start != null || end != null)
-            spec = spec.and(FoundSpecification.betweenPeriod(start, end));
+        if (date != null)
+            spec = spec.and(FoundSpecification.equalDate(date));
         if (area != null)
             spec = spec.and(FoundSpecification.equalArea(area));
         if (place != null)
@@ -111,7 +111,7 @@ public class FoundService {
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .images(post.getImages())
-                .period(post.getPeriod())
+                .date(post.getDate())
                 .area(post.getArea())
                 .place(post.getPlace())
                 .item(post.getItem())

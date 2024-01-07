@@ -66,8 +66,8 @@ public class LostSpecification {
     public static Specification<PostLost> equalCategory(String category) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("category"), category);
     }
-    public static Specification<PostLost> equalDate(LocalDateTime date) {
-        return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("date"), date);
+    public static Specification<PostLost> betweenPeriod(LocalDateTime start, LocalDateTime end) {
+        return (root, query, CriteriaBuilder) -> CriteriaBuilder.between(root.get("period"), start, end);
     }
     public static Specification<PostLost> equalArea(String area) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("area"), area);

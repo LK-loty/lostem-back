@@ -93,7 +93,8 @@ public class LostController {
     public ResponseEntity<Page<PostLostListDTO>> searchLost(
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "period", required = false) LocalDateTime period,
+            @RequestParam(value = "start", required = false) LocalDateTime start,
+            @RequestParam(value = "end", required = false) LocalDateTime end,
             @RequestParam(value = "area", required = false) String area,
             @RequestParam(value = "place", required = false) String place,
             @RequestParam(value = "item", required = false) String item,
@@ -102,7 +103,7 @@ public class LostController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "20") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<PostLostListDTO> listDTOS = lostService.search(title, category, period, area, place, item, contents, state, pageable);
+        Page<PostLostListDTO> listDTOS = lostService.search(title, category, start, end, area, place, item, contents, state, pageable);
 
         return ResponseEntity.ok(listDTOS);
     }

@@ -27,7 +27,7 @@ public class PostFoundDTO {
     private String category;  // 카테고리 : 물건 종류
 
     @NotNull
-    private String period;  // 기간
+    private LocalDateTime date;  // 날짜
 
     @NotNull
     @Size(max = 100)

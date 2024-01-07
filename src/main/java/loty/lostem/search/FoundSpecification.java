@@ -1,5 +1,6 @@
 package loty.lostem.search;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import loty.lostem.entity.PostFound;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -12,8 +13,8 @@ public class FoundSpecification {
     public static Specification<PostFound> equalCategory(String category) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("category"), category);
     }
-    public static Specification<PostFound> betweenPeriod(LocalDateTime startDatetime, LocalDateTime endDatetime) {
-        return (root, query, CriteriaBuilder) -> CriteriaBuilder.between(root.get("period"),startDatetime, endDatetime);
+    public static Specification<PostFound> equalDate(LocalDateTime date) {
+        return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("date"), date);
     }
     public static Specification<PostFound> equalArea(String area) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("area"), area);
