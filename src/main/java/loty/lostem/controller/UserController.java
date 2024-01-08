@@ -18,8 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@Valid @RequestPart("data") UserDTO userDTO, @RequestPart(value = "image", required = false)MultipartFile image) {
-        // 이미지가 null 인 경우 기본 url, 아닌 경우 이미지 저장 후 url 반환하는 서비스. DTO와 url 같이 createUser로 넘기기. userId 필요할 수도 있으니 userDTO로 넘겨서 바로 string 입력?
+    public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
         userService.createUser(userDTO);
         return ResponseEntity.ok("회원가입 완료");
     }
