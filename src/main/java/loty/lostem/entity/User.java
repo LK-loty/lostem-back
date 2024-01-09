@@ -32,30 +32,21 @@ public class User{
     private String nickname;
 
     @Column
-    @NotNull
-    @Size(min =5, max = 20)
     private String username;
 
     @Column
-    @NotNull
     private String password;
 
     @Column
-    @NotNull
-    @Size(max = 11)
     private String phone;
 
     @Column
-    @NotNull
-    @Size(max = 30)
     private String email;
 
     @Column
     private String profile;
 
     @Column
-    @NotNull
-    @Max(2)
     private float star;
 
     @Column
@@ -137,5 +128,18 @@ public class User{
 
     public String getRole() {
         return this.role.name();
+    }
+
+    public static void deleteUser(User user) {
+        user.name = "알 수 없음";
+        user.nickname = "알 수 없음";
+        user.username = "";
+        user.password = "";
+        user.phone = "";
+        user.email = "";
+        user.profile = "";
+        user.star = 0;
+        user.starCount = 0;
+        user.tag = "";
     }
 }

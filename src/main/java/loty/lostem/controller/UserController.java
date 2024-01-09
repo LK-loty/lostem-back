@@ -73,8 +73,8 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@Valid @PathVariable Long id) {
-        UserDTO dto = userService.deleteUser(id);
+    public ResponseEntity<String> delete(@Valid @RequestBody UserDTO userDTO) {
+        UserDTO dto = userService.deleteUser(userDTO);
         if (dto != null) {
             return ResponseEntity.ok("유저 삭제 완료");
         } else {

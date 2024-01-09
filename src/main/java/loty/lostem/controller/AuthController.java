@@ -51,9 +51,25 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response,
-                SecurityContextHolder.getContext().getAuthentication());
-        // 쿠키, db 에서 refresh 삭제
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+
+        // 쿠키에서 리프레시 토큰 삭제 후 repository 에서도 삭제
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refreshToken")) {
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                    tokenService.deleteRefreshToken(cookie.getValue());
+                    break;
+                }
+            }
+        }
+        return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 }

@@ -18,7 +18,6 @@ import org.springframework.util.StreamUtils;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private static final String DEFAULT_IMAGE_URL = "static/basic.png";
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -80,12 +79,12 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO deleteUser(Long userId) {
-        User selectedUser = userRepository.findById(userId)
+    public UserDTO deleteUser(UserDTO userDTO) {
+        User selectedUser = userRepository.findByUsername(userDTO.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        UserDTO selectedDTO = userToDTO(selectedUser);
-        userRepository.deleteById(userId);
-        return selectedDTO;
+        User.deleteUser(selectedUser);
+        userRepository.save(selectedUser);
+        return userDTO;
     }
 
 
