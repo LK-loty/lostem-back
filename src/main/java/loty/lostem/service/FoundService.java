@@ -4,15 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostFoundDTO;
 import loty.lostem.dto.PostFoundListDTO;
-import loty.lostem.dto.PostLostDTO;
 import loty.lostem.entity.PostFound;
-import loty.lostem.entity.PostLost;
 import loty.lostem.entity.User;
 import loty.lostem.repository.PostFoundRepository;
-import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
 import loty.lostem.search.FoundSpecification;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,7 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FoundService {
-    private static final String DEFAULT_IMAGE_URL = "static/lotylostem.png";
     private final PostFoundRepository postFoundRepository;
     private final UserRepository userRepository;
 
@@ -36,7 +31,8 @@ public class FoundService {
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostFound created = PostFound.createPost(postFoundDTO, user);
         postFoundRepository.save(created);
-        return postFoundDTO;
+        PostFoundDTO createdDTO = postToDTO(created);
+        return createdDTO;
     }
 
     // 하나의 게시물에 대한 정보 리턴

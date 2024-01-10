@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class LostService {
-    private static final String DEFAULT_IMAGE_URL = "static/lotylostem.png";
     private final PostLostRepository postLostRepository;
     private final UserRepository userRepository;
 
@@ -31,7 +30,8 @@ public class LostService {
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostLost created = PostLost.createPost(postLostDTO, user);
         postLostRepository.save(created);
-        return postLostDTO;
+        PostLostDTO createdDTO = postToDTO(created);
+        return createdDTO;
     }
 
     // 하나의 게시물에 대한 정보 리턴
