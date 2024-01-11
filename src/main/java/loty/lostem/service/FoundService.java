@@ -26,8 +26,8 @@ public class FoundService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PostFoundDTO createPost(PostFoundDTO postFoundDTO) {
-        User user = userRepository.findById(postFoundDTO.getUserId())
+    public PostFoundDTO createPost(PostFoundDTO postFoundDTO, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostFound created = PostFound.createPost(postFoundDTO, user);
         postFoundRepository.save(created);

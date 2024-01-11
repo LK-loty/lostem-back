@@ -25,8 +25,8 @@ public class LostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PostLostDTO createPost(PostLostDTO postLostDTO) {
-        User user = userRepository.findById(postLostDTO.getUserId())
+    public PostLostDTO createPost(PostLostDTO postLostDTO, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostLost created = PostLost.createPost(postLostDTO, user);
         postLostRepository.save(created);
