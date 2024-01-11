@@ -59,10 +59,8 @@ public class UserService {
         }
     }
 
-    public UserPreviewDTO loginData(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided token"));
-        User loginUser = userRepository.findById(refreshToken.getUserId())
+    public UserPreviewDTO loginData(Long userId) {
+        User loginUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user data found for the provided token"));
         UserPreviewDTO dto = previewToDTO(loginUser);
         return dto;

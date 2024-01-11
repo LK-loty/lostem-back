@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.dto.UserPreviewDTO;
+import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
@@ -40,7 +42,8 @@ public class UserController {
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring(7);
             try {
-                userPreviewDTO = userService.loginData(token);
+                Long userId = tokenProvider.getUserId(token);
+                userPreviewDTO = userService.loginData(userId);
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
