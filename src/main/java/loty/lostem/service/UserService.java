@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
+import java.security.SecureRandom;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -25,7 +27,11 @@ public class UserService {
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
         String encoded = bCryptPasswordEncoder.encode(userDTO.getPassword());
+
         UserDTO.setPasswordEncode(userDTO, encoded);
+        String tag = generateUniqueTag();
+        userDTO.setTag(tag);
+
         User created = User.createUser(userDTO);
         userRepository.save(created);
         return userDTO;
@@ -112,5 +118,28 @@ public class UserService {
                 .star(user.getStar())
                 .tag(user.getTag())
                 .build();
+    }
+
+    public static String generateTag() {
+        String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder codeBuilder = new StringBuilder(4);
+
+        for (int i = 0; i < 4 ; i++) {
+            int randomIndex = random.nextInt(characters.length());
+            char randomChar = characters.charAt(randomIndex);
+            codeBuilder.append(randomChar);
+        }
+        return codeBuilder.toString();
+    }
+
+    private String generateUniqueTag() {
+        while (true) {
+            String tag = generateTag();
+            if (!userRepository.existsByTag(tag)) {
+                return tag;
+            }
+        }
     }
 }

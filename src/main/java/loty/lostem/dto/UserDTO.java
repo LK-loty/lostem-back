@@ -61,6 +61,9 @@ public class UserDTO {
     public static void setPasswordNull(UserDTO userDTO) {
         userDTO.password = null;
     }
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
     public static void setRole(UserDTO userDTO) {
         userDTO.role = UserRole.USER;
     }
