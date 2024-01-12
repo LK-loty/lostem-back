@@ -20,7 +20,7 @@ public class PostFoundListDTO {
     private String image;
 
     @NotNull
-    @Size(max = 100)
+    @Size(max = 20)
     private String area;
 
     private LocalDateTime time;

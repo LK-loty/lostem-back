@@ -35,7 +35,7 @@ public class PostLost {
 
     @Column
     @NotNull
-    @Size(max = 4)
+    @Size(max = 10)
     private String category;
 
     @Column
@@ -46,7 +46,7 @@ public class PostLost {
 
     @Column
     @NotNull
-    @Size(max = 100)
+    @Size(max = 20)
     private String area;
 
     @Column

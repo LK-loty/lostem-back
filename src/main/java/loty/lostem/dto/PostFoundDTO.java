@@ -23,14 +23,14 @@ public class PostFoundDTO {
     private String images;  // 이미지 url
 
     @NotNull
-    @Size(max = 4)
+    @Size(max = 10)
     private String category;  // 카테고리 : 물건 종류
 
     @NotNull
     private LocalDateTime date;  // 날짜
 
     @NotNull
-    @Size(max = 100)
+    @Size(max = 20)
     private String area;  // 분실 지역 (필수 입력 지역)
 
     @Size(max = 100)

@@ -35,7 +35,7 @@ public class PostFound {
 
     @Column
     @NotNull
-    @Size(max = 4)
+    @Size(max = 10)
     private String category;
 
     @Column
@@ -43,7 +43,7 @@ public class PostFound {
 
     @Column
     @NotNull
-    @Size(max = 100)
+    @Size(max = 20)
     private String area;
 
     @Column
@@ -69,11 +69,6 @@ public class PostFound {
     @NotNull
     @Max(2)
     private int report;
-
-    @Column
-    @NotNull
-    @Size(max = 10)
-    private String type;
 
     @Column
     @Size(max = 50)
