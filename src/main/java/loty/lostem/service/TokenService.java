@@ -1,25 +1,19 @@
 package loty.lostem.service;
 
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.LoginDTO;
-import loty.lostem.dto.TokenDTO;
+import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.entity.RefreshToken;
 import loty.lostem.entity.User;
-import loty.lostem.jwt.JwtFilter;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.repository.RefreshTokenRepository;
 import loty.lostem.repository.UserRepository;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -35,21 +29,22 @@ public class TokenService {
     }
 
     public String createRefreshToken(UserDTO userDTO) {
-        // 사용자의 리프레시 토큰 가져오기
+        log.info("리프레시 토큰 가져오기");
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByUserId(userDTO.getUserId()).orElse(null);
 
         if (refreshTokenEntity == null) {
-            // 처음 로그인하는 경우
+            log.info("처음 로그인 시 토큰 발급합니다");
             String newRefreshToken = tokenProvider.createRefreshToken(userDTO.getUsername());
             refreshTokenEntity = new RefreshToken(userDTO.getUserId(), newRefreshToken);
             refreshTokenRepository.save(refreshTokenEntity);
             return newRefreshToken;
         } else {
+            log.info("처음이 아닌 경우 리프레시 토큰을 확인합니다");
             String refreshToken = refreshTokenEntity.getRefreshToken();
             if (tokenProvider.validateToken(refreshToken)) {
                 return refreshToken;
             } else {
-                // 리프레시 토큰이 만료된 경우 새로 발급하여 업데이트
+                log.info("리프레시 토큰이 만료되어 업데이트 합니다");
                 String newRefreshToken = tokenProvider.createRefreshToken(userDTO.getUsername());
                 refreshTokenEntity.update(newRefreshToken);
                 refreshTokenRepository.save(refreshTokenEntity);
@@ -79,5 +74,15 @@ public class TokenService {
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected Token"));
+    }
+
+    public boolean deleteRefreshToken(String refreshToken) {
+        Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findByRefreshToken(refreshToken);
+
+        if (refreshTokenOptional.isPresent()) {
+            refreshTokenRepository.delete(refreshTokenOptional.get());
+            return true;
+        }
+        return false;
     }
 }
