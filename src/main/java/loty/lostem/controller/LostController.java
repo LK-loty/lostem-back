@@ -84,8 +84,21 @@ public class LostController {
     }*/
 
     @PatchMapping("/update")
-    public ResponseEntity<String> update(@Valid @RequestBody PostLostDTO postDTO) {
-        PostLostDTO dto = lostService.updatePost(postDTO);
+    public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestPart("data") PostLostDTO postLostDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
+        String authorization = request.getHeader("Authorization");
+        Long userId = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            try {
+                userId = tokenProvider.getUserId(token);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+        PostLostDTO dto = null;
+        if (userId != null && userId.equals(postLostDTO.getUserId())) {
+            dto = lostService.updatePost(postLostDTO);
+        } // else >> id 가 같은데 오류나는 경우, id 달라서 나는 오류 구분? 아니면 delete 처럼 null 통일?
         if (dto != null) {
             return ResponseEntity.ok("게시물 수정 완료");
         } else {
@@ -93,9 +106,19 @@ public class LostController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@Valid @PathVariable Long id) {
-        PostLostDTO dto = lostService.deletePost(id);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(HttpServletRequest request, @Valid @PathVariable Long id) {
+        String authorization = request.getHeader("Authorization");
+        Long userId = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            try {
+                userId = tokenProvider.getUserId(token);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+        PostLostDTO dto = lostService.deletePost(id, userId);
         if (dto != null) {
             return ResponseEntity.ok("게시물 삭제 완료");
         } else {

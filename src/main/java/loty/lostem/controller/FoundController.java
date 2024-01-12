@@ -84,8 +84,21 @@ public class FoundController {
     }*/
 
     @PatchMapping("/update")
-    public ResponseEntity<String> update(@Valid @RequestBody PostFoundDTO postDTO) {
-        PostFoundDTO dto = foundService.updatePost(postDTO);
+    public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestPart("data") PostFoundDTO postFoundDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
+        String authorization = request.getHeader("Authorization");
+        Long userId = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            try {
+                userId = tokenProvider.getUserId(token);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+        PostFoundDTO dto = null;
+        if (userId != null && userId.equals(postFoundDTO.getUserId())) {
+            dto = foundService.updatePost(postFoundDTO);
+        }
         if (dto != null) {
             return ResponseEntity.ok("게시물 수정 완료");
         } else {
@@ -93,9 +106,19 @@ public class FoundController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@Valid @PathVariable Long id) {
-        PostFoundDTO dto = foundService.deletePost(id);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(HttpServletRequest request, @Valid @PathVariable Long id) {
+        String authorization = request.getHeader("Authorization");
+        Long userId = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            try {
+                userId = tokenProvider.getUserId(token);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+        PostFoundDTO dto = foundService.deletePost(id, userId);
         if (dto != null) {
             return ResponseEntity.ok("게시물 삭제 완료");
         } else {

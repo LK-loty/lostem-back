@@ -65,12 +65,16 @@ public class LostService {
     }
 
     @Transactional
-    public PostLostDTO deletePost(Long postId) {
+    public PostLostDTO deletePost(Long postId, Long userId) {
         PostLost selectedPost = postLostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        PostLostDTO selectedDTO = postToDTO(selectedPost);
-        postLostRepository.deleteById(postId);
-        return selectedDTO;
+        if (selectedPost.getPostId().equals(userId)) {
+            PostLostDTO selectedDTO = postToDTO(selectedPost);
+            postLostRepository.deleteById(postId);
+            return selectedDTO;
+        } else {
+            return null;
+        }
     }
 
     public Page<PostLostListDTO> search(String title, String category, LocalDateTime start, LocalDateTime end,
