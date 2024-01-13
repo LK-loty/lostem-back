@@ -70,6 +70,13 @@ public class TokenService {
         return tokenProvider.createToken(user);
     }
 
+    public boolean checkToken(String token) {
+        if (tokenProvider.validateToken(token)) {
+            return true;
+        }
+        return false;
+    }
+
     // refresh 토큰으로 refresh 객체 검색해서 반환
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)

@@ -72,4 +72,28 @@ public class AuthController {
         }
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
+
+    @GetMapping("/access")
+    public ResponseEntity<String> checkAccessToken(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+
+            if (tokenService.checkToken(token)) {
+                return ResponseEntity.ok("유효한 토큰입니다");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 Access 토큰입니다.");
+            }
+        }
+        return ResponseEntity.badRequest().body("Access 토큰이 존재하지 않습니다.");
+    }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<String> checkRefreshToken(@RequestParam String token) {
+        if (tokenService.checkToken(token)) {
+            return ResponseEntity.ok("유효한 토큰입니다");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 Refresh 토큰입니다.");
+        }
+    }
 }
