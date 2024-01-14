@@ -63,8 +63,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
                                 "/api/users/signup", "/api/users/**", "/api/users/check",
-                                "/api/posts/read/**", "/api/posts/search",  "/api/lost/read/**",  "/api/found/read/**",
-                                "/api/login", "/api/logout"
+                                "/api/lost/read/**", "/api/lost/search", "/api/found/read/**",
+                                "/api/login", "/api/logout", "/api/access", "/api/refresh"
                         )
                         .permitAll()
 
@@ -84,14 +84,7 @@ public class SecurityConfig {
                         .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
                         .anyRequest().authenticated()
                 )
-                .formLogin(formLogin -> formLogin.disable())
-                .logout((logout) -> logout
-                        //.logoutUrl("/api/logout")
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
-                        .logoutSuccessUrl("/")
-                        .deleteCookies("refreshToken")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true));
+                .formLogin(formLogin -> formLogin.disable());
 
                 return http.build();
     }
