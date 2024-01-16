@@ -121,6 +121,7 @@ public class LostService {
     public PostLostDTO postToDTO(PostLost post) {
         return PostLostDTO.builder()
                 .postId(post.getPostId())
+                .userId(post.getUser().getUserId())
                 .title(post.getTitle())
                 .images(post.getImages())
                 .start(post.getStart())

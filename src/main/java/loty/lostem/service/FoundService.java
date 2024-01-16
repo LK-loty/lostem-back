@@ -125,6 +125,7 @@ public class FoundService {
     public PostFoundDTO postToDTO(PostFound post) {
         return PostFoundDTO.builder()
                 .postId(post.getPostId())
+                .userId(post.getUser().getUserId())
                 .title(post.getTitle())
                 .images(post.getImages())
                 .date(post.getDate())
