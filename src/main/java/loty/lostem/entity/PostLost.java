@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.PostLostDTO;
+import loty.lostem.dto.PostStateDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -114,5 +115,9 @@ public class PostLost {
         this.contents = postLostDTO.getContents();
         this.state = postLostDTO.getState();
         this.time = LocalDateTime.now();
+    }
+
+    public void updatePostState(PostStateDTO postStateDTO) {
+        this.state = postStateDTO.getState();
     }
 }

@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostLostDTO;
 import loty.lostem.dto.PostLostListDTO;
+import loty.lostem.dto.PostStateDTO;
 import loty.lostem.entity.PostLost;
 import loty.lostem.entity.User;
 import loty.lostem.repository.PostLostRepository;
@@ -59,6 +60,21 @@ public class LostService {
         PostLost selectedPost = postLostRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         selectedPost.updatePostFields(postDTO);
+        postLostRepository.save(selectedPost);
+        PostLostDTO changedDTO = postToDTO(selectedPost);
+        return changedDTO;
+    }
+
+    @Transactional
+    public PostLostDTO updateState(Long userId, PostStateDTO stateDTO) {
+        PostLost selectedPost = postLostRepository.findById(stateDTO.getPostId())
+                .orElseThrow(()-> new IllegalArgumentException("No data found for the provided id"));
+
+        if (!userId.equals(selectedPost.getUser().getUserId())) {
+            return null;
+        }
+
+        selectedPost.updatePostState(stateDTO);
         postLostRepository.save(selectedPost);
         PostLostDTO changedDTO = postToDTO(selectedPost);
         return changedDTO;

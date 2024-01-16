@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostLostDTO;
 import loty.lostem.dto.PostLostListDTO;
+import loty.lostem.dto.PostStateDTO;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.LostService;
 import org.springframework.data.domain.Page;
@@ -103,6 +104,27 @@ public class LostController {
             return ResponseEntity.ok("게시물 수정 완료");
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PatchMapping("/change")
+    public ResponseEntity<String> update(HttpServletRequest request, @RequestBody PostStateDTO stateDTO) {
+        String authorization = request.getHeader("Authorization");
+        Long userId = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            try {
+                userId = tokenProvider.getUserId(token);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+
+        PostLostDTO dto = lostService.updateState(userId, stateDTO);
+        if (dto != null) {
+            return ResponseEntity.ok("상태 수정 완료");
+        } else {
+            return ResponseEntity.badRequest().build();
         }
     }
 
