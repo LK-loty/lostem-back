@@ -56,8 +56,8 @@ public class FoundService {
                 .map(this::listToDTO);
     }
 
-    public List<PostFoundDTO> userPost(Long id) {
-        return postFoundRepository.findByUser_UserId(id).stream()
+    public List<PostFoundDTO> userPost(String username) {
+        return postFoundRepository.findByUser_Username(username).stream()
                 .map(this::postToDTO)
                 .collect(Collectors.toList());
     }

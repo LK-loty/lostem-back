@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface PostLostRepository extends JpaRepository<PostLost, Long> , JpaSpecificationExecutor<PostLost> {
-    List<PostLost> findByUser_UserId(Long userId);
+    List<PostLost> findByUser_Username(String username);
 
     @Override
     Page<PostLost> findAll(Pageable pageable);

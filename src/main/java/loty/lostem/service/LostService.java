@@ -55,8 +55,8 @@ public class LostService {
                 .map(this::listToDTO);
     }
 
-    public List<PostLostDTO> userPost(Long id) {
-        return postLostRepository.findByUser_UserId(id).stream()
+    public List<PostLostDTO> userPost(String username) {
+        return postLostRepository.findByUser_Username(username).stream()
                 .map(this::postToDTO)
                 .collect(Collectors.toList());
     }
