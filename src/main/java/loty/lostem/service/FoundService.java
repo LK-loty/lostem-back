@@ -2,9 +2,7 @@ package loty.lostem.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.PostFoundDTO;
-import loty.lostem.dto.PostFoundListDTO;
-import loty.lostem.dto.PostStateDTO;
+import loty.lostem.dto.*;
 import loty.lostem.entity.PostFound;
 import loty.lostem.entity.User;
 import loty.lostem.repository.PostFoundRepository;
@@ -37,11 +35,19 @@ public class FoundService {
     }
 
     // 하나의 게시물에 대한 정보 리턴
-    public PostFoundDTO readPost(Long postId) {
+    public PostFoundDetailsDTO readPost(Long postId) {
         PostFound selectPost = postFoundRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
+        User user = userRepository.findById(selectPost.getUser().getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No data for user"));
+        PostUserDTO readOnePost = postUserToDTO(user);
         PostFoundDTO selectedDTO = postToDTO(selectPost);
-        return selectedDTO;
+        PostFoundDetailsDTO postFoundDetailsDTO =
+                PostFoundDetailsDTO.builder()
+                        .postFoundDTO(selectedDTO)
+                        .postUserDTO(readOnePost)
+                        .build();
+        return postFoundDetailsDTO;
     }
 
     // 전체 목록 보기
@@ -147,6 +153,14 @@ public class FoundService {
                 .image(post.getImages())
                 .area(post.getArea())
                 .time(post.getTime())
+                .build();
+    }
+
+    public PostUserDTO postUserToDTO(User user) {
+        return PostUserDTO.builder()
+                .nickname(user.getNickname())
+                .profile(user.getProfile())
+                .tag(user.getTag())
                 .build();
     }
 }

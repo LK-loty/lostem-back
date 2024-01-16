@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.PostFoundDTO;
+import loty.lostem.dto.PostFoundDetailsDTO;
 import loty.lostem.dto.PostFoundListDTO;
 import loty.lostem.dto.PostStateDTO;
 import loty.lostem.jwt.TokenProvider;
@@ -47,8 +48,8 @@ public class FoundController {
     }
 
     @GetMapping("/read/{id}") // 해당 글에 대한 정보
-    public ResponseEntity<PostFoundDTO> selectPost(@PathVariable Long id) {
-        PostFoundDTO dto = foundService.readPost(id);
+    public ResponseEntity<PostFoundDetailsDTO> selectPost(@PathVariable Long id) {
+        PostFoundDetailsDTO dto = foundService.readPost(id);
         if (dto != null) {
             return ResponseEntity.ok(dto);
         } else {
