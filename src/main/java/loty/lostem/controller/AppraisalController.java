@@ -25,9 +25,9 @@ public class AppraisalController {
         }
     }
 
-    @GetMapping("/read/{id}")
-    public ResponseEntity<List<AppraisalDTO>> userAppraisal(@PathVariable Long id) {
-        List<AppraisalDTO> dtoList = appraisalService.readAppraisal(id);
+    @GetMapping("/read")
+    public ResponseEntity<List<AppraisalDTO>> userAppraisal(@RequestParam String tag) {
+        List<AppraisalDTO> dtoList = appraisalService.readAppraisal(tag);
         if (dtoList != null) {
             return ResponseEntity.ok(dtoList);
         } else {

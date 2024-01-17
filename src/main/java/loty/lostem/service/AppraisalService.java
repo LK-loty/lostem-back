@@ -28,8 +28,8 @@ public class AppraisalService {
     }
 
     // 상세 보기는 지원하지 않음. 전체 목록만
-    public List<AppraisalDTO> readAppraisal(Long userId) {
-        return appraisalRepository.findByUser_UserId(userId).stream()
+    public List<AppraisalDTO> readAppraisal(String tag) {
+        return appraisalRepository.findByUser_Tag(tag).stream()
                 .map(this::appraisalToDTO)
                 .collect(Collectors.toList());
     }
