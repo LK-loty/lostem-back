@@ -66,8 +66,8 @@ public class FoundController {
     }
 
     @GetMapping("/read/user") // 사용자 관련 글 목록
-    public ResponseEntity<List<PostFoundDTO>> userPost(@RequestParam String username) {
-        List<PostFoundDTO> dtoList = foundService.userPost(username);
+    public ResponseEntity<List<PostFoundDTO>> userPost(@RequestParam String tag) {
+        List<PostFoundDTO> dtoList = foundService.userPost(tag);
         if (dtoList != null) {
             return ResponseEntity.ok(dtoList);
         } else {

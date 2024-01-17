@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface PostFoundRepository extends JpaRepository<PostFound, Long> , JpaSpecificationExecutor<PostFound> {
-    List<PostFound> findByUser_Username(String username);
+    List<PostFound> findByUser_Tag(String tag);
 
     @Override
     Page<PostFound> findAll(Pageable pageable);

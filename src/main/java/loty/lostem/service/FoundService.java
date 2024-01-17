@@ -56,8 +56,8 @@ public class FoundService {
                 .map(this::listToDTO);
     }
 
-    public List<PostFoundDTO> userPost(String username) {
-        return postFoundRepository.findByUser_Username(username).stream()
+    public List<PostFoundDTO> userPost(String tag) {
+        return postFoundRepository.findByUser_Tag(tag).stream()
                 .map(this::postToDTO)
                 .collect(Collectors.toList());
     }
