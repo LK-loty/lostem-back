@@ -10,7 +10,6 @@ import loty.lostem.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,9 +54,9 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> selectUser(@PathVariable Long id) {
-        UserDTO dto = userService.readUser(id);
+    @GetMapping("/read")
+    public ResponseEntity<UserDTO> selectUser(@RequestParam String username) {
+        UserDTO dto = userService.readUser(username);
         if (dto != null) {
             return ResponseEntity.ok(dto);
         } else {

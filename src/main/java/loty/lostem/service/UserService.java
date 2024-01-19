@@ -45,8 +45,8 @@ public class UserService {
         }
     }
 
-    public UserDTO readUser(Long userId) { // 프로필 정보 확인 창
-        User selectedUser = userRepository.findById(userId)
+    public UserDTO readUser(String tag) { // 프로필 정보 확인 창
+        User selectedUser = userRepository.findByTag(tag)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         UserDTO selectedDTO = userToDTO(selectedUser);
         return selectedDTO;
