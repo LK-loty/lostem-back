@@ -1,5 +1,6 @@
 package loty.lostem.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.UserDTO;
@@ -8,6 +9,8 @@ import loty.lostem.entity.User;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.repository.RefreshTokenRepository;
 import loty.lostem.repository.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -53,7 +56,6 @@ public class TokenService {
         }
     }
 
-
     public String createNewAccessToken(String refreshToken) { // refresh 토큰 검증하고 access 토큰 생성
         if (!tokenProvider.validateToken(refreshToken)) {
             throw new IllegalArgumentException("Unexpected token");
@@ -68,6 +70,20 @@ public class TokenService {
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected User"));
 
         return tokenProvider.createToken(user);
+    }
+
+    public Long getUserId(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        Long userId = null;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            try {
+                userId = tokenProvider.getUserId(token);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+        return userId;
     }
 
     public boolean checkToken(String token) {

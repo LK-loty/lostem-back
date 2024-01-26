@@ -7,12 +7,11 @@ import loty.lostem.dto.PostFoundDTO;
 import loty.lostem.dto.PostFoundDetailsDTO;
 import loty.lostem.dto.PostFoundListDTO;
 import loty.lostem.dto.PostStateDTO;
-import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.FoundService;
+import loty.lostem.service.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,20 +24,15 @@ import java.util.List;
 @RequestMapping("/api/found")
 public class FoundController {
     private final FoundService foundService;
-    private final TokenProvider tokenProvider;
+    private final TokenService tokenService;
 
     @PostMapping("/create")
     public ResponseEntity<PostFoundDTO> createPost(HttpServletRequest request, @Valid @RequestPart("data") PostFoundDTO postFoundDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
-        String authorization = request.getHeader("Authorization");
-        Long userId = null;
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring(7);
-            try {
-                userId = tokenProvider.getUserId(token);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
         }
+
         PostFoundDTO dto = foundService.createPost(postFoundDTO, userId);
         if (dto != null) {
             return ResponseEntity.ok(dto);
@@ -87,16 +81,11 @@ public class FoundController {
 
     @PatchMapping("/update")
     public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestPart("data") PostFoundDTO postFoundDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
-        String authorization = request.getHeader("Authorization");
-        Long userId = null;
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring(7);
-            try {
-                userId = tokenProvider.getUserId(token);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
         }
+
         PostFoundDTO dto = null;
         if (userId != null && userId.equals(postFoundDTO.getUserId())) {
             dto = foundService.updatePost(postFoundDTO);
@@ -110,15 +99,9 @@ public class FoundController {
 
     @PatchMapping("/change")
     public ResponseEntity<String> update(HttpServletRequest request, @RequestBody PostStateDTO stateDTO) {
-        String authorization = request.getHeader("Authorization");
-        Long userId = null;
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring(7);
-            try {
-                userId = tokenProvider.getUserId(token);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
         }
 
         PostFoundDTO dto = foundService.updateState(userId, stateDTO);
@@ -131,16 +114,11 @@ public class FoundController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(HttpServletRequest request, @Valid @PathVariable Long id) {
-        String authorization = request.getHeader("Authorization");
-        Long userId = null;
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring(7);
-            try {
-                userId = tokenProvider.getUserId(token);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
         }
+
         PostFoundDTO dto = foundService.deletePost(id, userId);
         if (dto != null) {
             return ResponseEntity.ok("게시물 삭제 완료");

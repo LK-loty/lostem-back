@@ -6,19 +6,17 @@ import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.dto.UserPreviewDTO;
-import loty.lostem.jwt.TokenProvider;
+import loty.lostem.service.TokenService;
 import loty.lostem.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-    private final TokenProvider tokenProvider;
+    private final TokenService tokenService;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
@@ -52,17 +50,13 @@ public class UserController {
 
     @GetMapping("/preview")
     public ResponseEntity<UserPreviewDTO> userPreview(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        UserPreviewDTO userPreviewDTO = null;
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring(7);
-            try {
-                Long userId = tokenProvider.getUserId(token);
-                userPreviewDTO = userService.loginData(userId);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
         }
+
+        UserPreviewDTO userPreviewDTO = userService.loginData(userId);
+
         if (userPreviewDTO != null) {
             return ResponseEntity.ok(userPreviewDTO);
         } else {
