@@ -37,6 +37,28 @@ public class UserService {
         return userDTO;
     }
 
+    @Transactional
+    public String findUser(String phone) {
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new IllegalArgumentException("No data for provided phone"));
+        return user.getUsername();
+    }
+
+    @Transactional
+    public LoginDTO resetPassword(LoginDTO loginDTO) {
+        User selectedUser = userRepository.findByUsername(loginDTO.getUsername())
+                        .orElseThrow(() -> new IllegalArgumentException("No data for provided username"));
+        UserDTO userDTO = userToDTO(selectedUser);
+
+        String encoded = bCryptPasswordEncoder.encode(loginDTO.getPassword());
+        UserDTO.setPasswordEncode(userDTO, encoded);
+
+        selectedUser.updateUserFields(selectedUser, userDTO);
+        userRepository.save(selectedUser);
+
+        return LoginDTO.builder().build();
+    }
+
     public String checkUsername(String username) {
         if (userRepository.findByUsername(username).isEmpty()) {
             return username;

@@ -3,6 +3,7 @@ package loty.lostem.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.UserDTO;
 import loty.lostem.dto.UserPreviewDTO;
 import loty.lostem.jwt.TokenProvider;
@@ -10,6 +11,7 @@ import loty.lostem.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +24,20 @@ public class UserController {
     public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
         userService.createUser(userDTO);
         return ResponseEntity.ok("회원가입 완료");
+    }
+
+    // find, pw >> 본인 인증 먼저 하고 나서
+
+    @PostMapping("/find")
+    public ResponseEntity<String> findUsername(@Valid @RequestBody String phone) {
+        String username = userService.findUser(phone);
+        return ResponseEntity.ok(username);
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
+        userService.resetPassword(loginDTO);
+        return ResponseEntity.ok("비밀번호 재설정 완료");
     }
 
     @GetMapping("/check")
@@ -55,8 +71,8 @@ public class UserController {
     }
 
     @GetMapping("/read")
-    public ResponseEntity<UserDTO> selectUser(@RequestParam String username) {
-        UserDTO dto = userService.readUser(username);
+    public ResponseEntity<UserDTO> selectUser(@RequestParam String tag) {
+        UserDTO dto = userService.readUser(tag);
         if (dto != null) {
             return ResponseEntity.ok(dto);
         } else {
