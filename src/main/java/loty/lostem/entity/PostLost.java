@@ -83,6 +83,9 @@ public class PostLost {
     @OneToMany(mappedBy = "postLost")
     private List<LostReport> lostReports = new ArrayList<>();
 
+    @OneToMany(mappedBy = "postLost")
+    private List<LostChatRoom> chatRooms = new ArrayList<>();
+
 
 
     public static PostLost createPost(PostLostDTO postLostDTO, User user) {
