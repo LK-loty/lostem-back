@@ -13,5 +13,7 @@ public class ChatRoomDTO {
 
     private Long guestUserId;  // 1:1 대화 상대
 
+    private Long postId;
+
     private int report;
 }

@@ -1,8 +1,8 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.ChatRoomDTO;
 
@@ -12,6 +12,9 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "post_type")
+@DiscriminatorValue("POST")
 @Builder
 @Getter
 public class ChatRoom {
@@ -27,9 +30,13 @@ public class ChatRoom {
     @JoinColumn(name = "guestUserId")
     private User guestUser;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "postId")
+    private Post post;
+
     @Column
     @NotNull
-    @Size(max = 2)
+    @Max(2)
     private int report;
 
 
