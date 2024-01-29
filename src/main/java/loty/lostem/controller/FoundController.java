@@ -87,7 +87,7 @@ public class FoundController {
         }
 
         PostFoundDTO dto = null;
-        if (userId != null && userId.equals(postFoundDTO.getUserId())) {
+        if (userId.equals(postFoundDTO.getUserId())) {
             dto = foundService.updatePost(postFoundDTO);
         }
         if (dto != null) {
@@ -98,7 +98,7 @@ public class FoundController {
     }
 
     @PatchMapping("/change")
-    public ResponseEntity<String> update(HttpServletRequest request, @RequestBody PostStateDTO stateDTO) {
+    public ResponseEntity<String> change(HttpServletRequest request, @RequestBody PostStateDTO stateDTO) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();

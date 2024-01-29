@@ -87,7 +87,7 @@ public class LostController {
         }
 
         PostLostDTO dto = null;
-        if (userId != null && userId.equals(postLostDTO.getUserId())) {
+        if (userId.equals(postLostDTO.getUserId())) {
             dto = lostService.updatePost(postLostDTO);
         } // else >> id 가 같은데 오류나는 경우, id 달라서 나는 오류 구분? 아니면 delete 처럼 null 통일?
         if (dto != null) {
@@ -98,7 +98,7 @@ public class LostController {
     }
 
     @PatchMapping("/change")
-    public ResponseEntity<String> update(HttpServletRequest request, @RequestBody PostStateDTO stateDTO) {
+    public ResponseEntity<String> change(HttpServletRequest request, @RequestBody PostStateDTO stateDTO) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
@@ -116,7 +116,7 @@ public class LostController {
     public ResponseEntity<String> delete(HttpServletRequest request, @Valid @PathVariable Long id) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
 
         PostLostDTO dto = lostService.deletePost(id, userId);

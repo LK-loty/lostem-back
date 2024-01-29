@@ -90,7 +90,8 @@ public class LostService {
     public PostLostDTO deletePost(Long postId, Long userId) {
         PostLost selectedPost = postLostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        if (selectedPost.getPostId().equals(userId)) {
+
+        if (selectedPost.getUser().getUserId().equals(userId)) {
             PostLostDTO selectedDTO = postToDTO(selectedPost);
             postLostRepository.deleteById(postId);
             return selectedDTO;
