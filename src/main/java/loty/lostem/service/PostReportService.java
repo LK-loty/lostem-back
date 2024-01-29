@@ -8,6 +8,8 @@ import loty.lostem.entity.*;
 import loty.lostem.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PostReportService {
@@ -17,19 +19,38 @@ public class PostReportService {
     private final PostFoundRepository foundRepository;
 
     @Transactional
-    public PostReportDTO createLostReport(PostReportDTO postReportDTO) {
+    public PostReportDTO createLostReport(PostReportDTO postReportDTO, Long userId) {
         PostLost post = lostRepository.findById(postReportDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided postId"));
-        LostReport created = LostReport.createPostReport(postReportDTO, post);
+
+        List<LostReport> list = lostReportRepository.findByPostLost_PostId(postReportDTO.getPostId());
+
+        for (LostReport report : list) {
+            if (report.getUserId().equals(userId)) {
+                return null;
+            }
+        }
+        
+        LostReport created = LostReport.createPostReport(postReportDTO, post, userId);
         lostReportRepository.save(created);
+        // post.reportCount 증가
         return postReportDTO;
     }
 
     @Transactional
-    public PostReportDTO createFoundReport(PostReportDTO postReportDTO) {
+    public PostReportDTO createFoundReport(PostReportDTO postReportDTO, Long userId) {
         PostFound post = foundRepository.findById(postReportDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided postId"));
-        FoundReport created = FoundReport.createPostReport(postReportDTO, post);
+
+        List<FoundReport> list = foundReportRepository.findByPostFound_PostId(postReportDTO.getPostId());
+
+        for (FoundReport report : list) {
+            if (report.getUserId().equals(userId)) {
+                return null;
+            }
+        }
+
+        FoundReport created = FoundReport.createPostReport(postReportDTO, post, userId);
         foundReportRepository.save(created);
         return postReportDTO;
     }
