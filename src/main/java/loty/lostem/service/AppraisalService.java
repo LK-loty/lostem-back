@@ -19,12 +19,18 @@ public class AppraisalService {
     private final UserRepository userRepository;
 
     @Transactional
-    public AppraisalDTO createAppraisal(AppraisalDTO appraisalDTO) {
-        User user = userRepository.findById(appraisalDTO.getUserId())
+    public AppraisalDTO createAppraisal(AppraisalDTO appraisalDTO, Long userId) {
+        User user = userRepository.findByTag(appraisalDTO.getTag())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided userId"));
-        Appraisal created = Appraisal.createAppraisal(appraisalDTO, user);
-        appraisalRepository.save(created);
-        return appraisalDTO;
+
+        if (!userId.equals(user.getUserId())) {
+            Appraisal created = Appraisal.createAppraisal(appraisalDTO, user);
+            appraisalRepository.save(created);
+            AppraisalDTO createdDTO = appraisalToDTO(created);
+            return createdDTO;
+        } else {
+            return null;
+        }
     }
 
     // 상세 보기는 지원하지 않음. 전체 목록만
@@ -35,12 +41,17 @@ public class AppraisalService {
     }
 
     @Transactional
-    public AppraisalDTO deleteAppraisal(Long appraisalId) {
+    public AppraisalDTO deleteAppraisal(Long appraisalId, Long userId) {
         Appraisal selectedAppraisal = appraisalRepository.findById(appraisalId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found"));
-        AppraisalDTO selectedDTO = appraisalToDTO(selectedAppraisal);
-        appraisalRepository.deleteById(appraisalId);
-        return selectedDTO;
+
+        if (selectedAppraisal.getAppraisalUser().equals(userId)) {
+            AppraisalDTO selectedDTO = appraisalToDTO(selectedAppraisal);
+            appraisalRepository.deleteById(appraisalId);
+            return selectedDTO;
+        } else {
+            return null;
+        }
     }
 
     public AppraisalDTO appraisalToDTO(Appraisal appraisal) {

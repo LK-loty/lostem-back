@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class AppraisalDTO {
     private Long appraisalId;
 
-    private Long userId;  // 평가받는 사람
+    private String tag;  // 평가받는 사람
 
     private Long appraisalUser;  // 평가하는 사람
 
