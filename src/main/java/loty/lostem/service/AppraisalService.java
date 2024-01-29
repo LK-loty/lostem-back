@@ -24,7 +24,7 @@ public class AppraisalService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided userId"));
 
         if (!userId.equals(user.getUserId())) {
-            Appraisal created = Appraisal.createAppraisal(appraisalDTO, user);
+            Appraisal created = Appraisal.createAppraisal(appraisalDTO, user, userId);
             appraisalRepository.save(created);
             AppraisalDTO createdDTO = appraisalToDTO(created);
             return createdDTO;

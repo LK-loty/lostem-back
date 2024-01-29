@@ -36,10 +36,10 @@ public class Appraisal {
     @NotNull
     private LocalDateTime time;
 
-    public static Appraisal createAppraisal(AppraisalDTO appraisalDTO, User user) {
+    public static Appraisal createAppraisal(AppraisalDTO appraisalDTO, User user,Long userId) {
         return Appraisal.builder()
                 .user(user)
-                .appraisalUser(user.getUserId())
+                .appraisalUser(userId)
                 .contents(appraisalDTO.getContents())
                 .time(LocalDateTime.now())
                 .build();

@@ -27,7 +27,7 @@ public class AppraisalController {
 
         AppraisalDTO dto = appraisalService.createAppraisal(appraisalDTO, userId);
         if (dto != null) {
-            return ResponseEntity.ok(appraisalDTO);
+            return ResponseEntity.ok(dto);
         } else {
             return ResponseEntity.badRequest().build();
         }
