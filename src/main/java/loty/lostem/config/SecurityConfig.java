@@ -81,7 +81,8 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/posts", "/api/users", "/api/lost", "/api/found",
-                                "/api/appraisals", "/api/reports"
+                                "/api/appraisals", "/api/reports",
+                                "/api/websocket"
                         )
                         .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
                         .anyRequest().authenticated()
