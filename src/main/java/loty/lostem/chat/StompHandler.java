@@ -18,18 +18,24 @@ public class StompHandler implements ChannelInterceptor {
     private final TokenProvider tokenProvider;
     private final String BEARER_PREFIX = "Bearer ";
 
-    // 웹소켓으로 들어온 요청이 처리되기 전 실행
+    // 웹소켓으로 들어온 요청이 처리되기 전 실행(publisher가 send하기 전 실행)
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        // wrap 으로 message를 감싸면 직접 접근 가능
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
         //// 웹소켓 연결 시 헤더 jwt 검증
         if (StompCommand.CONNECT == headerAccessor.getCommand()) {
-            tokenProvider.validateToken(headerAccessor.getFirstNativeHeader("token"));
+            try {
+                tokenProvider.validateToken(headerAccessor.getFirstNativeHeader("Authorization"));
+            } catch (AccessDeniedException e) {
+                throw new MessageDeliveryException("토큰 검증 실패");
+            }
         }
-        // return message;
 
-        // 헤더 토큰 얻기
+         return message;
+
+       /* // 헤더 토큰 얻기
         String authorizationHeader = String.valueOf(headerAccessor.getNativeHeader("Authorization"));
         // 토큰 자르기. fixme 토큰 자르는 로직 validate 로 리팩토링
 
@@ -47,7 +53,7 @@ public class StompHandler implements ChannelInterceptor {
                     e.printStackTrace();
                 }
         }
-        return message;
+        return message;*/
     }
 
     //
