@@ -123,4 +123,8 @@ public class PostLost {
     public void updatePostState(PostStateDTO postStateDTO) {
         this.state = postStateDTO.getState();
     }
+
+    public void increaseCount() {
+        this.report++;
+    }
 }

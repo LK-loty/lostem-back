@@ -30,10 +30,14 @@ public class PostReportService {
                 return null;
             }
         }
-        
-        LostReport created = LostReport.createPostReport(postReportDTO, post, userId);
-        lostReportRepository.save(created);
-        // post.reportCount 증가
+
+        if (!post.getUser().getUserId().equals(userId)) {
+            LostReport created = LostReport.createPostReport(postReportDTO, post, userId);
+            lostReportRepository.save(created);
+
+            post.increaseCount();
+            lostRepository.save(post);
+        }
         return postReportDTO;
     }
 
@@ -50,8 +54,13 @@ public class PostReportService {
             }
         }
 
-        FoundReport created = FoundReport.createPostReport(postReportDTO, post, userId);
-        foundReportRepository.save(created);
+        if (!post.getUser().getUserId().equals(userId)) {
+            FoundReport created = FoundReport.createPostReport(postReportDTO, post, userId);
+            foundReportRepository.save(created);
+
+            post.increaseCount();
+            foundRepository.save(post);
+        }
         return postReportDTO;
     }
 

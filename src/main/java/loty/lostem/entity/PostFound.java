@@ -124,4 +124,8 @@ public class PostFound {
     public void updatePostState(PostStateDTO postStateDTO) {
         this.state = postStateDTO.getState();
     }
+
+    public void increaseCount() {
+        this.report++;
+    }
 }
