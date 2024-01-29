@@ -42,10 +42,10 @@ public class LostReport {
 
 
 
-    public static LostReport createPostReport(PostReportDTO postReportDTO, PostLost postlost) {
+    public static LostReport createPostReport(PostReportDTO postReportDTO, PostLost postlost, Long userId) {
         return LostReport.builder()
                 .postLost(postlost)
-                .userId(postReportDTO.getUserId())
+                .userId(userId)
                 .title(postReportDTO.getTitle())
                 .contents(postReportDTO.getContents())
                 .time(LocalDateTime.now())

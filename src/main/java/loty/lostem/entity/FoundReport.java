@@ -42,10 +42,10 @@ public class FoundReport {
 
 
 
-    public static FoundReport createPostReport(PostReportDTO postReportDTO, PostFound postFound) {
+    public static FoundReport createPostReport(PostReportDTO postReportDTO, PostFound postFound, Long userId) {
         return FoundReport.builder()
                 .postFound(postFound)
-                .userId(postReportDTO.getUserId())
+                .userId(userId)
                 .title(postReportDTO.getTitle())
                 .contents(postReportDTO.getContents())
                 .time(LocalDateTime.now())
