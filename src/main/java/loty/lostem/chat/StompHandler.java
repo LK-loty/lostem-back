@@ -1,6 +1,7 @@
 package loty.lostem.chat;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import loty.lostem.jwt.TokenProvider;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -11,6 +12,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
@@ -21,13 +23,14 @@ public class StompHandler implements ChannelInterceptor {
     // 웹소켓으로 들어온 요청이 처리되기 전 실행(publisher가 send하기 전 실행)
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        // wrap 으로 message를 감싸면 직접 접근 가능
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+        log.info("wrap으로 message 감싸기");
 
         //// 웹소켓 연결 시 헤더 jwt 검증
         if (StompCommand.CONNECT == headerAccessor.getCommand()) {
             try {
                 tokenProvider.validateToken(headerAccessor.getFirstNativeHeader("Authorization"));
+                log.info("헤더 검증 완료");
             } catch (AccessDeniedException e) {
                 throw new MessageDeliveryException("토큰 검증 실패");
             }
