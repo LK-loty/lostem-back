@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) { // 소켓 연결을 위한 설정
-        registry.addEndpoint("/api/websocket").setAllowedOriginPatterns("http://localhost:3000").withSockJS(); // ws://localhost:8080/api/websocket 으로 접근
+        registry.addEndpoint("/api/websocket").setAllowedOriginPatterns("*").withSockJS(); // ws://localhost:8080/api/websocket 으로 접근
         log.info("소켓 연결을 설정합니다.");
         //registry.setErrorHandler(chatErrorHandler);
         // stomp 접속 주소, ("*")이라면 모든 ip에 대해(실제 서버에서는 서버 주소 origin만 적기. SOP 때문 >> cors 설정 필요), 클라에서 socketJS 사용시 포함
