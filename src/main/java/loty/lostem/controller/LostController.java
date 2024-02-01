@@ -69,16 +69,6 @@ public class LostController {
         }
     }
 
-    /*@GetMapping("/read/search") // 검색 필터 적용 후 글 목록 ... >> 알림용 검색
-    public ResponseEntity<List<PostLostDTO>> searchPost(@PathVariable PostLostDTO postDTO) {
-        List<PostLostDTO> dtoList = lostService.searchPost(postDTO);
-        if (dtoList != null) {
-            return ResponseEntity.ok(dtoList);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }*/
-
     @PatchMapping("/update")
     public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestPart("data") PostLostDTO postLostDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
         Long userId = tokenService.getUserId(request);

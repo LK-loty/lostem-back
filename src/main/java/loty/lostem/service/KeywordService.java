@@ -61,6 +61,30 @@ public class KeywordService {
         return keywordDTOList;
     }
 
+    public KeywordListDTO searchKeyword(Long userId) {
+        List<Keyword> keywords = keywordRepository.findByUser_UserId(userId);
+
+        List<PostLostListDTO> lostListDTOS = new ArrayList<>();
+        List<PostFoundListDTO> foundListDTOS = new ArrayList<>();
+
+        for (Keyword keyword : keywords) {
+            List<PostLost> lostList = lostRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
+            List<PostFound> foundList = foundRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
+
+            for (PostLost postLost : lostList) {
+                lostListDTOS.add(lostService.listToDTO(postLost));
+            }
+            for (PostFound postFound : foundList) {
+                foundListDTOS.add(foundService.listToDTO(postFound));
+            }
+        }
+
+        return KeywordListDTO.builder()
+                .postLostDTO(lostListDTOS)
+                .postFoundDTO(foundListDTOS)
+                .build();
+    }
+
     @Transactional
     public KeywordDTO updateKeyword(KeywordDTO keywordDTO, Long userId) {
        keywordRepository.deleteByUser_UserId(userId);

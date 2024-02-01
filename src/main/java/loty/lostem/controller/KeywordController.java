@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.KeywordDTO;
+import loty.lostem.dto.KeywordListDTO;
 import loty.lostem.service.KeywordService;
 import loty.lostem.service.TokenService;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,21 @@ public class KeywordController {
         List<KeywordDTO> dtoList = keywordService.readKeyword(userId);
         if (dtoList != null ) {
             return ResponseEntity.ok(dtoList);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<KeywordListDTO> searchKeyword(HttpServletRequest request) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        KeywordListDTO listDTO = keywordService.searchKeyword(userId);
+        if (listDTO != null ) {
+            return ResponseEntity.ok(listDTO);
         } else {
             return ResponseEntity.badRequest().build();
         }
