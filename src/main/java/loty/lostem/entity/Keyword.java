@@ -25,17 +25,17 @@ public class Keyword {
     @Column
     @NotNull
     @Size(max = 10)
-    private String[] keyword;
+    private String keyword;
 
     @Column
     private LocalDateTime time;
 
 
 
-    public static Keyword createKeyword(KeywordDTO keywordDTO, User user) {
+    public static Keyword createKeyword(String keyword, User user) {
         return Keyword.builder()
                 .user(user)
-                .keyword(keywordDTO.getKeyword())
+                .keyword(keyword)
                 .time(LocalDateTime.now())
                 .build();
     }

@@ -48,6 +48,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                //.headers(http.headers().frameOptions().sameOrigin())
                 //.csrf(csrf -> csrf.disable())
                 .addFilterBefore(corsConfig.corsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
@@ -81,8 +82,7 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/posts", "/api/users", "/api/lost", "/api/found",
-                                "/api/appraisals", "/api/reports",
-                                "/api/websocket"
+                                "/api/appraisals", "/api/reports", "/api/keyword"
                         )
                         .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
                         .anyRequest().authenticated()
