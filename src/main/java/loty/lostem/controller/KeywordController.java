@@ -9,6 +9,8 @@ import loty.lostem.service.TokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/keyword")
@@ -26,6 +28,22 @@ public class KeywordController {
         KeywordDTO dto = keywordService.createKeyword(keywordDTO, userId);
         if (dto != null ) {
             return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // 본인 키워드 확인용
+    @GetMapping("/read")
+    public ResponseEntity<List<KeywordDTO>> readKeyword(HttpServletRequest request) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<KeywordDTO> dtoList = keywordService.readKeyword(userId);
+        if (dtoList != null ) {
+            return ResponseEntity.ok(dtoList);
         } else {
             return ResponseEntity.badRequest().build();
         }
