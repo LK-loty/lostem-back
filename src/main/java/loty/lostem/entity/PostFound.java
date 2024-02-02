@@ -125,6 +125,20 @@ public class PostFound {
         this.state = postStateDTO.getState();
     }
 
+    public void deletePost(PostFound postFound) {
+        this.title = "삭제된 게시물입니다.";
+        this.images = " "; // 기본 이미지 주소
+        this.category = " ";
+        this.date = null;
+        this.area = " ";
+        this.place = " ";
+        this.item = " ";
+        this.contents = " ";
+        this.state = " ";
+        this.time = null;
+        this.storage = " ";
+    }
+
     public void increaseCount() {
         this.report++;
     }

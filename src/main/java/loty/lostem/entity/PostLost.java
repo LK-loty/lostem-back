@@ -124,6 +124,20 @@ public class PostLost {
         this.state = postStateDTO.getState();
     }
 
+    public void deletePost(PostLost postLost) {
+        this.title = "삭제된 게시물입니다.";
+        this.images = " "; // 기본 이미지 주소
+        this.category = " ";
+        this.start = null;
+        this.end = null;
+        this.area = " ";
+        this.place = " ";
+        this.item = " ";
+        this.contents = " ";
+        this.state = " ";
+        this.time = null;
+    }
+
     public void increaseCount() {
         this.report++;
     }

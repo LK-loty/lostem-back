@@ -93,8 +93,9 @@ public class FoundService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
         if (selectedPost.getUser().getUserId().equals(userId)) {
+            selectedPost.deletePost(selectedPost);
+            postFoundRepository.save(selectedPost);
             PostFoundDTO selectedDTO = postToDTO(selectedPost);
-            postFoundRepository.deleteById(postId);
             return selectedDTO;
         } else {
             return null;
