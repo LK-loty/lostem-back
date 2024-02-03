@@ -13,13 +13,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PostLostRepository extends JpaRepository<PostLost, Long> , JpaSpecificationExecutor<PostLost> {
-    List<PostLost> findByUser_Tag(String tag);
+    List<PostLost> findByUser_TagAndStateNot(String tag, String state);
 
     @Override
     Page<PostLost> findAll(Pageable pageable);
 
+    @Query("SELECT DISTINCT pf FROM PostLost pf WHERE pf.state <> '삭제'")
+    Page<PostLost> findAllNonDeleted(Pageable pageable);
+
     @Query("SELECT DISTINCT pf FROM PostLost pf JOIN pf.user u WHERE u.userId = :userId " +
-            "AND (pf.title LIKE %:keyword% OR pf.contents LIKE %:keyword%) AND pf.time >= :keywordTime")
+            "AND (pf.title LIKE %:keyword% OR pf.contents LIKE %:keyword%) AND pf.time >= :keywordTime " +
+            "AND pf.state <> '삭제'")
     List<PostLost> findPostsAfterKeywordTime(@Param("userId") Long userId,
                                               @Param("keyword") String keyword,
                                               @Param("keywordTime") LocalDateTime keywordTime);

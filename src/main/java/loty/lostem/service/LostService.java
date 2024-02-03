@@ -51,12 +51,12 @@ public class LostService {
 
     // 전체 목록 보기
     public Page<PostLostListDTO> allLists(Pageable pageable) {
-        return postLostRepository.findAll(pageable)
+        return postLostRepository.findAllNonDeleted(pageable)
                 .map(this::listToDTO);
     }
 
     public List<PostLostDTO> userPost(String tag) {
-        return postLostRepository.findByUser_Tag(tag).stream()
+        return postLostRepository.findByUser_TagAndStateNot(tag, "삭제").stream()
                 .map(this::postToDTO)
                 .collect(Collectors.toList());
     }
@@ -122,8 +122,13 @@ public class LostService {
         if (state != null)
             spec = spec.and(LostSpecification.equalState(state));
 
+        spec = spec.and(LostSpecification.notDeleted());
+
         return postLostRepository.findAll(spec, pageable)
                 .map(this::listToDTO);
+        /*return postLostRepository.findAll(spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.notEqual(root.get("state"), "삭제")), pageable)
+                .map(this::listToDTO);*/
     }
 
     public PostLostDTO postToDTO(PostLost post) {

@@ -34,4 +34,8 @@ public class FoundSpecification {
     public static Specification<PostFound> likeStorage(String storage) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("storage"), "%" + storage +"%");
     }
+    public static Specification<PostFound> notDeleted() {
+        return (root, query, CriteriaBuilder) ->
+                CriteriaBuilder.notEqual(root.get("state"), "삭제");
+    }
 }

@@ -76,7 +76,6 @@ public class PostFound {
     private String storage;
 
     @Column
-    @NotNull
     private LocalDateTime time;
 
 
@@ -134,7 +133,7 @@ public class PostFound {
         this.place = " ";
         this.item = " ";
         this.contents = " ";
-        this.state = " ";
+        this.state = "삭제";
         this.time = null;
         this.storage = " ";
     }

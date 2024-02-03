@@ -75,7 +75,6 @@ public class PostLost {
     private int report;
 
     @Column
-    @NotNull
     private LocalDateTime time;
 
 
@@ -134,7 +133,7 @@ public class PostLost {
         this.place = " ";
         this.item = " ";
         this.contents = " ";
-        this.state = " ";
+        this.state = "삭제";
         this.time = null;
     }
 

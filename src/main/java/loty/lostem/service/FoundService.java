@@ -52,12 +52,12 @@ public class FoundService {
 
     // 전체 목록 보기
     public Page<PostFoundListDTO> allLists(Pageable pageable) {
-        return postFoundRepository.findAll(pageable)
+        return postFoundRepository.findAllNonDeleted(pageable)
                 .map(this::listToDTO);
     }
 
     public List<PostFoundDTO> userPost(String tag) {
-        return postFoundRepository.findByUser_Tag(tag).stream()
+        return postFoundRepository.findByUser_TagAndStateNot(tag, "삭제").stream()
                 .map(this::postToDTO)
                 .collect(Collectors.toList());
     }
@@ -124,6 +124,8 @@ public class FoundService {
             spec = spec.and(FoundSpecification.equalState(state));
         if (storage != null)
             spec = spec.and(FoundSpecification.likeStorage(storage));
+
+        spec = spec.and(FoundSpecification.notDeleted());
 
         return postFoundRepository.findAll(spec, pageable)
                 .map(this::listToDTO);

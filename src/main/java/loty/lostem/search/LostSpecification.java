@@ -84,4 +84,8 @@ public class LostSpecification {
     public static Specification<PostLost> equalState(String state) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("state"), state);
     }
- }
+    public static Specification<PostLost> notDeleted() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.notEqual(root.get("state"), "삭제");
+    }
+}
