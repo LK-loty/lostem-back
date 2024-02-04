@@ -66,14 +66,15 @@ public class SecurityConfig {
                                 "/api/users/signup", "/api/users/pw", "/api/users/find", "/api/users/check", "/api/users/read",
                                 "/api/lost/read/**", "/api/lost/search", "/api/found/read/**", "/api/found/search",
                                 "/api/appraisals/read",
-                                "/api/login", "/api/logout", "/api/access", "/api/refresh"
+                                "/api/login", "/api/logout", "/api/access", "/api/refresh",
+                                "/api/websocket"
                         )
                         .permitAll()
 
-                        .requestMatchers(
+                        /*.requestMatchers(
                                 "/api/websocket"
                         )
-                        .authenticated()
+                        .authenticated()*/
 
                         .requestMatchers(
                                 "/admin/**"
