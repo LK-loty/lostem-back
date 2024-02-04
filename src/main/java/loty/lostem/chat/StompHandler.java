@@ -29,7 +29,7 @@ public class StompHandler implements ChannelInterceptor {
         //// 웹소켓 연결 시 헤더 jwt 검증
         if (StompCommand.CONNECT == headerAccessor.getCommand()) {
             try {
-                tokenProvider.validateToken(headerAccessor.getFirstNativeHeader("Authorization"));
+                tokenProvider.validateToken(headerAccessor.getFirstNativeHeader("Authorization").substring(7));
                 log.info("헤더 검증 완료");
             } catch (AccessDeniedException e) {
                 throw new MessageDeliveryException("토큰 검증 실패");
