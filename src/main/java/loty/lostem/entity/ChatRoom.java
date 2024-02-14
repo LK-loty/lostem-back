@@ -30,14 +30,8 @@ public class ChatRoom {
     @JoinColumn(name = "guestUserId")
     private User guestUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
-    private Post post;
-
     @Column
-    @NotNull
-    @Max(2)
-    private int report;
+    private Long postId;
 
 
 
@@ -49,11 +43,11 @@ public class ChatRoom {
 
 
 
-    public static ChatRoom createChatRoom(ChatRoomDTO chatRoomDTO, User host, User guest) {
+    public static ChatRoom createChatRoom(User host, User guest, Long postId) {
         return ChatRoom.builder()
-                .report(0)
                 .hostUser(host)
                 .guestUser(guest)
+                .postId(postId)
                 .build();
     }
 }

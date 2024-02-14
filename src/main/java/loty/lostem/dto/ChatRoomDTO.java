@@ -11,9 +11,7 @@ public class ChatRoomDTO {
 
     private Long hostUserId;  // 방 만든 사람
 
-    private Long guestUserId;  // 1:1 대화 상대
+    private String guestUserTag;  // 1:1 대화 상대
 
     private Long postId;
-
-    private int report;
 }

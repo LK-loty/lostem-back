@@ -22,6 +22,8 @@ public class ChatMessageDTO {
 
     private Long sender;  // 채팅 보낸 사람 키
 
+    private Long postId;
+
     @NotNull
     @Size(max = 1000)
     private String message;  // 채팅 내용
