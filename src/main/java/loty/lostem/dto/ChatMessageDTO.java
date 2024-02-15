@@ -22,6 +22,7 @@ public class ChatMessageDTO {
 
     private Long sender;  // 채팅 보낸 사람 키
 
+    private String postType; // 게시물 타입
     private Long postId;
 
     @NotNull

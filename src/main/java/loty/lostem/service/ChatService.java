@@ -4,14 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.ChatMessageDTO;
 import loty.lostem.dto.ChatRoomDTO;
-import loty.lostem.entity.ChatMessage;
-import loty.lostem.entity.ChatRoom;
-import loty.lostem.entity.Post;
-import loty.lostem.entity.User;
-import loty.lostem.repository.ChatMessageRepository;
-import loty.lostem.repository.ChatRoomRepository;
-import loty.lostem.repository.PostRepository;
-import loty.lostem.repository.UserRepository;
+import loty.lostem.entity.*;
+import loty.lostem.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -24,7 +18,8 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
-    private final PostRepository postRepository;
+    private final PostLostRepository lostRepository;
+    private final PostFoundRepository foundRepository;
 
     // 채팅방
     @Transactional
@@ -34,18 +29,42 @@ public class ChatService {
         }*/
         User guest = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No guest"));
-        Post post = postRepository.findById(messageDTO.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException("No post"));
-        User host = userRepository.findById(post.getUser().getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("No host"));
+        ChatRoomDTO chatRoomDTO = null;
+        if (messageDTO.getPostType().equals("Lost")) {
+            PostLost post = lostRepository.findById(messageDTO.getPostId())
+                    .orElseThrow(() -> new IllegalArgumentException("No post"));
+            User host = userRepository.findById(post.getUser().getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-        ChatRoom chatRoom = ChatRoom.createChatRoom(host, guest, messageDTO.getPostId());
-        chatRoomRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
+            LostChatRoom chatRoom = LostChatRoom.builder()
+                    .hostUser(host)
+                    .guestUser(guest)
+                    .postLost(post)
+                    .build();
+            chatRoomRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
 
-        ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest);
-        chatMessageRepository.save(chatMessage);
+            ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest);
+            chatMessageRepository.save(chatMessage);
 
-        ChatRoomDTO chatRoomDTO = roomToDTO(chatRoom);
+            return roomToDTO(chatRoom);
+        } else if (messageDTO.getPostType().equals("Found")){
+            PostFound post = foundRepository.findById(messageDTO.getPostId())
+                    .orElseThrow(() -> new IllegalArgumentException("No post"));
+            User host = userRepository.findById(post.getUser().getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("No host"));
+
+            FoundChatRoom chatRoom = FoundChatRoom.builder()
+                    .hostUser(host)
+                    .guestUser(guest)
+                    .postFound(post)
+                    .build();
+            chatRoomRepository.save(chatRoom);
+
+            ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest);
+            chatMessageRepository.save(chatMessage);
+
+            return roomToDTO(chatRoom);
+        }
         return chatRoomDTO;
     }
 

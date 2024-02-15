@@ -19,17 +19,47 @@ public class ChatController {
 
     // 채팅방
     @PostMapping("/room/create")
-    public ResponseEntity<ChatRoomDTO> createRoom(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String token) {
-        Long userId = tokenProvider.getUserId(token);
-        ChatRoomDTO dto = chatService.createRoom(messageDTO, userId);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<ChatRoomDTO> createRoom(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
+        Long userId;
+        ChatRoomDTO dto = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                // 'Bearer ' 이후의 토큰 추출
+                String token = authorization.substring(7);
+                // 토큰 사용 및 처리
+                userId = tokenProvider.getUserId(token);
+                dto = chatService.createRoom(messageDTO, userId);
+            } catch (IllegalArgumentException e) {
+                // 예외 처리 추가
+                e.printStackTrace();
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        if (dto != null) {
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // 채팅방 목록
     @GetMapping("/room/read/user")
-    public ResponseEntity<List<ChatRoomDTO>> readUserRoom(@RequestHeader("Authorization") String token) {
-        Long userId = tokenProvider.getUserId(token);
-        List<ChatRoomDTO> chatRoomDTOList = chatService.getAllRooms(userId);
+    public ResponseEntity<List<ChatRoomDTO>> readUserRoom(@RequestHeader("Authorization") String authorization) {
+        Long userId;
+        List<ChatRoomDTO> chatRoomDTOList = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+                chatRoomDTOList = chatService.getAllRooms(userId);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
         return ResponseEntity.ok(chatRoomDTOList);
     }
 
