@@ -14,4 +14,6 @@ public class ChatRoomDTO {
     private String guestUserTag;  // 1:1 대화 상대
 
     private Long postId;
+
+    private String lastMessage;
 }

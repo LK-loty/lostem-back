@@ -8,20 +8,32 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue("Lost")
+@Builder
 @Getter
-public class LostChatRoom extends ChatRoom {
+public class LostChatRoom {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long roomId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lost_post_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "lost_post_id", nullable = false)
     private PostLost postLost;
 
-    @Builder
-    public LostChatRoom(Long roomId, User hostUser, User guestUser, Long postId, List<ChatMessage> chatMessages, PostLost postLost) {
-        super(roomId, hostUser, guestUser, chatMessages);
-        this.postLost = postLost;
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User hostUser;
 
-    // 생성 메서드
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guestUserId")
+    private User guestUser;
+
+
+
+    @OneToMany(mappedBy = "lostChatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessageLost> chatMessages;
+
+
+
     public static LostChatRoom createChatRoom(User host, User guest, PostLost postLost) {
         return LostChatRoom.builder()
                 .hostUser(host)

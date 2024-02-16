@@ -33,18 +33,18 @@ public class MessageController {
     }
 
     // /pub/chat/message 로 요청이 들어오면 해당 메서드 실행 후 /sub/chat/room/id 구독하는 사용자들에게 요청할 때 같이온 chatRequest 실행
-    @MessageMapping("/chat/message") // setApplicationDestinationPrefixes()를 통해 prefix "/pub"으로 설정 했으므로, 경로가 한번 더 수정되어 “/pub/chat/message”로 바뀜
-    public void message(@Payload ChatMessageDTO messageDTO, @Header("Authorization") String token) { // (@Payload ChatRequest chatRequest, SimpMessageHeaderAccessor headerAccessor)
-        // 토큰 검사하면서 유저 추출? 유효성 검사 로직 정리 필요
-        tokenProvider.validateToken(token);
-        log.info("유효한 토큰이므로 채팅을 계속합니다.");
-        Long userId = tokenProvider.getUserId(token);
-
-        chatService.createMessage(messageDTO, userId);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + messageDTO.getRoomId(), messageDTO);
-        /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
-        redisTemplate.convertAndSend("/topic/public", chatMessage);*/
-    }
+//    @MessageMapping("/chat/message") // setApplicationDestinationPrefixes()를 통해 prefix "/pub"으로 설정 했으므로, 경로가 한번 더 수정되어 “/pub/chat/message”로 바뀜
+//    public void message(@Payload ChatMessageDTO messageDTO, @Header("Authorization") String token) { // (@Payload ChatRequest chatRequest, SimpMessageHeaderAccessor headerAccessor)
+//        // 토큰 검사하면서 유저 추출? 유효성 검사 로직 정리 필요
+//        tokenProvider.validateToken(token);
+//        log.info("유효한 토큰이므로 채팅을 계속합니다.");
+//        Long userId = tokenProvider.getUserId(token);
+//
+//        chatService.createMessage(messageDTO, userId);
+//        simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + messageDTO.getRoomId(), messageDTO);
+//        /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
+//        redisTemplate.convertAndSend("/topic/public", chatMessage);*/
+//    }
 
     /*@MessageMapping("/chat/{roomId}")
     @SendTo("/sub/chat/{roomId}") //
