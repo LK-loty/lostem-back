@@ -82,8 +82,8 @@ public class PostLost {
     @OneToMany(mappedBy = "postLost")
     private List<LostReport> lostReports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "postLost")
-    private List<LostChatRoom> chatRooms = new ArrayList<>();
+    /*@OneToMany(mappedBy = "postLost")
+    private List<LostChatRoom> chatRooms = new ArrayList<>();*/
 
 
 

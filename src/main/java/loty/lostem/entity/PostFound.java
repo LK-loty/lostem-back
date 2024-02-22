@@ -83,8 +83,8 @@ public class PostFound {
     @OneToMany(mappedBy = "postFound")
     private List<FoundReport> foundReports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "postFound")
-    private List<FoundChatRoom> chatRooms = new ArrayList<>();
+    /*@OneToMany(mappedBy = "postFound")
+    private List<FoundChatRoom> chatRooms = new ArrayList<>();*/
 
 
 

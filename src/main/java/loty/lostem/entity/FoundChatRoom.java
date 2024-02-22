@@ -8,25 +8,40 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue("FOUND")
+@Builder
 @Getter
-public class FoundChatRoom extends ChatRoom {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "found_post_id", nullable = false, insertable = false, updatable = false)
-    private PostFound postFound;
+public class FoundChatRoom {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long roomId;
 
-    @Builder
-    public FoundChatRoom(Long roomId, User hostUser, User guestUser, Long postId, List<ChatMessage> chatMessages, PostFound postFound) {
-        super(roomId, hostUser, guestUser, chatMessages);
-        this.postFound = postFound;
-    }
+    /*@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "found_post_id", nullable = false)
+    private PostFound postFound;*/
+    @Column(nullable = false)
+    private Long postId;
 
-    // 생성 메서드
-    public static FoundChatRoom createChatRoom(User host, User guest, PostFound postFound) {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "host_user_id", nullable = false)
+    private User hostUser;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guest_user_id", nullable = false)
+    private User guestUser;
+
+
+
+    @OneToMany(mappedBy = "foundChatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessageFound> chatMessages;
+
+
+
+    public static FoundChatRoom createChatRoom(Long postId, User host, User guest) {
         return FoundChatRoom.builder()
+                .postId(postId)
                 .hostUser(host)
                 .guestUser(guest)
-                .postFound(postFound)
+                //.postFound(postFound)
                 .build();
     }
 }
