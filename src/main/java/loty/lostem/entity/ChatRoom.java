@@ -11,6 +11,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "post_type")
 @DiscriminatorValue("POST")
+//@MappedSuperclass
 @Getter
 public class ChatRoom {
     @Id
@@ -18,24 +19,23 @@ public class ChatRoom {
     private Long roomId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "hostId")
     private User hostUser;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "guestUserId")
+    @JoinColumn(name = "guestId")
     private User guestUser;
 
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatMessage> chatMessages;
+    /*@OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessage> chatMessages;*/
 
 
-
-    /*public static ChatRoom createChatRoom(User host, User guest, Long postId) {
+    @Builder
+    public static ChatRoom createChatRoom(Long postId, User host, User guest) {
         return ChatRoom.builder()
-                .hostUser(host)
-                .guestUser(guest)
-                .postId(postId)
+                .host(host)
+                .guest(guest)
                 .build();
-    }*/
+    }
 }
