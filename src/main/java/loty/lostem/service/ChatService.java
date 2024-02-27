@@ -29,9 +29,6 @@ public class ChatService {
     // 채팅방
     @Transactional
     public ChatRoomDTO createRoom(ChatMessageDTO messageDTO, Long userId) {
-        /*if (chatRoomDTO.getPostId()) {
-            // 유저가 이미 그 상대와 채팅방 만들었다면 그 채팅방으로 이동
-        }*/
         User guest = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No guest"));
         ChatRoomDTO chatRoomDTO = null;
@@ -46,9 +43,9 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            //LostChatRoom chatRoom = roomLostRepository.findByPostLost_IdAndHostUser_UserIdAndGuestUser_UserId(messageDTO.getPostId(), host.getUserId(), userId);
             LostChatRoom chatRoom = roomLostRepository.findByHostUser_UserIdAndGuestUser_UserId(host.getUserId(), userId);
-            if (chatRoom == null) {
+
+            if (chatRoom == null ) {
                 log.info("채팅방을 생성합니다");
                 chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host, guest);
                 roomLostRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
@@ -57,14 +54,14 @@ public class ChatService {
                 messageLostRepository.save(chatMessage);
             }
             return roomToDTO(chatRoom);
-        } else if (messageDTO.getPostType().equals("Found")){
+        }
+        else if (messageDTO.getPostType().equals("Found")){
             log.info("found 게시물");
             PostFound post = foundRepository.findById(messageDTO.getPostId())
                     .orElseThrow(() -> new IllegalArgumentException("No post"));
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            //FoundChatRoom chatRoom = roomFoundRepository.findByPostFound_IdAndHostUser_UserIdAndGuestUser_UserId(messageDTO.getPostId(), host.getUserId(), userId);
             FoundChatRoom chatRoom = roomFoundRepository.findByHostUser_UserIdAndGuestUser_UserId(host.getUserId(), userId);
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다.");
@@ -81,6 +78,7 @@ public class ChatService {
 
     // 채탕방 목록 정보
     public ChatRoomListDTO getAllRooms(Long userId) {
+        // 상대방이랑 host, guest 바뀌는거 생각해서 상대방의 이미지, 닉네임, 태그 전달
         List<LostChatRoom> lostChatRooms = roomLostRepository.findByHostUser_UserIdOrGuestUser_UserId(userId);
         List<FoundChatRoom> foundChatRooms = roomFoundRepository.findByHostUser_UserIdOrGuestUser_UserId(userId);
 
@@ -95,12 +93,6 @@ public class ChatService {
                 .build();
     }
 
-    /*public List<ChatRoomDTO> findAllRoom() {  // 채팅방 최근 순서로 반환
-        List chatRoomDTOList = chatRoomRepository.findAll();
-        Collections.reverse(chatRoomDTOList);
-        return chatRoomDTOList;
-    }*/
-
     // 특정 채팅방 정보만. 메시지는 아직 >> 같이?? 채팅방 위에 게시물 정보 같이 전달(채팅방 정보)
     /*public ChatRoomDTO selectRoom(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
@@ -111,15 +103,24 @@ public class ChatService {
 
 
     // 메시지
-    /*public ChatMessageDTO createMessage(ChatMessageDTO chatMessageDTO, Long userId) {
+    public ChatMessageDTO createLostMessage(ChatMessageDTO chatMessageDTO, Long userId) {
         LostChatRoom chatRoom = roomLostRepository.findById(chatMessageDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provide id"));
-        ChatMessage newMessage = ChatMessage.createChatMessage(chatMessageDTO, chatRoom, user);
-        chatMessageRepository.save(newMessage);
+        ChatMessageLost newMessage = ChatMessageLost.createChatMessage(chatMessageDTO, chatRoom, user);
+        messageLostRepository.save(newMessage);
         return chatMessageDTO;
-    }*/
+    }
+    public ChatMessageDTO createFoundMessage(ChatMessageDTO chatMessageDTO, Long userId) {
+        FoundChatRoom chatRoom = roomFoundRepository.findById(chatMessageDTO.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No user found for the provide id"));
+        ChatMessageFound newMessage = ChatMessageFound.createChatMessage(chatMessageDTO, chatRoom, user);
+        messageFoundRepository.save(newMessage);
+        return chatMessageDTO;
+    }
 
 
 
@@ -133,11 +134,15 @@ public class ChatService {
 
 
     public ChatRoomDTO roomToDTO (LostChatRoom chatRoom) {
-        String lastMessage = chatRoom.getChatMessages()
-                .stream()
-                .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
-                .map(ChatMessageLost::getMessage)
-                .orElse(null);
+        String lastMessage = null;
+
+        if (chatRoom.getChatMessages() != null) {
+            lastMessage = chatRoom.getChatMessages()
+                    .stream()
+                    .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
+                    .map(ChatMessageLost::getMessage)
+                    .orElse(null);
+        }
 
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
@@ -148,11 +153,15 @@ public class ChatService {
                 .build();
     }
     public ChatRoomDTO roomToDTO (FoundChatRoom chatRoom) {
-        String lastMessage = chatRoom.getChatMessages()
-                .stream()
-                .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
-                .map(ChatMessageFound::getMessage)
-                .orElse(null);
+        String lastMessage = null;
+
+        if (chatRoom.getChatMessages() != null) {
+            lastMessage = chatRoom.getChatMessages()
+                    .stream()
+                    .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
+                    .map(ChatMessageFound::getMessage)
+                    .orElse(null);
+        }
 
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
@@ -166,6 +175,7 @@ public class ChatService {
     public ChatMessageDTO messageToDTO(ChatMessage message) {
         return ChatMessageDTO.builder()
                 .messageId(message.getMessageId())
+                .sender(message.getSender().getUserId())
                 .message(message.getMessage())
                 .time(message.getTime())
                 .build();
