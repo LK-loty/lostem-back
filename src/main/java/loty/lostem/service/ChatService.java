@@ -121,13 +121,33 @@ public class ChatService {
 
 
     public ChatRoomDTO roomToDTO (LostChatRoom chatRoom) {
+        String lastMessage = chatRoom.getChatMessages()
+                .stream()
+                .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
+                .map(ChatMessageLost::getMessage)
+                .orElse(null);
+
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
+                .hostUserTag(chatRoom.getHostUser().getTag())
+                .guestUserTag(chatRoom.getGuestUser().getTag())
+                .postId(chatRoom.getPostId())
+                .lastMessage(lastMessage)
                 .build();
     }
     public ChatRoomDTO roomToDTO (FoundChatRoom chatRoom) {
+        String lastMessage = chatRoom.getChatMessages()
+                .stream()
+                .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
+                .map(ChatMessageFound::getMessage)
+                .orElse(null);
+
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
+                .hostUserTag(chatRoom.getHostUser().getTag())
+                .guestUserTag(chatRoom.getGuestUser().getTag())
+                .postId(chatRoom.getPostId())
+                .lastMessage(lastMessage)
                 .build();
     }
 
