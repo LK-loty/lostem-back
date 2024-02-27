@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.ChatMessageDTO;
 import loty.lostem.dto.ChatRoomDTO;
+import loty.lostem.dto.ChatRoomListDTO;
 import loty.lostem.entity.*;
 import loty.lostem.repository.*;
 import org.springframework.stereotype.Service;
@@ -79,10 +80,19 @@ public class ChatService {
     }
 
     // 채탕방 목록 정보
-    public List<ChatRoomDTO> getAllRooms(Long userId) {
-        return /*chatRoomRepository.findByHostUser_UserId(userId).stream()
-                .map(this::roomToDTO)
-                .collect(Collectors.toList());*/ null;
+    public ChatRoomListDTO getAllRooms(Long userId) {
+        List<LostChatRoom> lostChatRooms = roomLostRepository.findByHostUser_UserIdOrGuestUser_UserId(userId);
+        List<FoundChatRoom> foundChatRooms = roomFoundRepository.findByHostUser_UserIdOrGuestUser_UserId(userId);
+
+        List<ChatRoomDTO> lostDTOs = lostChatRooms.stream()
+                .map(this::roomToDTO).toList();
+        List<ChatRoomDTO> foundDTOs = foundChatRooms.stream()
+                .map(this::roomToDTO).toList();
+
+        return ChatRoomListDTO.builder()
+                .chatRoomLostList(lostDTOs)
+                .chatRoomFoundList(foundDTOs)
+                .build();
     }
 
     /*public List<ChatRoomDTO> findAllRoom() {  // 채팅방 최근 순서로 반환
@@ -102,7 +112,7 @@ public class ChatService {
 
     // 메시지
     /*public ChatMessageDTO createMessage(ChatMessageDTO chatMessageDTO, Long userId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDTO.getRoomId())
+        LostChatRoom chatRoom = roomLostRepository.findById(chatMessageDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provide id"));
@@ -110,6 +120,8 @@ public class ChatService {
         chatMessageRepository.save(newMessage);
         return chatMessageDTO;
     }*/
+
+
 
     // 채팅방의 모든 메시지 가져오기
     /*public List<ChatMessageDTO> getAllMessages(Long roomId) { // 쿼리 작성 필요

@@ -3,6 +3,7 @@ package loty.lostem.controller;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.ChatMessageDTO;
 import loty.lostem.dto.ChatRoomDTO;
+import loty.lostem.dto.ChatRoomListDTO;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.ChatService;
 import org.springframework.http.ResponseEntity;
@@ -45,36 +46,36 @@ public class ChatController {
 
     // 채팅방 목록
     @GetMapping("/room/read/user")
-    public ResponseEntity<List<ChatRoomDTO>> readUserRoom(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<ChatRoomListDTO> readUserRoom(@RequestHeader("Authorization") String authorization) {
         Long userId;
-        List<ChatRoomDTO> chatRoomDTOList = null;
+        ChatRoomListDTO chatRoomListDTO= null;
 
         if (authorization != null && authorization.startsWith("Bearer ")) {
             try {
                 String token = authorization.substring(7);
                 userId = tokenProvider.getUserId(token);
-                chatRoomDTOList = chatService.getAllRooms(userId);
+                chatRoomListDTO = chatService.getAllRooms(userId);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 return ResponseEntity.badRequest().build();
             }
         }
 
-        return ResponseEntity.ok(chatRoomDTOList);
+        return ResponseEntity.ok(chatRoomListDTO);
     }
 
     // 특정 채팅방 조회
-    @GetMapping("/room/read/{roomId}")
+    /*@GetMapping("/room/read/{roomId}")
     public ResponseEntity<ChatRoomDTO> selectRoom(@PathVariable Long roomId) {
         ChatRoomDTO chatRoomDTO = chatService.selectRoom(roomId);
         return ResponseEntity.ok(chatRoomDTO);
-    }
+    }*/
 
     // 채팅방 채팅 내역
-    @GetMapping("/chat/get")
+    /*@GetMapping("/chat/get")
     public ResponseEntity<List<ChatMessageDTO>> getMessages(@PathVariable Long roomId) {
         // 채팅방에서의 모든 메시지를 가져오는 요청을 서비스에 전달하여 처리
         List<ChatMessageDTO> messages = chatService.getAllMessages(roomId);
         return ResponseEntity.ok(messages);
-    }
+    }*/
 }
