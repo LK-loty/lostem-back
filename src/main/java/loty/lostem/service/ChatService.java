@@ -42,17 +42,24 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            LostChatRoom chatRoom = roomLostRepository.findByHostUser_UserIdAndGuestUser_UserId(host.getUserId(), userId);
+            LostChatRoom chatRoom = roomLostRepository.findByChatRoom_HostUser_UserIdAndChatRoom_GuestUser_UserId(host.getUserId(), userId);
             // 이미 있으면 그 채팅방으로 이동?
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다");
                 //chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host, guest);
 
                 //ChatRoom room = ChatRoom.createChatRoom(post.getPostId(), host, guest);
-                chatRoom = (LostChatRoom) LostChatRoom.createChatRoom(post.getPostId(), host, guest);
+                //chatRoom = (LostChatRoom) LostChatRoom.createChatRoom(post.getPostId(), host, guest);
 
                 //chatRoom = LostChatRoom.createChatRoom(room.getRoomId(),host, guest, post.getPostId(), );
-                roomLostRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
+                //roomLostRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
+
+
+                //ChatRoom newChatRoom = ChatRoom.createChatRoom(host, guest);
+                ChatRoom newChatRoom = new ChatRoom(host, guest);
+                chatRoom = new LostChatRoom(newChatRoom, post.getPostId());
+                roomLostRepository.save(chatRoom);
+
 
                 // 채팅 메시지 생성
                 ChatMessageLost chatMessage = ChatMessageLost.createChatMessage(messageDTO, chatRoom, guest);
@@ -67,12 +74,17 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            FoundChatRoom chatRoom = roomFoundRepository.findByHostUser_UserIdAndGuestUser_UserId(host.getUserId(), userId);
+            FoundChatRoom chatRoom = roomFoundRepository.findByChatRoom_HostUser_UserIdAndChatRoom_GuestUser_UserId(host.getUserId(), userId);
 
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다.");
 
-                chatRoom = (FoundChatRoom) FoundChatRoom.createChatRoom(post.getPostId(), host, guest);
+                /*chatRoom = (FoundChatRoom) FoundChatRoom.createChatRoom(post.getPostId(), host, guest);
+                roomFoundRepository.save(chatRoom);*/
+
+                ChatRoom newChatRoom = ChatRoom.createChatRoom(host, guest);
+                //ChatRoom newChatRoom = new ChatRoom(host, guest);
+                chatRoom = new FoundChatRoom(newChatRoom, post.getPostId());
                 roomFoundRepository.save(chatRoom);
 
                 ChatMessageFound chatMessage = ChatMessageFound.createChatMessage(messageDTO, chatRoom, guest);
@@ -85,7 +97,7 @@ public class ChatService {
 
     // 채탕방 목록 정보
     public ChatRoomListDTO getAllRooms(Long userId) {
-        List<ChatRoomDTO> lostChatRooms = roomLostRepository.findByGuestUser_UserId(userId).stream()
+        /*List<ChatRoomDTO> lostChatRooms = roomLostRepository.findByGuestUser_UserId(userId).stream()
                 .map(this::roomToDTO)
                 .collect(Collectors.toList());
         List<ChatRoomDTO> foundChatRooms = roomFoundRepository.findByGuestUser_UserId(userId).stream()
@@ -95,7 +107,8 @@ public class ChatService {
         return ChatRoomListDTO.builder()
                 .chatRoomLostList(lostChatRooms)
                 .chatRoomLostList(foundChatRooms)
-                .build();
+                .build();*/
+        return null;
     }
 
     /*public List<ChatRoomDTO> findAllRoom() {  // 채팅방 최근 순서로 반환
@@ -135,16 +148,16 @@ public class ChatService {
 
     public ChatRoomDTO roomToDTO (LostChatRoom chatRoom) {
         return ChatRoomDTO.builder()
-                .roomId(chatRoom.getRoomId())
+                .roomId(chatRoom.getChatRoom().getRoomId())
                 .postId(chatRoom.getPostId())
-                .guestUserTag(chatRoom.getGuestUser().getTag())
+                .guestUserTag(chatRoom.getChatRoom().getGuestUser().getTag())
                 .build();
     }
     public ChatRoomDTO roomToDTO (FoundChatRoom chatRoom) {
         return ChatRoomDTO.builder()
-                .roomId(chatRoom.getRoomId())
+                .roomId(chatRoom.getChatRoom().getRoomId())
                 .postId(chatRoom.getPostId())
-                .guestUserTag(chatRoom.getGuestUser().getTag())
+                .guestUserTag(chatRoom.getChatRoom().getGuestUser().getTag())
                 .build();
     }
 
