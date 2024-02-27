@@ -9,12 +9,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //@Builder
-@DiscriminatorValue("FOUND")
+//@DiscriminatorValue("FOUND")
 @Getter
-public class FoundChatRoom extends ChatRoom {
+public class FoundChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chatRoomId")
+    private ChatRoom chatRoom;
 
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "found_post_id", nullable = false)
@@ -37,11 +41,16 @@ public class FoundChatRoom extends ChatRoom {
 
 
 
-    public FoundChatRoom(Long roomId, User hostUser, User guestUser, Long postId, List<ChatMessageFound> chatMessages) {
+    public FoundChatRoom(ChatRoom chatRoom, Long postId) {
+        this.chatRoom = chatRoom;
+        this.roomId = chatRoom.getRoomId();
+        this.postId = postId;
+    }
+    /*public FoundChatRoom(Long roomId, User hostUser, User guestUser, Long postId, List<ChatMessageFound> chatMessages) {
         super(roomId, hostUser, guestUser);
         this.postId = postId;
         this.chatMessages = chatMessages;
-    }
+    }*/
     /*public static FoundChatRoom createChatRoom(Long postId, User host, User guest) {
         return FoundChatRoom.builder()
                 .postId(postId)

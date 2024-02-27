@@ -8,9 +8,9 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+/*@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "post_type")
-@DiscriminatorValue("POST")
+@DiscriminatorValue("POST")*/
 //@MappedSuperclass
 @Getter
 public class ChatRoom {
@@ -32,10 +32,15 @@ public class ChatRoom {
 
 
     @Builder
-    public static ChatRoom createChatRoom(Long postId, User host, User guest) {
+    public static ChatRoom createChatRoom(User host, User guest) {
         return ChatRoom.builder()
                 .host(host)
                 .guest(guest)
                 .build();
+    }
+
+    public ChatRoom(User hostUser, User guestUser) {
+        this.hostUser = hostUser;
+        this.guestUser = guestUser;
     }
 }

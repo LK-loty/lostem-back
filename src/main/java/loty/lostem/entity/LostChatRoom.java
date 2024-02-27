@@ -9,12 +9,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //@Builder
-@DiscriminatorValue("LOST")
+//@DiscriminatorValue("LOST")
 @Getter
-public class LostChatRoom extends ChatRoom {
+public class LostChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chatRoomId")
+    private ChatRoom chatRoom;
 
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lost_post_id", nullable = false)
@@ -36,11 +40,16 @@ public class LostChatRoom extends ChatRoom {
     private List<ChatMessageLost> chatMessages;
 
 
-    public LostChatRoom(Long roomId, User hostUser, User guestUser, Long postId, List<ChatMessageLost> chatMessages) {
+    public LostChatRoom(ChatRoom chatRoom, Long postId) {
+        this.chatRoom = chatRoom;
+        this.roomId = chatRoom.getRoomId();
+        this.postId = postId;
+    }
+    /*public LostChatRoom(Long roomId, User hostUser, User guestUser, Long postId, List<ChatMessageLost> chatMessages) {
         super(roomId, hostUser, guestUser);
         this.postId = postId;
         this.chatMessages = chatMessages;
-    }
+    }*/
 
     /*public static LostChatRoom createChatRoom(Long postId, User host, User guest) {
         return LostChatRoom.builder()
