@@ -29,6 +29,9 @@ public class LostChatRoom {
     @JoinColumn(name = "guest_user_id", nullable = false)
     private User guestUser;
 
+    @Column
+    private String type;
+
 
 
     @OneToMany(mappedBy = "lostChatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -41,7 +44,7 @@ public class LostChatRoom {
                 .postId(postId)
                 .hostUser(host)
                 .guestUser(guest)
-                //.postLost(postLost)
+                .type("Lost")
                 .build();
     }
 }
