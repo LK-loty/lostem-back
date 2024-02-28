@@ -2,6 +2,8 @@ package loty.lostem.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -13,7 +15,11 @@ public class ChatRoomDTO {
 
     private String guestUserTag;  // 채팅 시도하는 사람
 
+    private String type;
+
     private Long postId;
 
     private String lastMessage;
+
+    private LocalDateTime time;
 }

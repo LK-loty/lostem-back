@@ -10,6 +10,7 @@ import loty.lostem.entity.*;
 import loty.lostem.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -135,40 +136,40 @@ public class ChatService {
 
     public ChatRoomDTO roomToDTO (LostChatRoom chatRoom) {
         String lastMessage = null;
+        LocalDateTime time = null;
 
         if (chatRoom.getChatMessages() != null) {
-            lastMessage = chatRoom.getChatMessages()
-                    .stream()
-                    .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
-                    .map(ChatMessageLost::getMessage)
-                    .orElse(null);
+            lastMessage = chatRoom.getLastMessage();
+            time = chatRoom.getLastMessageTime();
         }
 
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
                 .hostUserTag(chatRoom.getHostUser().getTag())
                 .guestUserTag(chatRoom.getGuestUser().getTag())
+                .type(chatRoom.getType())
                 .postId(chatRoom.getPostId())
                 .lastMessage(lastMessage)
+                .time(time)
                 .build();
     }
     public ChatRoomDTO roomToDTO (FoundChatRoom chatRoom) {
         String lastMessage = null;
+        LocalDateTime time = null;
 
         if (chatRoom.getChatMessages() != null) {
-            lastMessage = chatRoom.getChatMessages()
-                    .stream()
-                    .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
-                    .map(ChatMessageFound::getMessage)
-                    .orElse(null);
+            lastMessage = chatRoom.getLastMessage();
+            time = chatRoom.getLastMessageTime();
         }
 
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
                 .hostUserTag(chatRoom.getHostUser().getTag())
                 .guestUserTag(chatRoom.getGuestUser().getTag())
+                .type(chatRoom.getType())
                 .postId(chatRoom.getPostId())
                 .lastMessage(lastMessage)
+                .time(time)
                 .build();
     }
 

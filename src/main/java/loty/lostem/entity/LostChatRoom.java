@@ -3,6 +3,7 @@ package loty.lostem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -46,5 +47,19 @@ public class LostChatRoom {
                 .guestUser(guest)
                 .type("Lost")
                 .build();
+    }
+
+    public String getLastMessage() {
+        return chatMessages.stream()
+                .reduce((first, second) -> second) // 목록에서 마지막 요소 가져오기
+                .map(ChatMessageLost::getMessage)
+                .orElse(null);
+    }
+
+    public LocalDateTime getLastMessageTime() {
+        return chatMessages.stream()
+                .map(ChatMessageLost::getTime)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
     }
 }
