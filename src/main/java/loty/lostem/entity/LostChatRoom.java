@@ -22,13 +22,18 @@ public class LostChatRoom {
     @Column
     private Long postId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    /*@OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_user_id", nullable = false)
     private User hostUser;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guest_user_id", nullable = false)
-    private User guestUser;
+    private User guestUser;*/
+    @Column
+    private Long hostUserId;
+
+    @Column
+    private Long guestUserId;
 
     @Column
     private String type;
@@ -40,11 +45,11 @@ public class LostChatRoom {
 
 
 
-    public static LostChatRoom createChatRoom(Long postId, User host, User guest) {
+    public static LostChatRoom createChatRoom(Long postId, Long host, Long guest) {
         return LostChatRoom.builder()
                 .postId(postId)
-                .hostUser(host)
-                .guestUser(guest)
+                .hostUserId(host)
+                .guestUserId(guest)
                 .type("Lost")
                 .build();
     }

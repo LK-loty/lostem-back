@@ -62,6 +62,7 @@ public class User{
     private UserRole role;
 
 
+
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
@@ -73,12 +74,6 @@ public class User{
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Appraisal> appraisals = new ArrayList<>();
-
-    @OneToOne(mappedBy = "hostUser")
-    private ChatRoom hostedChatRoom;
-
-    @OneToOne(mappedBy = "guestUser")
-    private ChatRoom joinedChatRoom;
 
     @OneToMany(mappedBy = "user")
     private List<Keyword> keywords = new ArrayList<>();
