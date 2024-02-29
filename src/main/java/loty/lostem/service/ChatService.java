@@ -37,18 +37,16 @@ public class ChatService {
         //Optional<? extends ChatRoom> existingRoom = roomRepository.findByHostUserAndGuestUserAndPostLost(host, guest, (PostLost) post);
         if (messageDTO.getPostType().equals("Lost")) {
             log.info("lost 게시글");
-            //LostChatRoom chatRoom = roomLostRepository.findBy()
-
             PostLost post = lostRepository.findById(messageDTO.getPostId())
                     .orElseThrow(() -> new IllegalArgumentException("No post"));
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            LostChatRoom chatRoom = roomLostRepository.findByHostUser_UserIdAndGuestUser_UserId(host.getUserId(), userId);
+            LostChatRoom chatRoom = roomLostRepository.findByPostIdAndGuestUserId(messageDTO.getPostId(), userId);
 
-            if (chatRoom == null ) {
+            if (chatRoom == null) {
                 log.info("채팅방을 생성합니다");
-                chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host, guest);
+                chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host.getUserId(), guest.getUserId());
                 roomLostRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
 
                 ChatMessageLost chatMessage = ChatMessageLost.createChatMessage(messageDTO, chatRoom, guest);
@@ -63,10 +61,11 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            FoundChatRoom chatRoom = roomFoundRepository.findByHostUser_UserIdAndGuestUser_UserId(host.getUserId(), userId);
+            FoundChatRoom chatRoom = roomFoundRepository.findByPostIdAndGuestUserId(host.getUserId(), userId);
+
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다.");
-                chatRoom = FoundChatRoom.createChatRoom(post.getPostId(), host, guest);
+                chatRoom = FoundChatRoom.createChatRoom(post.getPostId(), host.getUserId(), guest.getUserId());
                 roomFoundRepository.save(chatRoom);
 
                 ChatMessageFound chatMessage = ChatMessageFound.createChatMessage(messageDTO, chatRoom, guest);
@@ -80,8 +79,8 @@ public class ChatService {
     // 채탕방 목록 정보
     public ChatRoomListDTO getAllRooms(Long userId) {
         // 상대방이랑 host, guest 바뀌는거 생각해서 상대방의 이미지, 닉네임, 태그 전달
-        List<LostChatRoom> lostChatRooms = roomLostRepository.findByHostUser_UserIdOrGuestUser_UserId(userId);
-        List<FoundChatRoom> foundChatRooms = roomFoundRepository.findByHostUser_UserIdOrGuestUser_UserId(userId);
+        List<LostChatRoom> lostChatRooms = roomLostRepository.findByHostUserIdOrGuestUserId(userId);
+        List<FoundChatRoom> foundChatRooms = roomFoundRepository.findByHostUserIdOrGuestUserId(userId);
 
         List<ChatRoomDTO> lostDTOs = lostChatRooms.stream()
                 .map(this::roomToDTO).toList();
@@ -145,8 +144,8 @@ public class ChatService {
 
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
-                .hostUserTag(chatRoom.getHostUser().getTag())
-                .guestUserTag(chatRoom.getGuestUser().getTag())
+                .hostUserId(chatRoom.getHostUserId())
+                .guestUserId(chatRoom.getGuestUserId())
                 .type(chatRoom.getType())
                 .postId(chatRoom.getPostId())
                 .lastMessage(lastMessage)
@@ -164,8 +163,8 @@ public class ChatService {
 
         return ChatRoomDTO.builder()
                 .roomId(chatRoom.getRoomId())
-                .hostUserTag(chatRoom.getHostUser().getTag())
-                .guestUserTag(chatRoom.getGuestUser().getTag())
+                .hostUserId(chatRoom.getHostUserId())
+                .guestUserId(chatRoom.getGuestUserId())
                 .type(chatRoom.getType())
                 .postId(chatRoom.getPostId())
                 .lastMessage(lastMessage)
