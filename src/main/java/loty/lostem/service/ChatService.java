@@ -27,7 +27,7 @@ public class ChatService {
     private final PostLostRepository lostRepository;
     private final PostFoundRepository foundRepository;
 
-    // 채팅방
+    // 채팅
     @Transactional
     public ChatRoomDTO createRoom(ChatMessageDTO messageDTO, Long userId) {
         User guest = userRepository.findById(userId)
@@ -103,6 +103,7 @@ public class ChatService {
 
 
     // 메시지
+    @Transactional
     public ChatMessageDTO createLostMessage(ChatMessageDTO chatMessageDTO, Long userId) {
         LostChatRoom chatRoom = roomLostRepository.findById(chatMessageDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
@@ -112,6 +113,7 @@ public class ChatService {
         messageLostRepository.save(newMessage);
         return chatMessageDTO;
     }
+    @Transactional
     public ChatMessageDTO createFoundMessage(ChatMessageDTO chatMessageDTO, Long userId) {
         FoundChatRoom chatRoom = roomFoundRepository.findById(chatMessageDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));

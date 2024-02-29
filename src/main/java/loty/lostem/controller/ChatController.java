@@ -26,14 +26,10 @@ public class ChatController {
 
         if (authorization != null && authorization.startsWith("Bearer ")) {
             try {
-                // 'Bearer ' 이후의 토큰 추출
                 String token = authorization.substring(7);
-                // 토큰 사용 및 처리
                 userId = tokenProvider.getUserId(token);
                 dto = chatService.createRoom(messageDTO, userId);
             } catch (IllegalArgumentException e) {
-                // 예외 처리 추가
-                e.printStackTrace();
                 return ResponseEntity.badRequest().build();
             }
         }
@@ -78,4 +74,48 @@ public class ChatController {
         List<ChatMessageDTO> messages = chatService.getAllMessages(roomId);
         return ResponseEntity.ok(messages);
     }*/
+
+    @PostMapping("/message/lost/create")
+    public ResponseEntity<ChatMessageDTO> createLostMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
+        Long userId;
+        ChatMessageDTO dto = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+
+                dto = chatService.createLostMessage(messageDTO, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        if (dto != null) {
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/message/found/create")
+    public ResponseEntity<ChatMessageDTO> createFoundMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
+        Long userId;
+        ChatMessageDTO dto = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+
+                dto = chatService.createFoundMessage(messageDTO, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        if (dto != null) {
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
