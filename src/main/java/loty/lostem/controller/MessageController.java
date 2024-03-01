@@ -27,7 +27,7 @@ public class MessageController {
         Long userId = tokenProvider.getUserId(token);
         if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
             ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
-            simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomDTO.getRoomId(),messageDTO.getSender()+"님이 입장하셨습니다. " + messageDTO.getMessage());
+            simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomDTO.getRoomId(),messageDTO.getSenderTag()+"님이 입장하셨습니다. " + messageDTO.getMessage());
         }
         log.info("채팅방이 생성되었습니다");
     }

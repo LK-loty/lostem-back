@@ -10,17 +10,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ChatMessageDTO {
-    public enum MessageType{
-        ENTER, TALK, LEAVE;
-    }
-    private MessageType type; // 입장, 일반 메시지, 퇴장으로 나누는 메시지 타입
-
+public class ChatMessageDTO {  //(채팅방 대화 내역 = 기존 메시지 리스트), (게시물 id, 사진, 제목, 상태), (상대방 이미지, 닉네임, 태그)
     private Long messageId;
 
     private Long roomId;  // 채팅방 키
 
-    private Long sender;  // 채팅 보낸 사람 키
+    private Long senderId;
+    private String senderTag;  // 채팅 보낸 사람 태그
 
     private String postType; // 게시물 타입
     private Long postId;
