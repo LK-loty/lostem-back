@@ -52,7 +52,6 @@ public class ChatController {
                 userId = tokenProvider.getUserId(token);
                 chatRoomListDTO = chatService.getAllRooms(userId);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
                 return ResponseEntity.badRequest().build();
             }
         }
@@ -61,19 +60,19 @@ public class ChatController {
     }
 
     // 특정 채팅방 조회
-    /*@GetMapping("/room/read/{roomId}")
-    public ResponseEntity<ChatRoomDTO> selectRoom(@PathVariable Long roomId) {
-        ChatRoomDTO chatRoomDTO = chatService.selectRoom(roomId);
-        return ResponseEntity.ok(chatRoomDTO);
-    }*/
 
     // 채팅방 채팅 내역
-    /*@GetMapping("/chat/get")
-    public ResponseEntity<List<ChatMessageDTO>> getMessages(@PathVariable Long roomId) {
+    @GetMapping("/get/lost/{roomId}")
+    public ResponseEntity<List<ChatMessageDTO>> getLostMessages(@PathVariable Long roomId) {
         // 채팅방에서의 모든 메시지를 가져오는 요청을 서비스에 전달하여 처리
-        List<ChatMessageDTO> messages = chatService.getAllMessages(roomId);
+        List<ChatMessageDTO> messages = chatService.getAllLostMessages(roomId);
         return ResponseEntity.ok(messages);
-    }*/
+    }
+    @GetMapping("/get/found/{roomId}")
+    public ResponseEntity<List<ChatMessageDTO>> getFoundMessages(@PathVariable Long roomId) {
+        List<ChatMessageDTO> messages = chatService.getAllFoundMessages(roomId);
+        return ResponseEntity.ok(messages);
+    }
 
     @PostMapping("/message/lost/create")
     public ResponseEntity<ChatMessageDTO> createLostMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {

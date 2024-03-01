@@ -127,11 +127,16 @@ public class ChatService {
 
 
     // 채팅방의 모든 메시지 가져오기
-    /*public List<ChatMessageDTO> getAllMessages(Long roomId) { // 쿼리 작성 필요
-        return chatMessageRepository.findAll().stream()
+    public List<ChatMessageDTO> getAllLostMessages(Long roomId) { // 쿼리 작성 필요
+        return messageLostRepository.findByLostChatRoom_RoomId(roomId).stream()
                 .map(this::messageToDTO)
                 .collect(Collectors.toList());
-    }*/
+    }
+    public List<ChatMessageDTO> getAllFoundMessages(Long roomId) {
+        return messageFoundRepository.findByFoundChatRoom_RoomId(roomId).stream()
+                .map(this::messageToDTO)
+                .collect(Collectors.toList());
+    }
 
 
 
@@ -174,7 +179,15 @@ public class ChatService {
                 .build();
     }
 
-    public ChatMessageDTO messageToDTO(ChatMessage message) {
+    public ChatMessageDTO messageToDTO(ChatMessageLost message) {
+        return ChatMessageDTO.builder()
+                .messageId(message.getMessageId())
+                .senderTag(message.getSender().getTag())
+                .message(message.getMessage())
+                .time(message.getTime())
+                .build();
+    }
+    public ChatMessageDTO messageToDTO(ChatMessageFound message) {
         return ChatMessageDTO.builder()
                 .messageId(message.getMessageId())
                 .senderTag(message.getSender().getTag())
