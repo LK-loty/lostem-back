@@ -94,11 +94,11 @@ public class ChatService {
     }
 
     // 특정 채팅방 정보만. 메시지는 아직 >> 같이?? 채팅방 위에 게시물 정보 같이 전달(채팅방 정보)
-    /*public ChatRoomDTO selectRoom(Long roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+    public ChatRoomDTO selectLostRoom(Long roomId, Long userId) {
+        LostChatRoom chatRoom = roomLostRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
         return roomToDTO(chatRoom);
-    }*/
+    }
 
 
 
@@ -148,7 +148,7 @@ public class ChatService {
                 .roomId(chatRoom.getRoomId())
                 .hostUserId(chatRoom.getHostUserId())
                 .guestUserId(chatRoom.getGuestUserId())
-                .type(chatRoom.getType())
+                .postType(chatRoom.getType())
                 .postId(chatRoom.getPostId())
                 .lastMessage(lastMessage)
                 .time(time)
@@ -167,7 +167,7 @@ public class ChatService {
                 .roomId(chatRoom.getRoomId())
                 .hostUserId(chatRoom.getHostUserId())
                 .guestUserId(chatRoom.getGuestUserId())
-                .type(chatRoom.getType())
+                .postType(chatRoom.getType())
                 .postId(chatRoom.getPostId())
                 .lastMessage(lastMessage)
                 .time(time)
@@ -177,7 +177,7 @@ public class ChatService {
     public ChatMessageDTO messageToDTO(ChatMessage message) {
         return ChatMessageDTO.builder()
                 .messageId(message.getMessageId())
-                .sender(message.getSender().getUserId())
+                .senderTag(message.getSender().getTag())
                 .message(message.getMessage())
                 .time(message.getTime())
                 .build();
