@@ -49,6 +49,7 @@ public class TokenProvider {
                 .setSubject(user.getUsername())  // (내용) sub : user 이름(user 를 식별하는 값)
                 .claim(AUTHORITIES_KEY, user.getRole()) // (클레임) auth : 권한들
                 .claim("id", user.getUserId())
+                .claim("tag",user.getTag())
                 // 서명
                 .signWith(jwtProperties.getKey(), SignatureAlgorithm.HS512) // 암호화된 비밀키 값 + 해시를 HS512 방식으로 암호화 (사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅
                 .compact();
