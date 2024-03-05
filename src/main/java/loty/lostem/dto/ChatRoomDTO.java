@@ -40,4 +40,24 @@ public class ChatRoomDTO {
     private String lastMessage;
 
     private LocalDateTime time;
+
+
+
+    public void setTags(String hostUserTag, String guestUserTag) {
+        this.hostUserTag = hostUserTag;
+        this.guestUserTag = guestUserTag;
+    }
+
+    public void setCounterpart(String profile, String nickname, String tag) {
+        this.profile = profile;
+        this.nickname = nickname;
+        this.tag = tag;
+    }
+
+    public void setPostData(Long postId, String postImage, String title, String state) {
+        this.postId = postId;
+        this.postImage = postImage;
+        this.title = title;
+        this.state = state;
+    }
 }

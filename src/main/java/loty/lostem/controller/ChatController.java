@@ -60,6 +60,47 @@ public class ChatController {
     }
 
     // 특정 채팅방 조회
+    @GetMapping("/room/lost/read/{roomId}")
+    public ResponseEntity<ChatRoomDTO> selectLostRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
+        Long userId;
+        ChatRoomDTO chatRoomDTO = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+                chatRoomDTO = chatService.selectLostRoom(roomId, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        if (chatRoomDTO != null) {
+            return ResponseEntity.ok(chatRoomDTO);
+        } else  {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/room/found/read/{roomId}")
+    public ResponseEntity<ChatRoomDTO> selectFoundRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
+        Long userId;
+        ChatRoomDTO chatRoomDTO = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+                chatRoomDTO = chatService.selectFoundRoom(roomId, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        if (chatRoomDTO != null) {
+            return ResponseEntity.ok(chatRoomDTO);
+        } else  {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     // 채팅방 채팅 내역
     @GetMapping("/get/lost/{roomId}")

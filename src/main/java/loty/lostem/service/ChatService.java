@@ -97,7 +97,81 @@ public class ChatService {
     public ChatRoomDTO selectLostRoom(Long roomId, Long userId) {
         LostChatRoom chatRoom = roomLostRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
-        return roomToDTO(chatRoom);
+
+        ChatRoomDTO chatRoomDTO = roomToDTO(chatRoom);
+
+        // user id 들 tag 추가해서 보내는 작업
+        User host = userRepository.findById(chatRoom.getHostUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        User guest = userRepository.findById(chatRoom.getGuestUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        chatRoomDTO.setTags(host.getTag(), guest.getTag());
+
+        // 상대방 구분해서 프로필, 이미지, 태그 추가
+        if (userId.equals(host.getUserId())) {
+            String profile = guest.getProfile();
+            String nickname = guest.getNickname();
+            String tag = guest.getTag();
+
+            chatRoomDTO.setCounterpart(profile, nickname, tag);
+        } else if (userId.equals(guest.getUserId())) {
+            String profile = host.getProfile();
+            String nickname = host.getNickname();
+            String tag = host.getTag();
+
+            chatRoomDTO.setCounterpart(profile, nickname, tag);
+        }
+
+        // 게시물 정보 추가 .post dto에 불러오기만 하는 클래스(+user 불러오기만 하는 클래스) 만들어서 그걸 사용? . id, img, title, state
+        PostLost post = lostRepository.findById(chatRoom.getPostId())
+                .orElseThrow(() -> new IllegalArgumentException("No post"));
+        Long postId = post.getPostId();
+        String image = post.getImages();
+        String title = post.getTitle();
+        String state = post.getState();
+
+        chatRoomDTO.setPostData(postId, image, title, state);
+        // 이전 대화 목록 추가
+
+        return chatRoomDTO;
+    }
+
+    public ChatRoomDTO selectFoundRoom(Long roomId, Long userId) {
+        FoundChatRoom chatRoom = roomFoundRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        ChatRoomDTO chatRoomDTO = roomToDTO(chatRoom);
+
+        User host = userRepository.findById(chatRoom.getHostUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        User guest = userRepository.findById(chatRoom.getGuestUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        chatRoomDTO.setTags(host.getTag(), guest.getTag());
+
+        if (userId.equals(host.getUserId())) {
+            String profile = guest.getProfile();
+            String nickname = guest.getNickname();
+            String tag = guest.getTag();
+
+            chatRoomDTO.setCounterpart(profile, nickname, tag);
+        } else if (userId.equals(guest.getUserId())) {
+            String profile = host.getProfile();
+            String nickname = host.getNickname();
+            String tag = host.getTag();
+
+            chatRoomDTO.setCounterpart(profile, nickname, tag);
+        }
+
+        PostFound post = foundRepository.findById(chatRoom.getPostId())
+                .orElseThrow(() -> new IllegalArgumentException("No post"));
+        Long postId = post.getPostId();
+        String image = post.getImages();
+        String title = post.getTitle();
+        String state = post.getState();
+
+        chatRoomDTO.setPostData(postId, image, title, state);
+        // 이전 대화 목록 추가
+
+        return chatRoomDTO;
     }
 
 
@@ -126,7 +200,7 @@ public class ChatService {
 
 
 
-    // 채팅방의 모든 메시지 가져오기
+    // 채팅방의 모든 메시지 가져오기. dto 재사용이라 바꿀 필요 있음
     public List<ChatMessageDTO> getAllLostMessages(Long roomId) { // 쿼리 작성 필요
         return messageLostRepository.findByLostChatRoom_RoomId(roomId).stream()
                 .map(this::messageToDTO)
@@ -183,6 +257,7 @@ public class ChatService {
         return ChatMessageDTO.builder()
                 .messageId(message.getMessageId())
                 .senderTag(message.getSender().getTag())
+                .postType("Lost")
                 .message(message.getMessage())
                 .time(message.getTime())
                 .build();
@@ -191,6 +266,7 @@ public class ChatService {
         return ChatMessageDTO.builder()
                 .messageId(message.getMessageId())
                 .senderTag(message.getSender().getTag())
+                .postType("Found")
                 .message(message.getMessage())
                 .time(message.getTime())
                 .build();
