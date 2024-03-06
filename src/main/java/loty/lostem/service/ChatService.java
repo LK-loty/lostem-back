@@ -3,15 +3,12 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import loty.lostem.dto.ChatMessageDTO;
-import loty.lostem.dto.ChatRoomDTO;
-import loty.lostem.dto.ChatRoomListDTO;
+import loty.lostem.dto.*;
 import loty.lostem.entity.*;
 import loty.lostem.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,11 +43,13 @@ public class ChatService {
 
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다");
-                chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host.getUserId(), guest.getUserId());
+                chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host.getTag(), guest.getTag());
                 roomLostRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
 
                 ChatMessageLost chatMessage = ChatMessageLost.createChatMessage(messageDTO, chatRoom, guest);
                 messageLostRepository.save(chatMessage);
+                chatRoomDTO = roomToDTO(chatRoom);
+                return chatRoomDTO;
             }
             return roomToDTO(chatRoom);
         }
@@ -65,7 +64,7 @@ public class ChatService {
 
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다.");
-                chatRoom = FoundChatRoom.createChatRoom(post.getPostId(), host.getUserId(), guest.getUserId());
+                chatRoom = FoundChatRoom.createChatRoom(post.getPostId(), host.getTag(), guest.getTag());
                 roomFoundRepository.save(chatRoom);
 
                 ChatMessageFound chatMessage = ChatMessageFound.createChatMessage(messageDTO, chatRoom, guest);
@@ -113,24 +112,39 @@ public class ChatService {
             String nickname = guest.getNickname();
             String tag = guest.getTag();
 
-            chatRoomDTO.setCounterpart(profile, nickname, tag);
+            ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
+                    .profile(profile)
+                    .nickname(nickname)
+                    .tag(tag)
+                    .build(); //.setCounterpart(profile, nickname, tag);
+
+            chatRoomDTO.setCounterpart(userInfoDTO);
         } else if (userId.equals(guest.getUserId())) {
             String profile = host.getProfile();
             String nickname = host.getNickname();
             String tag = host.getTag();
 
-            chatRoomDTO.setCounterpart(profile, nickname, tag);
+            ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
+                    .profile(profile)
+                    .nickname(nickname)
+                    .tag(tag)
+                    .build();
+
+            chatRoomDTO.setCounterpart(userInfoDTO);
         }
 
         // 게시물 정보 추가 .post dto에 불러오기만 하는 클래스(+user 불러오기만 하는 클래스) 만들어서 그걸 사용? . id, img, title, state
         PostLost post = lostRepository.findById(chatRoom.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No post"));
-        Long postId = post.getPostId();
-        String image = post.getImages();
-        String title = post.getTitle();
-        String state = post.getState();
 
-        chatRoomDTO.setPostData(postId, image, title, state);
+        ChatPostInfoDTO postInfoDTO = ChatPostInfoDTO.builder()
+                .postId(post.getPostId())
+                .image(post.getImages())
+                .title(post.getTitle())
+                .state(post.getState())
+                .build();
+
+        chatRoomDTO.setPostData(postInfoDTO);
         // 이전 대화 목록 추가
 
         return chatRoomDTO;
@@ -139,6 +153,7 @@ public class ChatService {
     public ChatRoomDTO selectFoundRoom(Long roomId, Long userId) {
         FoundChatRoom chatRoom = roomFoundRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
+
         ChatRoomDTO chatRoomDTO = roomToDTO(chatRoom);
 
         User host = userRepository.findById(chatRoom.getHostUserId())
@@ -152,23 +167,37 @@ public class ChatService {
             String nickname = guest.getNickname();
             String tag = guest.getTag();
 
-            chatRoomDTO.setCounterpart(profile, nickname, tag);
+            ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
+                    .profile(profile)
+                    .nickname(nickname)
+                    .tag(tag)
+                    .build();
+
+            chatRoomDTO.setCounterpart(userInfoDTO);
         } else if (userId.equals(guest.getUserId())) {
             String profile = host.getProfile();
             String nickname = host.getNickname();
             String tag = host.getTag();
 
-            chatRoomDTO.setCounterpart(profile, nickname, tag);
+            ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
+                    .profile(profile)
+                    .nickname(nickname)
+                    .tag(tag)
+                    .build();
+            chatRoomDTO.setCounterpart(userInfoDTO);
         }
 
         PostFound post = foundRepository.findById(chatRoom.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No post"));
-        Long postId = post.getPostId();
-        String image = post.getImages();
-        String title = post.getTitle();
-        String state = post.getState();
 
-        chatRoomDTO.setPostData(postId, image, title, state);
+        ChatPostInfoDTO postInfoDTO = ChatPostInfoDTO.builder()
+                .postId(post.getPostId())
+                .image(post.getImages())
+                .title(post.getTitle())
+                .state(post.getState())
+                .build();
+
+        chatRoomDTO.setPostData(postInfoDTO);
         // 이전 대화 목록 추가
 
         return chatRoomDTO;
@@ -201,12 +230,12 @@ public class ChatService {
 
 
     // 채팅방의 모든 메시지 가져오기. dto 재사용이라 바꿀 필요 있음
-    public List<ChatMessageDTO> getAllLostMessages(Long roomId) { // 쿼리 작성 필요
+    public List<ChatMessageInfoDTO> getAllLostMessages(Long roomId) { // 쿼리 작성 필요
         return messageLostRepository.findByLostChatRoom_RoomId(roomId).stream()
                 .map(this::messageToDTO)
                 .collect(Collectors.toList());
     }
-    public List<ChatMessageDTO> getAllFoundMessages(Long roomId) {
+    public List<ChatMessageInfoDTO> getAllFoundMessages(Long roomId) {
         return messageFoundRepository.findByFoundChatRoom_RoomId(roomId).stream()
                 .map(this::messageToDTO)
                 .collect(Collectors.toList());
@@ -217,8 +246,13 @@ public class ChatService {
     public ChatRoomDTO roomToDTO (LostChatRoom chatRoom) {
         String lastMessage = null;
         LocalDateTime time = null;
+        ChatMessageInfoDTO messageInfoDTO;
 
         if (chatRoom.getChatMessages() != null) {
+            /*messageInfoDTO = ChatMessageInfoDTO.builder()
+                    .message(chatRoom.getLastMessage())
+                    .time(chatRoom.getLastMessageTime())
+                    .build();*/
             lastMessage = chatRoom.getLastMessage();
             time = chatRoom.getLastMessageTime();
         }
@@ -228,7 +262,7 @@ public class ChatService {
                 .hostUserId(chatRoom.getHostUserId())
                 .guestUserId(chatRoom.getGuestUserId())
                 .postType(chatRoom.getType())
-                .postId(chatRoom.getPostId())
+                //.messageInfoDTO()
                 .lastMessage(lastMessage)
                 .time(time)
                 .build();
@@ -247,13 +281,12 @@ public class ChatService {
                 .hostUserId(chatRoom.getHostUserId())
                 .guestUserId(chatRoom.getGuestUserId())
                 .postType(chatRoom.getType())
-                .postId(chatRoom.getPostId())
                 .lastMessage(lastMessage)
                 .time(time)
                 .build();
     }
 
-    public ChatMessageDTO messageToDTO(ChatMessageLost message) {
+    /*public ChatMessageDTO messageToDTO(ChatMessageLost message) {
         return ChatMessageDTO.builder()
                 .messageId(message.getMessageId())
                 .senderTag(message.getSender().getTag())
@@ -267,6 +300,22 @@ public class ChatService {
                 .messageId(message.getMessageId())
                 .senderTag(message.getSender().getTag())
                 .postType("Found")
+                .message(message.getMessage())
+                .time(message.getTime())
+                .build();
+    }*/
+    public ChatMessageInfoDTO messageToDTO(ChatMessageLost message) {
+        return ChatMessageInfoDTO.builder()
+                .messageId(message.getMessageId())
+                .sender(message.getSender().getTag())
+                .message(message.getMessage())
+                .time(message.getTime())
+                .build();
+    }
+    public ChatMessageInfoDTO messageToDTO(ChatMessageFound message) {
+        return ChatMessageInfoDTO.builder()
+                .messageId(message.getMessageId())
+                .sender(message.getSender().getTag())
                 .message(message.getMessage())
                 .time(message.getTime())
                 .build();

@@ -11,8 +11,6 @@ import java.util.List;
 public class ChatRoomListDTO {
     private List<ChatRoomDTO> chatRoomLostList;
     private List<ChatRoomDTO> chatRoomFoundList;
-    private String profile;
-    private String nickname;
-    private String tag;
+    private ChatUserInfoDTO chatUserDTO;
     private ChatRoomDTO chatRoomDTO;
 }

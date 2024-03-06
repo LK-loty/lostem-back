@@ -19,27 +19,17 @@ public class ChatRoomDTO {
     private Long guestUserId;
 
     // 상대방
-    private String profile;
-
-    private String nickname;
-
-    private String tag;
+    private ChatUserInfoDTO userInfoDTO;
 
     // 게시물
     private String postType;
-
-    private Long postId;
-
-    private String postImage;
-
-    private String title;
-
-    private String state;
+    private ChatPostInfoDTO postInfoDTO;
 
     // 메시지
     private String lastMessage;
 
     private LocalDateTime time;
+    //private ChatMessageInfoDTO messageInfoDTO;
 
 
 
@@ -48,16 +38,11 @@ public class ChatRoomDTO {
         this.guestUserTag = guestUserTag;
     }
 
-    public void setCounterpart(String profile, String nickname, String tag) {
-        this.profile = profile;
-        this.nickname = nickname;
-        this.tag = tag;
+    public void setCounterpart(ChatUserInfoDTO userInfoDTO) {
+        this.userInfoDTO = userInfoDTO;
     }
 
-    public void setPostData(Long postId, String postImage, String title, String state) {
-        this.postId = postId;
-        this.postImage = postImage;
-        this.title = title;
-        this.state = state;
+    public void setPostData(ChatPostInfoDTO postInfoDTO) {
+        this.postInfoDTO = postInfoDTO;
     }
 }
