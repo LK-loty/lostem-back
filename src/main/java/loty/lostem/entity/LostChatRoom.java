@@ -33,7 +33,13 @@ public class LostChatRoom {
     private Long hostUserId;
 
     @Column
+    private String hostUserTag;
+
+    @Column
     private Long guestUserId;
+
+    @Column
+    private String guestUserTag;
 
     @Column
     private String type;
@@ -45,11 +51,11 @@ public class LostChatRoom {
 
 
 
-    public static LostChatRoom createChatRoom(Long postId, Long host, Long guest) {
+    public static LostChatRoom createChatRoom(Long postId, String host, String guest) {
         return LostChatRoom.builder()
                 .postId(postId)
-                .hostUserId(host)
-                .guestUserId(guest)
+                .hostUserTag(host)
+                .guestUserTag(guest)
                 .type("Lost")
                 .build();
     }

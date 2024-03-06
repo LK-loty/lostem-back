@@ -34,7 +34,13 @@ public class FoundChatRoom {
     private Long hostUserId;
 
     @Column
+    private String hostUserTag;
+
+    @Column
     private Long guestUserId;
+
+    @Column
+    private String guestUserTag;
 
     @Column
     private String type;
@@ -46,11 +52,11 @@ public class FoundChatRoom {
 
 
 
-    public static FoundChatRoom createChatRoom(Long postId, Long host, Long guest) {
+    public static FoundChatRoom createChatRoom(Long postId, String host, String guest) {
         return FoundChatRoom.builder()
                 .postId(postId)
-                .hostUserId(host)
-                .guestUserId(guest)
+                .hostUserTag(host)
+                .guestUserTag(guest)
                 .type("Found")
                 .build();
     }
