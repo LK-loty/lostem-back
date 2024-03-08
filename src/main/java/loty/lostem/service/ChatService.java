@@ -32,7 +32,7 @@ public class ChatService {
         ChatRoomDTO chatRoomDTO = null;
 
         //Optional<? extends ChatRoom> existingRoom = roomRepository.findByHostUserAndGuestUserAndPostLost(host, guest, (PostLost) post);
-        if (messageDTO.getPostType().equals("Lost")) {
+        if (messageDTO.getPostType().equals("lost")) {
             log.info("lost 게시글");
             PostLost post = lostRepository.findById(messageDTO.getPostId())
                     .orElseThrow(() -> new IllegalArgumentException("No post"));
@@ -53,7 +53,7 @@ public class ChatService {
             }
             return roomToDTO(chatRoom);
         }
-        else if (messageDTO.getPostType().equals("Found")){
+        else if (messageDTO.getPostType().equals("found")){
             log.info("found 게시물");
             PostFound post = foundRepository.findById(messageDTO.getPostId())
                     .orElseThrow(() -> new IllegalArgumentException("No post"));
