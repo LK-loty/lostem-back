@@ -2,6 +2,7 @@ package loty.lostem.controller;
 
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.ChatMessageDTO;
+import loty.lostem.dto.ChatMessageInfoDTO;
 import loty.lostem.dto.ChatRoomDTO;
 import loty.lostem.dto.ChatRoomListDTO;
 import loty.lostem.jwt.TokenProvider;
@@ -102,18 +103,7 @@ public class ChatController {
         }
     }
 
-    // 채팅방 채팅 내역
-    @GetMapping("/get/lost/{roomId}")
-    public ResponseEntity<List<ChatMessageDTO>> getLostMessages(@PathVariable Long roomId) {
-        // 채팅방에서의 모든 메시지를 가져오는 요청을 서비스에 전달하여 처리
-        List<ChatMessageDTO> messages = chatService.getAllLostMessages(roomId);
-        return ResponseEntity.ok(messages);
-    }
-    @GetMapping("/get/found/{roomId}")
-    public ResponseEntity<List<ChatMessageDTO>> getFoundMessages(@PathVariable Long roomId) {
-        List<ChatMessageDTO> messages = chatService.getAllFoundMessages(roomId);
-        return ResponseEntity.ok(messages);
-    }
+
 
     @PostMapping("/message/lost/create")
     public ResponseEntity<ChatMessageDTO> createLostMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
@@ -157,5 +147,18 @@ public class ChatController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // 채팅방 채팅 내역
+    @GetMapping("/get/lost/{roomId}")
+    public ResponseEntity<List<ChatMessageInfoDTO>> getLostMessages(@PathVariable Long roomId) {
+        // 채팅방에서의 모든 메시지를 가져오는 요청을 서비스에 전달하여 처리
+        List<ChatMessageInfoDTO> messages = chatService.getAllLostMessages(roomId);
+        return ResponseEntity.ok(messages);
+    }
+    @GetMapping("/get/found/{roomId}")
+    public ResponseEntity<List<ChatMessageInfoDTO>> getFoundMessages(@PathVariable Long roomId) {
+        List<ChatMessageInfoDTO> messages = chatService.getAllFoundMessages(roomId);
+        return ResponseEntity.ok(messages);
     }
 }
