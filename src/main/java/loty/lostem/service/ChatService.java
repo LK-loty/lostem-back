@@ -16,10 +16,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-    private final ChatRoomLostRepository roomLostRepository;
-    private final ChatRoomFoundRepository roomFoundRepository;
-    private final ChatMessageLostRepository messageLostRepository;
-    private final ChatMessageFoundRepository messageFoundRepository;
+    private final ChatRoomRepository roomRepository;
+    private final ChatMessageRepository messageRepository;
     private final UserRepository userRepository;
     private final PostLostRepository lostRepository;
     private final PostFoundRepository foundRepository;
@@ -32,6 +30,8 @@ public class ChatService {
         ChatRoomDTO chatRoomDTO = null;
 
         //Optional<? extends ChatRoom> existingRoom = roomRepository.findByHostUserAndGuestUserAndPostLost(host, guest, (PostLost) post);
+        //ChatRoom chatRoom = roomRepository.findByPostIdAndGuestUserTag(messageDTO.getPostId(), guest.getTag());
+
         if (messageDTO.getPostType().equals("lost")) {
             log.info("lost 게시글");
             PostLost post = lostRepository.findById(messageDTO.getPostId())
@@ -39,15 +39,25 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            LostChatRoom chatRoom = roomLostRepository.findByPostIdAndGuestUserId(messageDTO.getPostId(), userId);
+            ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("lost", messageDTO.getPostId(), guest.getTag());
 
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다");
-                chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host.getTag(), guest.getTag());
-                roomLostRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
+                //LostChatRoom lostChatRoom = new LostChatRoom(post.getPostId(), host.getTag(), guest.getTag());
+                //chatRoom = new LostChatRoom(host.getTag(), guest.getTag(), post.getPostId());
+                //chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host.getTag(), guest.getTag());
 
-                ChatMessageLost chatMessage = ChatMessageLost.createChatMessage(messageDTO, chatRoom, guest);
-                messageLostRepository.save(chatMessage);
+                chatRoom = ChatRoom.builder()
+                        .postType("lost")
+                        .postId(post.getPostId())
+                        .hostUserTag(host.getTag())
+                        .guestUserTag(guest.getTag())
+                        .build();
+                roomRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
+
+                ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest.getTag());
+                messageRepository.save(chatMessage);
+
                 chatRoomDTO = roomToDTO(chatRoom);
                 return chatRoomDTO;
             }
@@ -60,15 +70,20 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            FoundChatRoom chatRoom = roomFoundRepository.findByPostIdAndGuestUserId(host.getUserId(), userId);
+            ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("found", messageDTO.getPostId(), guest.getTag());
 
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다.");
-                chatRoom = FoundChatRoom.createChatRoom(post.getPostId(), host.getTag(), guest.getTag());
-                roomFoundRepository.save(chatRoom);
+                chatRoom = ChatRoom.builder()
+                        .postType("found")
+                        .postId(post.getPostId())
+                        .hostUserTag(host.getTag())
+                        .guestUserTag(guest.getTag())
+                        .build();
+                roomRepository.save(chatRoom);
 
-                ChatMessageFound chatMessage = ChatMessageFound.createChatMessage(messageDTO, chatRoom, guest);
-                messageFoundRepository.save(chatMessage);
+                ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest.getTag());
+                messageRepository.save(chatMessage);
             }
             return roomToDTO(chatRoom);
         }
@@ -76,7 +91,7 @@ public class ChatService {
     }
 
     // 채탕방 목록 정보
-    public ChatRoomListDTO getAllRooms(Long userId) {
+    /*public ChatRoomListDTO getAllRooms(Long userId) {
         // 상대방이랑 host, guest 바뀌는거 생각해서 상대방의 이미지, 닉네임, 태그 전달
         List<LostChatRoom> lostChatRooms = roomLostRepository.findByHostUserIdOrGuestUserId(userId);
         List<FoundChatRoom> foundChatRooms = roomFoundRepository.findByHostUserIdOrGuestUserId(userId);
@@ -90,10 +105,10 @@ public class ChatService {
                 .chatRoomLostList(lostDTOs)
                 .chatRoomFoundList(foundDTOs)
                 .build();
-    }
+    }*/
 
     // 특정 채팅방 정보만. 메시지는 아직 >> 같이?? 채팅방 위에 게시물 정보 같이 전달(채팅방 정보)
-    public ChatRoomDTO selectLostRoom(Long roomId, Long userId) {
+    /*public ChatRoomDTO selectLostRoom(Long roomId, Long userId) {
         LostChatRoom chatRoom = roomLostRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
 
@@ -201,12 +216,12 @@ public class ChatService {
         // 이전 대화 목록 추가
 
         return chatRoomDTO;
-    }
+    }*/
 
 
 
     // 메시지
-    @Transactional
+    /*@Transactional
     public ChatMessageDTO createLostMessage(ChatMessageDTO chatMessageDTO, Long userId) {
         LostChatRoom chatRoom = roomLostRepository.findById(chatMessageDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
@@ -225,12 +240,12 @@ public class ChatService {
         ChatMessageFound newMessage = ChatMessageFound.createChatMessage(chatMessageDTO, chatRoom, user);
         messageFoundRepository.save(newMessage);
         return chatMessageDTO;
-    }
+    }*/
 
 
 
     // 채팅방의 모든 메시지 가져오기. dto 재사용이라 바꿀 필요 있음
-    public List<ChatMessageInfoDTO> getAllLostMessages(Long roomId) { // 쿼리 작성 필요
+    /*public List<ChatMessageInfoDTO> getAllLostMessages(Long roomId) { // 쿼리 작성 필요
         return messageLostRepository.findByLostChatRoom_RoomId(roomId).stream()
                 .map(this::messageToDTO)
                 .collect(Collectors.toList());
@@ -239,20 +254,20 @@ public class ChatService {
         return messageFoundRepository.findByFoundChatRoom_RoomId(roomId).stream()
                 .map(this::messageToDTO)
                 .collect(Collectors.toList());
-    }
+    }*/
 
 
 
-    public ChatRoomDTO roomToDTO (LostChatRoom chatRoom) {
+    /*public ChatRoomDTO roomToDTO (LostChatRoom chatRoom) {
         String lastMessage = null;
         LocalDateTime time = null;
         ChatMessageInfoDTO messageInfoDTO;
 
         if (chatRoom.getChatMessages() != null) {
-            /*messageInfoDTO = ChatMessageInfoDTO.builder()
+            *//*messageInfoDTO = ChatMessageInfoDTO.builder()
                     .message(chatRoom.getLastMessage())
                     .time(chatRoom.getLastMessageTime())
-                    .build();*/
+                    .build();*//*
             lastMessage = chatRoom.getLastMessage();
             time = chatRoom.getLastMessageTime();
         }
@@ -284,6 +299,25 @@ public class ChatService {
                 .lastMessage(lastMessage)
                 .time(time)
                 .build();
+    }*/
+
+    public ChatRoomDTO roomToDTO (ChatRoom chatRoom) {
+        String lastMessage = null;
+        LocalDateTime time = null;
+
+        if (chatRoom.getChatMessages() != null) {
+            lastMessage = chatRoom.getLastMessage();
+            time = chatRoom.getLastMessageTime();
+        }
+
+        return ChatRoomDTO.builder()
+                .roomId(chatRoom.getRoomId())
+                .hostUserTag(chatRoom.getHostUserTag())
+                .guestUserTag(chatRoom.getGuestUserTag())
+                //.postType(chatRoom.)
+                .lastMessage(lastMessage)
+                .time(time)
+                .build();
     }
 
     /*public ChatMessageDTO messageToDTO(ChatMessageLost message) {
@@ -304,7 +338,7 @@ public class ChatService {
                 .time(message.getTime())
                 .build();
     }*/
-    public ChatMessageInfoDTO messageToDTO(ChatMessageLost message) {
+    /*public ChatMessageInfoDTO messageToDTO(ChatMessageLost message) {
         return ChatMessageInfoDTO.builder()
                 .messageId(message.getMessageId())
                 .sender(message.getSender().getTag())
@@ -319,5 +353,5 @@ public class ChatService {
                 .message(message.getMessage())
                 .time(message.getTime())
                 .build();
-    }
+    }*/
 }

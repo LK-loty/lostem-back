@@ -22,9 +22,12 @@ public class ChatMessage {
     @JoinColumn(name = "roomId")
     private ChatRoom chatRoom;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "userId")
-    private User sender; //receiver?
+    private User sender;*/
+
+    @Column
+    private String sender;
 
     @Column
     @NotNull
@@ -37,7 +40,7 @@ public class ChatMessage {
 
 
 
-    public static ChatMessage createChatMessage(ChatMessageDTO chatMessageDTO, ChatRoom chatRoom, User sender) {
+    public static ChatMessage createChatMessage(ChatMessageDTO chatMessageDTO, ChatRoom chatRoom, String sender) {
         return ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .sender(sender)

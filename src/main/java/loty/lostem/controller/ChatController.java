@@ -42,7 +42,7 @@ public class ChatController {
     }
 
     // 채팅방 목록
-    @GetMapping("/room/read/user")
+    /*@GetMapping("/room/read/user")
     public ResponseEntity<ChatRoomListDTO> readUserRoom(@RequestHeader("Authorization") String authorization) {
         Long userId;
         ChatRoomListDTO chatRoomListDTO= null;
@@ -61,7 +61,7 @@ public class ChatController {
     }
 
     // 특정 채팅방 조회
-    @GetMapping("/room/lost/read/{roomId}")
+    *//*@GetMapping("/room/lost/read/{roomId}")
     public ResponseEntity<ChatRoomDTO> selectLostRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
         Long userId;
         ChatRoomDTO chatRoomDTO = null;
@@ -101,7 +101,7 @@ public class ChatController {
         } else  {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*//*
 
 
 
@@ -160,5 +160,5 @@ public class ChatController {
     public ResponseEntity<List<ChatMessageInfoDTO>> getFoundMessages(@PathVariable Long roomId) {
         List<ChatMessageInfoDTO> messages = chatService.getAllFoundMessages(roomId);
         return ResponseEntity.ok(messages);
-    }
+    }*/
 }
