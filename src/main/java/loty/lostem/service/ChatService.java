@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -91,21 +92,27 @@ public class ChatService {
     }
 
     // 채탕방 목록 정보
-    /*public ChatRoomListDTO getAllRooms(Long userId) {
+    public ChatRoomListDTO getAllRooms(Long userId) {
         // 상대방이랑 host, guest 바뀌는거 생각해서 상대방의 이미지, 닉네임, 태그 전달
-        List<LostChatRoom> lostChatRooms = roomLostRepository.findByHostUserIdOrGuestUserId(userId);
-        List<FoundChatRoom> foundChatRooms = roomFoundRepository.findByHostUserIdOrGuestUserId(userId);
+        Optional<User> userOptional = userRepository.findById(userId);
 
-        List<ChatRoomDTO> lostDTOs = lostChatRooms.stream()
-                .map(this::roomToDTO).toList();
-        List<ChatRoomDTO> foundDTOs = foundChatRooms.stream()
+        String userTag;
+        List<ChatRoom> chatRooms = null;
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            userTag = user.getTag();
+
+            chatRooms = roomRepository.findByHostUserTagOrGuestUserTag(userTag);
+        }
+
+        List<ChatRoomDTO> chatRoomDTOs = chatRooms.stream()
                 .map(this::roomToDTO).toList();
 
         return ChatRoomListDTO.builder()
-                .chatRoomLostList(lostDTOs)
-                .chatRoomFoundList(foundDTOs)
+                .chatRoomList(chatRoomDTOs)
                 .build();
-    }*/
+    }
 
     // 특정 채팅방 정보만. 메시지는 아직 >> 같이?? 채팅방 위에 게시물 정보 같이 전달(채팅방 정보)
     /*public ChatRoomDTO selectLostRoom(Long roomId, Long userId) {
@@ -165,59 +172,6 @@ public class ChatService {
         return chatRoomDTO;
     }
 
-    public ChatRoomDTO selectFoundRoom(Long roomId, Long userId) {
-        FoundChatRoom chatRoom = roomFoundRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("No data"));
-
-        ChatRoomDTO chatRoomDTO = roomToDTO(chatRoom);
-
-        User host = userRepository.findById(chatRoom.getHostUserId())
-                .orElseThrow(() -> new IllegalArgumentException("No data"));
-        User guest = userRepository.findById(chatRoom.getGuestUserId())
-                .orElseThrow(() -> new IllegalArgumentException("No data"));
-        chatRoomDTO.setTags(host.getTag(), guest.getTag());
-
-        if (userId.equals(host.getUserId())) {
-            String profile = guest.getProfile();
-            String nickname = guest.getNickname();
-            String tag = guest.getTag();
-
-            ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
-                    .profile(profile)
-                    .nickname(nickname)
-                    .tag(tag)
-                    .build();
-
-            chatRoomDTO.setCounterpart(userInfoDTO);
-        } else if (userId.equals(guest.getUserId())) {
-            String profile = host.getProfile();
-            String nickname = host.getNickname();
-            String tag = host.getTag();
-
-            ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
-                    .profile(profile)
-                    .nickname(nickname)
-                    .tag(tag)
-                    .build();
-            chatRoomDTO.setCounterpart(userInfoDTO);
-        }
-
-        PostFound post = foundRepository.findById(chatRoom.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException("No post"));
-
-        ChatPostInfoDTO postInfoDTO = ChatPostInfoDTO.builder()
-                .postId(post.getPostId())
-                .image(post.getImages())
-                .title(post.getTitle())
-                .state(post.getState())
-                .build();
-
-        chatRoomDTO.setPostData(postInfoDTO);
-        // 이전 대화 목록 추가
-
-        return chatRoomDTO;
-    }*/
-
 
 
     // 메시지
@@ -231,16 +185,7 @@ public class ChatService {
         messageLostRepository.save(newMessage);
         return chatMessageDTO;
     }
-    @Transactional
-    public ChatMessageDTO createFoundMessage(ChatMessageDTO chatMessageDTO, Long userId) {
-        FoundChatRoom chatRoom = roomFoundRepository.findById(chatMessageDTO.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("No user found for the provide id"));
-        ChatMessageFound newMessage = ChatMessageFound.createChatMessage(chatMessageDTO, chatRoom, user);
-        messageFoundRepository.save(newMessage);
-        return chatMessageDTO;
-    }*/
+    */
 
 
 
@@ -281,26 +226,7 @@ public class ChatService {
                 .lastMessage(lastMessage)
                 .time(time)
                 .build();
-    }
-    public ChatRoomDTO roomToDTO (FoundChatRoom chatRoom) {
-        String lastMessage = null;
-        LocalDateTime time = null;
-
-        if (chatRoom.getChatMessages() != null) {
-            lastMessage = chatRoom.getLastMessage();
-            time = chatRoom.getLastMessageTime();
-        }
-
-        return ChatRoomDTO.builder()
-                .roomId(chatRoom.getRoomId())
-                .hostUserId(chatRoom.getHostUserId())
-                .guestUserId(chatRoom.getGuestUserId())
-                .postType(chatRoom.getType())
-                .lastMessage(lastMessage)
-                .time(time)
-                .build();
     }*/
-
     public ChatRoomDTO roomToDTO (ChatRoom chatRoom) {
         String lastMessage = null;
         LocalDateTime time = null;
@@ -328,25 +254,8 @@ public class ChatService {
                 .message(message.getMessage())
                 .time(message.getTime())
                 .build();
-    }
-    public ChatMessageDTO messageToDTO(ChatMessageFound message) {
-        return ChatMessageDTO.builder()
-                .messageId(message.getMessageId())
-                .senderTag(message.getSender().getTag())
-                .postType("Found")
-                .message(message.getMessage())
-                .time(message.getTime())
-                .build();
     }*/
     /*public ChatMessageInfoDTO messageToDTO(ChatMessageLost message) {
-        return ChatMessageInfoDTO.builder()
-                .messageId(message.getMessageId())
-                .sender(message.getSender().getTag())
-                .message(message.getMessage())
-                .time(message.getTime())
-                .build();
-    }
-    public ChatMessageInfoDTO messageToDTO(ChatMessageFound message) {
         return ChatMessageInfoDTO.builder()
                 .messageId(message.getMessageId())
                 .sender(message.getSender().getTag())
