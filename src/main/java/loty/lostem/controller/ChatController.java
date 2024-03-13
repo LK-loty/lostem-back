@@ -42,7 +42,7 @@ public class ChatController {
     }
 
     // 채팅방 목록
-    /*@GetMapping("/room/read/user")
+    @GetMapping("/room/read/user")
     public ResponseEntity<ChatRoomListDTO> readUserRoom(@RequestHeader("Authorization") String authorization) {
         Long userId;
         ChatRoomListDTO chatRoomListDTO= null;
@@ -61,8 +61,8 @@ public class ChatController {
     }
 
     // 특정 채팅방 조회
-    *//*@GetMapping("/room/lost/read/{roomId}")
-    public ResponseEntity<ChatRoomDTO> selectLostRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
+    @GetMapping("/room/read/{roomId}")
+    public ResponseEntity<ChatRoomDTO> selectRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
         Long userId;
         ChatRoomDTO chatRoomDTO = null;
 
@@ -70,7 +70,7 @@ public class ChatController {
             try {
                 String token = authorization.substring(7);
                 userId = tokenProvider.getUserId(token);
-                chatRoomDTO = chatService.selectLostRoom(roomId, userId);
+                chatRoomDTO = chatService.selectRoom(roomId, userId);
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.badRequest().build();
             }
@@ -82,31 +82,10 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/room/found/read/{roomId}")
-    public ResponseEntity<ChatRoomDTO> selectFoundRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
-        Long userId;
-        ChatRoomDTO chatRoomDTO = null;
-
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            try {
-                String token = authorization.substring(7);
-                userId = tokenProvider.getUserId(token);
-                chatRoomDTO = chatService.selectFoundRoom(roomId, userId);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-        if (chatRoomDTO != null) {
-            return ResponseEntity.ok(chatRoomDTO);
-        } else  {
-            return ResponseEntity.notFound().build();
-        }
-    }*//*
 
 
-
-    @PostMapping("/message/lost/create")
-    public ResponseEntity<ChatMessageDTO> createLostMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
+    @PostMapping("/message/create")
+    public ResponseEntity<ChatMessageDTO> createMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
         Long userId;
         ChatMessageDTO dto = null;
 
@@ -115,29 +94,7 @@ public class ChatController {
                 String token = authorization.substring(7);
                 userId = tokenProvider.getUserId(token);
 
-                dto = chatService.createLostMessage(messageDTO, userId);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-        if (dto != null) {
-            return ResponseEntity.ok(dto);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/message/found/create")
-    public ResponseEntity<ChatMessageDTO> createFoundMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
-        Long userId;
-        ChatMessageDTO dto = null;
-
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            try {
-                String token = authorization.substring(7);
-                userId = tokenProvider.getUserId(token);
-
-                dto = chatService.createFoundMessage(messageDTO, userId);
+                dto = chatService.createMessage(messageDTO, userId);
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.badRequest().build();
             }
@@ -150,15 +107,10 @@ public class ChatController {
     }
 
     // 채팅방 채팅 내역
-    @GetMapping("/get/lost/{roomId}")
-    public ResponseEntity<List<ChatMessageInfoDTO>> getLostMessages(@PathVariable Long roomId) {
+    @GetMapping("/get/room/{roomId}")
+    public ResponseEntity<List<ChatMessageDTO>> getMessages(@PathVariable Long roomId) {
         // 채팅방에서의 모든 메시지를 가져오는 요청을 서비스에 전달하여 처리
-        List<ChatMessageInfoDTO> messages = chatService.getAllLostMessages(roomId);
+        List<ChatMessageDTO> messages = chatService.getAllMessages(roomId);
         return ResponseEntity.ok(messages);
     }
-    @GetMapping("/get/found/{roomId}")
-    public ResponseEntity<List<ChatMessageInfoDTO>> getFoundMessages(@PathVariable Long roomId) {
-        List<ChatMessageInfoDTO> messages = chatService.getAllFoundMessages(roomId);
-        return ResponseEntity.ok(messages);
-    }*/
 }
