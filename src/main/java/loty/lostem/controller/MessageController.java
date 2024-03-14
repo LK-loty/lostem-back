@@ -37,7 +37,7 @@ public class MessageController {
     @MessageMapping("/chat/roomList")
     public void getRoomList(@Header("Authorization") String token) {
         Long userId = tokenProvider.getUserId(token);
-        ChatRoomListDTO roomListDTO = chatService.getAllRooms(userId);
+        List<ChatRoomListDTO> roomListDTO = chatService.getAllRooms(userId);
 
         simpMessageSendingOperations.convertAndSend("/sub/list/" + userId, roomListDTO);
     }

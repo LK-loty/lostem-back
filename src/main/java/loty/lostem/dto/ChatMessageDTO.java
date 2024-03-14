@@ -15,7 +15,6 @@ public class ChatMessageDTO {  //(채팅방 대화 내역 = 기존 메시지 리
 
     private Long roomId;  // 채팅방 키
 
-    private Long senderId;
     private String senderTag;  // 채팅 보낸 사람 태그
 
     private String postType; // 게시물 타입

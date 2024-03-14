@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 @Getter
 public class ChatRoomListDTO {
-    private List<ChatRoomDTO> chatRoomList;
+    private Long roomId;
     private ChatUserInfoDTO chatUserDTO;
-    private ChatRoomDTO chatRoomDTO;
+    private ChatLastMessageDTO chatMessageDTO;
 }

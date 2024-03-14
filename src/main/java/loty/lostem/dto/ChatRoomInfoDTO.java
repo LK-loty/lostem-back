@@ -9,5 +9,9 @@ public class ChatRoomInfoDTO {
     private Long roomId;
     private String hostUserTag;
     private String guestUserTag;
-    private String postType;
+
+    public void setTags(String hostUserTag, String guestUserTag) {
+        this.hostUserTag = hostUserTag;
+        this.guestUserTag = guestUserTag;
+    }
 }
