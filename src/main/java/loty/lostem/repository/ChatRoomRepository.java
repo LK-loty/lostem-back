@@ -20,4 +20,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("SELECT lr FROM ChatRoom lr WHERE lr.hostUserTag = :tag OR lr.guestUserTag = :tag")
     List<ChatRoom> findByHostUserTagOrGuestUserTag(@Param("tag") String tag);
+
+    List<ChatRoom> findByPostTypeAndPostId(String postType, Long postId);
 }

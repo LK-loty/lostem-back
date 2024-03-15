@@ -57,6 +57,42 @@ public class ChatController {
         return ResponseEntity.ok(chatRoomListDTO);
     }
 
+    @GetMapping("/get/post")
+    public ResponseEntity<Long> getRoomIdByPost(@RequestHeader("Authorization") String authorization, @RequestParam String postType, @RequestParam Long postId) {
+        Long userId;
+        Long roomId = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+                roomId = chatService.getRoomIdByPost(postType, postId, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        return ResponseEntity.ok(roomId);
+    }
+
+    @GetMapping("/get/list")
+    public ResponseEntity<List<ChatRoomListDTO>> getRoomListByPost(@RequestHeader("Authorization") String authorization, @RequestParam String postType, @RequestParam Long postId) {
+        Long userId;
+        List<ChatRoomListDTO> chatRoomListDTO= null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+                chatRoomListDTO = chatService.getRoomListByPost(postType, postId, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        return ResponseEntity.ok(chatRoomListDTO);
+    }
+
     // 특정 채팅방 조회
     @GetMapping("/room/read/{roomId}")
     public ResponseEntity<ChatRoomSelectedDTO> selectRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {

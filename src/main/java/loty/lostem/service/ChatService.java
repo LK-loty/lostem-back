@@ -153,6 +153,119 @@ public class ChatService {
         return chatRoomListDTOS;
     }
 
+    // 글쓴이 != 본인
+    public Long getRoomIdByPost(String postType, Long postId, Long userId) {
+        User guest = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No user"));
+
+        if (postType.equals("lost")) {
+            log.info("lost 타입 확인");
+            PostLost post = lostRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("no post"));
+
+            if (!post.getUser().getUserId().equals(userId)) {
+                log.info("글쓴이가 본인이 아니므로 room ID를 반환합니다.");
+                ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag(postType, postId, guest.getTag());
+                return chatRoom.getRoomId();
+            }
+        } else if (postType.equals("found")) {
+            log.info("found 타입 확인");
+            PostFound post = foundRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("no post"));
+
+            if (!post.getUser().getUserId().equals(userId)) {
+                log.info("글쓴이가 본인이 아니므로 room ID를 반환합니다.");
+                ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag(postType, postId, guest.getTag());
+                return chatRoom.getRoomId();
+            }
+        }
+        return null;
+    }
+
+    // 글쓴이 = 본인
+    public List<ChatRoomListDTO> getRoomListByPost(String postType, Long postId, Long userId) {
+        List<ChatRoomListDTO> chatRoomListDTOS = new ArrayList<>();
+
+        if (postType.equals("lost")) {
+            log.info("lost 타입 확인");
+            PostLost post = lostRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("no post"));
+
+            if (post.getUser().getUserId().equals(userId)) {
+                log.info("글쓴이가 본인이므로 room IDs를 반환합니다.");
+                List<ChatRoom> chatRooms = roomRepository.findByPostTypeAndPostId("lost", post.getPostId());
+                for (ChatRoom chatRoom : chatRooms) {
+                    Long roomId = chatRoom.getRoomId();
+
+                    User guest = userRepository.findByTag(chatRoom.getGuestUserTag())
+                            .orElseThrow(() -> new IllegalArgumentException("No data"));
+                    ChatUserInfoDTO userInfoDTO = null;
+
+                    String profile = guest.getProfile();
+                    String nickname = guest.getNickname();
+                    String tag = guest.getTag();
+
+                    userInfoDTO = ChatUserInfoDTO.builder()
+                            .profile(profile)
+                            .nickname(nickname)
+                            .tag(tag)
+                            .build();
+
+                    ChatMessage lastMessage = messageRepository.findByChatRoom_RoomId(chatRoom.getRoomId())
+                            .stream().reduce((first, second) -> second).orElse(null);
+                    ChatLastMessageDTO messageDTO = lastMsgToDTO(lastMessage);
+
+                    ChatRoomListDTO chatRoomListDTO = ChatRoomListDTO.builder()
+                            .roomId(roomId)
+                            .chatUserDTO(userInfoDTO)
+                            .chatMessageDTO(messageDTO)
+                            .build();
+                    chatRoomListDTOS.add(chatRoomListDTO);
+                }
+                return chatRoomListDTOS;
+            }
+        } else if (postType.equals("found")) {
+            log.info("found 타입 확인");
+            PostFound post = foundRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("no post"));
+
+            if (post.getUser().getUserId().equals(userId)) {
+                log.info("글쓴이가 본인이므로 room IDs를 반환합니다.");
+                List<ChatRoom> chatRooms = roomRepository.findByPostTypeAndPostId("found", post.getPostId());
+                for (ChatRoom chatRoom : chatRooms) {
+                    Long roomId = chatRoom.getRoomId();
+
+                    User guest = userRepository.findByTag(chatRoom.getGuestUserTag())
+                            .orElseThrow(() -> new IllegalArgumentException("No data"));
+                    ChatUserInfoDTO userInfoDTO = null;
+
+                    String profile = guest.getProfile();
+                    String nickname = guest.getNickname();
+                    String tag = guest.getTag();
+
+                    userInfoDTO = ChatUserInfoDTO.builder()
+                            .profile(profile)
+                            .nickname(nickname)
+                            .tag(tag)
+                            .build();
+
+                    ChatMessage lastMessage = messageRepository.findByChatRoom_RoomId(chatRoom.getRoomId())
+                            .stream().reduce((first, second) -> second).orElse(null);
+                    ChatLastMessageDTO messageDTO = lastMsgToDTO(lastMessage);
+
+                    ChatRoomListDTO chatRoomListDTO = ChatRoomListDTO.builder()
+                            .roomId(roomId)
+                            .chatUserDTO(userInfoDTO)
+                            .chatMessageDTO(messageDTO)
+                            .build();
+                    chatRoomListDTOS.add(chatRoomListDTO);
+                }
+            }
+            return chatRoomListDTOS;
+        }
+        return null;
+    }
+
     // 특정 채팅방 정보만. 메시지는 아직 >> 같이?? 채팅방 위에 게시물 정보 같이 전달(채팅방 정보)
     public ChatRoomSelectedDTO selectRoom(Long roomId, Long userId) {
         ChatRoom chatRoom = roomRepository.findById(roomId)

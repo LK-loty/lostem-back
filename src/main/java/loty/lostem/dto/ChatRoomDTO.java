@@ -20,4 +20,6 @@ public class ChatRoomDTO {
 
     // 게시물
     private String postType;
+
+    private Long postId;
 }
