@@ -88,6 +88,11 @@ public class TokenProvider {
         return claims.get("id", Long.class);
     }
 
+    public String getUserTag(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("tag", String.class);
+    }
+
     // 토큰을 파라미터로 받아 파싱해보고 발생하는 익셉션들 캐치, 문제 없으면 true (jwt 토큰 유효성 검사)
     public boolean validateToken(String token) {
         try { // setSigningKey : 비밀 값으로 복호화

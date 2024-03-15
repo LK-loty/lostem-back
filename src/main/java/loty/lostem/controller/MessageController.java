@@ -37,9 +37,10 @@ public class MessageController {
     @MessageMapping("/chat/roomList")
     public void getRoomList(@Header("Authorization") String token) {
         Long userId = tokenProvider.getUserId(token);
+        String userTag = tokenProvider.getUserTag(token);
         List<ChatRoomListDTO> roomListDTO = chatService.getAllRooms(userId);
 
-        simpMessageSendingOperations.convertAndSend("/sub/list/" + userId, roomListDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/list/" + userTag, roomListDTO);
     }
 
     // /pub/chat/message 로 요청이 들어오면 해당 메서드 실행 후 /sub/chat/room/id 구독하는 사용자들에게 요청할 때 같이온 chatRequest 실행
