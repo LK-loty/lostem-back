@@ -25,23 +25,31 @@ public class MessageController {
 
     @MessageMapping("/chat/enter") // 처음 입장 시 메세지 출력
     public void enterRoom(@Payload ChatMessageDTO messageDTO, @Header("Authorization") String token) {
-        Long userId = tokenProvider.getUserId(token);
+        String userTag = tokenProvider.getUserTag(token);
         if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
-            ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
-            simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomDTO.getRoomId(),messageDTO.getSenderTag()+"님이 입장하셨습니다. " + messageDTO.getMessage());
+            //ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
+            messageDTO.setMessageType(ChatMessageDTO.MessageType.ENTER);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + userTag, messageDTO);
         }
         log.info("채팅방이 생성되었습니다");
     }
 
+    @MessageMapping("/chat/leave")
+    public void leaveRoom(@Payload Long roomId, @Header("Authorization") String token) {
+        String userTag = tokenProvider.getUserTag(token);
+
+        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + userTag, ChatMessageDTO.MessageType.LEAVE + userTag);
+    }
+
     // 채팅방 목록
-    @MessageMapping("/chat/roomList")
+    /*@MessageMapping("/chat/roomList")
     public void getRoomList(@Header("Authorization") String token) {
         Long userId = tokenProvider.getUserId(token);
         String userTag = tokenProvider.getUserTag(token);
         List<ChatRoomListDTO> roomListDTO = chatService.getAllRooms(userId);
 
         simpMessageSendingOperations.convertAndSend("/sub/list/" + userTag, roomListDTO);
-    }
+    }*/
 
     // /pub/chat/message 로 요청이 들어오면 해당 메서드 실행 후 /sub/chat/room/id 구독하는 사용자들에게 요청할 때 같이온 chatRequest 실행
     @MessageMapping("/chat/message/create") // setApplicationDestinationPrefixes()를 통해 prefix "/pub"으로 설정 했으므로, 경로가 한번 더 수정되어 “/pub/chat/message”로 바뀜
