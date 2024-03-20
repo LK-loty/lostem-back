@@ -13,18 +13,18 @@ import java.security.Key;
 @Component
 public class JwtProperties implements InitializingBean {
 
-    @Value("${jwt.issuer}")
+    @Value("${spring.jwt.issuer}")
     private String issuer;
-    @Value("${jwt.secret}")
+    @Value("${spring.jwt.secret}")
     private String secret;
 
-    @Value("${jwt.token-validity}")
+    @Value("${spring.jwt.token-validity}")
     private long tokenValidity;
 
-    @Value(("${jwt.refresh-validity}"))
+    @Value(("${spring.jwt.refresh-validity}"))
     private long refreshTokenValidity;
 
-    @Value("${jwt.header}")
+    @Value("${spring.jwt.header}")
     private String header;
 
     private Key key;
