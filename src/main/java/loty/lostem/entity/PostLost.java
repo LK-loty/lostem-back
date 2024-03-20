@@ -98,7 +98,7 @@ public class PostLost {
                 .place(postLostDTO.getPlace())
                 .item(postLostDTO.getItem())
                 .contents(postLostDTO.getContents())
-                .state(postLostDTO.getState())
+                .state("찾는중")
                 .report(0)
                 .time(LocalDateTime.now())
                 .category(postLostDTO.getCategory())
