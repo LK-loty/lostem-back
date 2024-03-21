@@ -350,7 +350,7 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
         ChatMessage newMessage = ChatMessage.createChatMessage(chatMessageDTO, chatRoom, chatMessageDTO.getSenderTag());
         messageRepository.save(newMessage);
-        return chatMessageDTO;
+        return messageToDTO(newMessage);
     }
 
 

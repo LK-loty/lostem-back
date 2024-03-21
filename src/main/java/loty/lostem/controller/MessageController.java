@@ -59,9 +59,10 @@ public class MessageController {
         log.info("유효한 토큰이므로 채팅을 계속합니다.");
         Long userId = tokenProvider.getUserId(token);
 
-        chatService.createMessage(messageDTO, userId);
+        ChatMessageDTO createdDTO = chatService.createMessage(messageDTO, userId);
+        createdDTO.setMessageType(ChatMessageDTO.MessageType.TALK);
 
-        simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + messageDTO.getRoomId(), messageDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + createdDTO.getRoomId(), createdDTO);
         /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
         redisTemplate.convertAndSend("/topic/public", chatMessage);*/
     }
