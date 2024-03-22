@@ -24,12 +24,16 @@ public class MessageController {
     private final ChatService chatService;
 
     @MessageMapping("/chat/enter") // 처음 입장 시 메세지 출력
-    public void enterRoom(@Payload ChatMessageDTO messageDTO, @Header("Authorization") String token) {
+    public void enterRoom(@Payload Long roomId, @Header("Authorization") String token) {
         String userTag = tokenProvider.getUserTag(token);
+
+        ChatMessageDTO messageDTO = chatService.socketRoom(roomId);
         if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
             //ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
             messageDTO.setMessageType(ChatMessageDTO.MessageType.ENTER);
-            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + userTag, messageDTO);
+
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getSenderTag(), messageDTO);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
         }
         log.info("채팅방이 생성되었습니다");
     }
@@ -38,7 +42,13 @@ public class MessageController {
     public void leaveRoom(@Payload Long roomId, @Header("Authorization") String token) {
         String userTag = tokenProvider.getUserTag(token);
 
-        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + userTag, ChatMessageDTO.MessageType.LEAVE + userTag);
+        ChatMessageDTO messageDTO = chatService.socketRoom(roomId);
+        if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {
+            messageDTO.setMessageType(ChatMessageDTO.MessageType.LEAVE);
+
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getSenderTag(), messageDTO);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
+        }
     }
 
     // 채팅방 목록

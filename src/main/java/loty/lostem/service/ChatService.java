@@ -341,6 +341,22 @@ public class ChatService {
         return selectedDTO;
     }
 
+    public ChatMessageDTO socketRoom(Long roomId) {
+        ChatRoom chatRoom = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+
+        User host = userRepository.findByTag(chatRoom.getHostUserTag())
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        User guest = userRepository.findByTag(chatRoom.getGuestUserTag())
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+
+        return ChatMessageDTO.builder()
+                .roomId(chatRoom.getRoomId())
+                .senderTag(guest.getTag())
+                .receiverTag(host.getTag())
+                .build();
+    }
+
 
 
     // 메시지
