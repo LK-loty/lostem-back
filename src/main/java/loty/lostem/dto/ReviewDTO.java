@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class AppraisalDTO {
-    private Long appraisalId;
+public class ReviewDTO {
+    private Long reviewId;
 
     private String tag;  // 평가받는 사람
 
-    private Long appraisalUser;  // 평가하는 사람
+    private Long reviewedUser;  // 평가하는 사람
 
     @NotNull
     @Size(max = 100)

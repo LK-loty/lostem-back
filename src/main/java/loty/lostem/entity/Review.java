@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import loty.lostem.dto.AppraisalDTO;
+import loty.lostem.dto.ReviewDTO;
 
 import java.time.LocalDateTime;
 
@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class Appraisal {
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long appraisalId;
+    private Long reviewId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
@@ -25,7 +25,7 @@ public class Appraisal {
 
     @Column
     @NotNull
-    private Long appraisalUser;
+    private Long reviewedUser; // 리뷰를 해준 사용자
 
     @Column
     @NotNull
@@ -36,11 +36,11 @@ public class Appraisal {
     @NotNull
     private LocalDateTime time;
 
-    public static Appraisal createAppraisal(AppraisalDTO appraisalDTO, User user,Long userId) {
-        return Appraisal.builder()
+    public static Review createReview(ReviewDTO reviewDTO, User user, Long userId) {
+        return Review.builder()
                 .user(user)
-                .appraisalUser(userId)
-                .contents(appraisalDTO.getContents())
+                .reviewedUser(userId)
+                .contents(reviewDTO.getContents())
                 .time(LocalDateTime.now())
                 .build();
     }

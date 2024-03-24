@@ -78,7 +78,7 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/posts", "/api/users", "/api/lost", "/api/found",
-                                "/api/appraisals", "/api/reports", "/api/keyword",
+                                "/api/review", "/api/reports", "/api/keyword",
                                 "/api/chat"
                         )
                         .hasAnyRole(UserRole.ADMIN.name(), UserRole.USER.name())
