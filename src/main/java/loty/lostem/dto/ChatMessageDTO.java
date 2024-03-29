@@ -35,4 +35,8 @@ public class ChatMessageDTO {  //(채팅방 대화 내역 = 기존 메시지 리
     public void setMessageType(MessageType messageType) {
         this.type = messageType;
     }
+
+    public void setReceiverTag(String receiverTag) {
+        this.receiverTag = receiverTag;
+    }
 }

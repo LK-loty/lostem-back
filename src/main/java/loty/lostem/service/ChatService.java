@@ -366,9 +366,24 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
         User sender = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
+        User receiver = null;
+
+
+        if (!sender.getTag().equals(chatRoom.getHostUserTag())) {
+            receiver = userRepository.findByTag(chatRoom.getGuestUserTag())
+                    .orElseThrow(() -> new IllegalArgumentException("No receiver"));
+        } else if (!sender.getTag().equals(chatRoom.getGuestUserTag())) {
+            receiver = userRepository.findByTag(chatRoom.getHostUserTag())
+                    .orElseThrow(() -> new IllegalArgumentException("No receiver"));
+        }
+
         ChatMessage newMessage = ChatMessage.createChatMessage(chatMessageDTO, chatRoom, sender.getTag());
         newMessage = messageRepository.save(newMessage);
-        return messageToDTO(newMessage);
+
+        ChatMessageDTO messageDTO = messageToDTO(newMessage);
+        messageDTO.setReceiverTag(receiver.getTag());
+
+        return messageDTO;
     }
 
 

@@ -75,7 +75,7 @@ public class MessageController {
 
         simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + createdDTO.getRoomId(), createdDTO);
         simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getSenderTag(), createdDTO);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getReceiverTag(), messageDTO);
         /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
         redisTemplate.convertAndSend("/topic/public", chatMessage);*/
     }
