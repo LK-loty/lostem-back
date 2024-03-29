@@ -341,8 +341,8 @@ public class ChatService {
         return selectedDTO;
     }
 
-    public ChatMessageDTO socketRoom(Long roomId) {
-        ChatRoom chatRoom = roomRepository.findById(roomId)
+    public ChatMessageDTO socketRoom(ChatRoomIdDTO roomIdDTO) {
+        ChatRoom chatRoom = roomRepository.findById(roomIdDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
 
         User host = userRepository.findByTag(chatRoom.getHostUserTag())
