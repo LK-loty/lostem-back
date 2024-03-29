@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.ChatMessageDTO;
 import loty.lostem.dto.ChatRoomDTO;
+import loty.lostem.dto.ChatRoomIdDTO;
 import loty.lostem.dto.ChatRoomListDTO;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.ChatService;
@@ -24,10 +25,10 @@ public class MessageController {
     private final ChatService chatService;
 
     @MessageMapping("/chat/enter") // 처음 입장 시 메세지 출력
-    public void enterRoom(@Payload Long roomId, @Header("Authorization") String token) {
+    public void enterRoom(@Payload ChatRoomIdDTO roomIdDTO, @Header("Authorization") String token) {
         String userTag = tokenProvider.getUserTag(token);
 
-        ChatMessageDTO messageDTO = chatService.socketRoom(roomId);
+        ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
         if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
             //ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
             messageDTO.setMessageType(ChatMessageDTO.MessageType.ENTER);
@@ -39,10 +40,10 @@ public class MessageController {
     }
 
     @MessageMapping("/chat/leave")
-    public void leaveRoom(@Payload Long roomId, @Header("Authorization") String token) {
+    public void leaveRoom(@Payload ChatRoomIdDTO roomIdDTO, @Header("Authorization") String token) {
         String userTag = tokenProvider.getUserTag(token);
 
-        ChatMessageDTO messageDTO = chatService.socketRoom(roomId);
+        ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
         if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {
             messageDTO.setMessageType(ChatMessageDTO.MessageType.LEAVE);
 
@@ -73,6 +74,8 @@ public class MessageController {
         createdDTO.setMessageType(ChatMessageDTO.MessageType.TALK);
 
         simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + createdDTO.getRoomId(), createdDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getSenderTag(), createdDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
         /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
         redisTemplate.convertAndSend("/topic/public", chatMessage);*/
     }
