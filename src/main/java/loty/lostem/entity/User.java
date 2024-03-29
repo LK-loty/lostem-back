@@ -56,6 +56,10 @@ public class User{
     @Size(max = 4)
     private String tag;
 
+    @Column
+    @NotNull
+    @Max(2)
+    private int report;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -73,7 +77,7 @@ public class User{
     private List<PostFound> postFounds = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Appraisal> appraisals = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<Keyword> keywords = new ArrayList<>();
@@ -95,6 +99,7 @@ public class User{
                 .star(userDTO.getStar())
                 .starCount(userDTO.getStarCount())
                 .tag(userDTO.getTag())
+                .report(0)
                 .role(UserRole.USER)
                 .build();
     }
