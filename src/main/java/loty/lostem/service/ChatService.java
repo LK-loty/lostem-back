@@ -364,8 +364,10 @@ public class ChatService {
     public ChatMessageDTO createMessage(ChatMessageDTO chatMessageDTO, Long userId) {
         ChatRoom chatRoom = roomRepository.findById(chatMessageDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
-        ChatMessage newMessage = ChatMessage.createChatMessage(chatMessageDTO, chatRoom, chatMessageDTO.getSenderTag());
-        messageRepository.save(newMessage);
+        User sender = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No user"));
+        ChatMessage newMessage = ChatMessage.createChatMessage(chatMessageDTO, chatRoom, sender.getTag());
+        newMessage = messageRepository.save(newMessage);
         return messageToDTO(newMessage);
     }
 
@@ -405,6 +407,7 @@ public class ChatService {
     public ChatMessageDTO messageToDTO(ChatMessage message) {
         return ChatMessageDTO.builder()
                 .messageId(message.getMessageId())
+                .roomId(message.getChatRoom().getRoomId())
                 .senderTag(message.getSender())
                 .message(message.getMessage())
                 .time(message.getTime())
