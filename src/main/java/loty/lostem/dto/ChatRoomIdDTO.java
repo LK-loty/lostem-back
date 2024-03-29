@@ -2,6 +2,7 @@ package loty.lostem.dto;
 
 import lombok.*;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter

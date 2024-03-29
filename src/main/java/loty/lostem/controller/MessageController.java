@@ -29,14 +29,15 @@ public class MessageController {
         String userTag = tokenProvider.getUserTag(token);
 
         ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
-        if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
+        if (messageDTO.getRoomId() != null || !messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
             //ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
             messageDTO.setMessageType(ChatMessageDTO.MessageType.ENTER);
 
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getSenderTag(), messageDTO);
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
+
+            log.info("채팅방 생성 알림을 보냅니다.");
         }
-        log.info("채팅방이 생성되었습니다");
     }
 
     @MessageMapping("/chat/leave")
@@ -44,11 +45,13 @@ public class MessageController {
         String userTag = tokenProvider.getUserTag(token);
 
         ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
-        if (messageDTO.getRoomId() == null || messageDTO.equals("null")) {
+        if (messageDTO.getRoomId() != null || !messageDTO.equals("null")) {
             messageDTO.setMessageType(ChatMessageDTO.MessageType.LEAVE);
 
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getSenderTag(), messageDTO);
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
+
+            log.info("채팅방 퇴장 알림을 보냅니다.");
         }
     }
 
