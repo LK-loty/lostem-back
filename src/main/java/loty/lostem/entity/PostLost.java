@@ -65,7 +65,6 @@ public class PostLost {
     private String contents;
 
     @Column
-    @NotNull
     @Size(max = 5)
     private String state;
 

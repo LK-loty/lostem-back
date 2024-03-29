@@ -44,7 +44,6 @@ public class PostFoundDTO {
     @Size(max = 500)
     private String contents;  // 내용
 
-    @NotNull
     @Size(max = 5)
     private String state;  // 게시물 상태
 
