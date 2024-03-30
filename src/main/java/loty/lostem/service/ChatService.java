@@ -368,11 +368,10 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
         User receiver = null;
 
-
-        if (!sender.getTag().equals(chatRoom.getHostUserTag())) {
+        if (sender.getTag().equals(chatRoom.getHostUserTag())) {
             receiver = userRepository.findByTag(chatRoom.getGuestUserTag())
                     .orElseThrow(() -> new IllegalArgumentException("No receiver"));
-        } else if (!sender.getTag().equals(chatRoom.getGuestUserTag())) {
+        } else if (sender.getTag().equals(chatRoom.getGuestUserTag())) {
             receiver = userRepository.findByTag(chatRoom.getHostUserTag())
                     .orElseThrow(() -> new IllegalArgumentException("No receiver"));
         }

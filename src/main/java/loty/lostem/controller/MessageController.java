@@ -27,6 +27,7 @@ public class MessageController {
     @MessageMapping("/chat/enter") // 처음 입장 시 메세지 출력
     public void enterRoom(@Payload ChatRoomIdDTO roomIdDTO, @Header("Authorization") String token) {
         String userTag = tokenProvider.getUserTag(token);
+        log.info("채팅방 생성 토큰 확인");
 
         ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
         if (messageDTO.getRoomId() != null || !messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
@@ -43,6 +44,7 @@ public class MessageController {
     @MessageMapping("/chat/leave")
     public void leaveRoom(@Payload ChatRoomIdDTO roomIdDTO, @Header("Authorization") String token) {
         String userTag = tokenProvider.getUserTag(token);
+        log.info("채팅방 퇴장 토큰 확인");
 
         ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
         if (messageDTO.getRoomId() != null || !messageDTO.equals("null")) {
@@ -78,7 +80,7 @@ public class MessageController {
 
         simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + createdDTO.getRoomId(), createdDTO);
         simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getSenderTag(), createdDTO);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getReceiverTag(), messageDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getReceiverTag(), createdDTO);
         /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
         redisTemplate.convertAndSend("/topic/public", chatMessage);*/
     }
