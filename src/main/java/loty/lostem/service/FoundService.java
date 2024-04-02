@@ -113,7 +113,7 @@ public class FoundService {
         if (date != null)
             spec = spec.and(FoundSpecification.equalDate(date));
         if (area != null)
-            spec = spec.and(FoundSpecification.equalArea(area));
+            spec = spec.and(FoundSpecification.likeArea(area));
         if (place != null)
             spec = spec.and(FoundSpecification.likePlace(place));
         if (item != null)

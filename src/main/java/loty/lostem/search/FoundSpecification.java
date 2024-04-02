@@ -16,8 +16,8 @@ public class FoundSpecification {
     public static Specification<PostFound> equalDate(LocalDateTime date) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("date"), date);
     }
-    public static Specification<PostFound> equalArea(String area) {
-        return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("area"), area);
+    public static Specification<PostFound> likeArea(String area) {
+        return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("area"), "%" + area + "%");
     }
     public static Specification<PostFound> likePlace(String place) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("place"), "%" + place + "%");

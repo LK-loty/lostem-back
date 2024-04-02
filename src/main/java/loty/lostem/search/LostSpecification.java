@@ -69,8 +69,8 @@ public class LostSpecification {
     public static Specification<PostLost> betweenPeriod(LocalDateTime start, LocalDateTime end) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.between(root.get("period"), start, end);
     }
-    public static Specification<PostLost> equalArea(String area) {
-        return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("area"), area);
+    public static Specification<PostLost> likeArea(String area) {
+        return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("area"), "%" + area + "%");
     }
     public static Specification<PostLost> likePlace(String place) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("place"), "%" + place + "%");

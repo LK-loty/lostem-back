@@ -112,7 +112,7 @@ public class LostService {
         if (start != null || end != null)
             spec = spec.and(LostSpecification.betweenPeriod(start, end));
         if (area != null)
-            spec =spec.and(LostSpecification.equalArea(area));
+            spec =spec.and(LostSpecification.likeArea(area));
         if (place != null)
             spec = spec.and(LostSpecification.likePlace(place));
         if (item != null)
