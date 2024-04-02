@@ -64,8 +64,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
                                 "/api/users/signup", "/api/users/pw", "/api/users/find", "/api/users/check", "/api/users/read",
+                                "/api/mail/**",
                                 "/api/lost/read/**", "/api/lost/search", "/api/found/read/**", "/api/found/search",
-                                "/api/appraisals/read",
+                                "/api/review/read",
                                 "/api/login", "/api/logout", "/api/access", "/api/refresh",
                                 "/api/websocket/**"
                         )
