@@ -50,7 +50,7 @@ public class KeywordController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<KeywordListDTO> searchKeyword(HttpServletRequest request) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
@@ -80,7 +80,7 @@ public class KeywordController {
         }
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<KeywordDTO> deleteKeyword(HttpServletRequest request, @Valid @RequestBody KeywordDTO keywordDTO) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {

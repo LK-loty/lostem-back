@@ -29,21 +29,18 @@ public class KeywordService {
     private final PostLostRepository lostRepository;
     private final PostFoundRepository foundRepository;
 
-    @Autowired
-    private LostService lostService;
-    @Autowired
-    private FoundService foundService;
+    private final LostService lostService;
+
+    private final FoundService foundService;
 
     @Transactional
     public KeywordDTO createKeyword(KeywordDTO keywordDTO, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
-        // 빈번한 검색이 있을 수 있고, 후에 테이블 확장성을 위해서 키워드 각각 저장
-        for (String keyword : keywordDTO.getKeyword()) {
-            Keyword created = Keyword.createKeyword(keyword, user);
-            keywordRepository.save(created);
-        }
+        // 한 번에 하나씩으로 변경
+        Keyword created = Keyword.createKeyword(keywordDTO.getKeyword(), user);
+        keywordRepository.save(created);
         return keywordDTO;
     }
 
@@ -51,11 +48,7 @@ public class KeywordService {
         List<Keyword> keywords = keywordRepository.findByUser_UserId(userId);
 
         List<KeywordDTO> keywordDTOList = keywords.stream()
-                .map(keyword -> KeywordDTO.builder()
-                        .keywordId(keyword.getKeywordId())
-                        .keyword(new String[]{keyword.getKeyword()})  // 배열로 변환하여 저장
-                        .time(keyword.getTime())
-                        .build())
+                .map(this::keywordToDTO)
                 .collect(Collectors.toList());
 
         return keywordDTOList;
@@ -95,12 +88,17 @@ public class KeywordService {
 
     @Transactional
     public KeywordDTO deleteKeyword(KeywordDTO keywordDTO, Long userId) {
-        for (String keyword : keywordDTO.getKeyword()) {
-            keywordRepository.deleteByKeywordAndUser_UserId(keyword, userId);
-        }
+        keywordRepository.deleteByKeywordAndUser_UserId(keywordDTO.getKeyword(), userId);
 
         return keywordDTO;
     }
 
 
+
+    public KeywordDTO keywordToDTO(Keyword keyword) {
+        return KeywordDTO.builder()
+                .keyword(keyword.getKeyword())
+                .time(keyword.getTime())
+                .build();
+    }
 }

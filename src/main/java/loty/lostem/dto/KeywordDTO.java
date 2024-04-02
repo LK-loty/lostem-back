@@ -15,7 +15,7 @@ public class KeywordDTO {
 
     @NotNull
     @Size(max = 10)
-    private String[] keyword;  // 키워드 문자
+    private String keyword;  // 키워드 문자
 
     private LocalDateTime time;
 }
