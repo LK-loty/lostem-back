@@ -13,7 +13,7 @@ public class UserPreviewDTO {
 
     private String profile;
 
-    private float star;
+    private double star;
 
     private String tag;
 }
