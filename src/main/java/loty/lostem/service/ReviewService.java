@@ -3,6 +3,7 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.ReviewDTO;
+import loty.lostem.dto.StarDTO;
 import loty.lostem.entity.Review;
 import loty.lostem.entity.User;
 import loty.lostem.repository.ReviewRepository;
@@ -53,6 +54,16 @@ public class ReviewService {
             return null;
         }
     }
+
+    @Transactional
+    public void updateStar(StarDTO starDTO) {
+        User user = userRepository.findByTag(starDTO.getUserTag())
+                .orElseThrow(() -> new IllegalArgumentException("No user"));
+        user.updateStar(starDTO.getStar());
+        userRepository.save(user);
+    }
+
+
 
     public ReviewDTO reviewToDTO(Review review) {
         return ReviewDTO.builder()

@@ -2,6 +2,7 @@ package loty.lostem.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -28,7 +29,6 @@ public class User{
 
     @Column
     @NotNull
-    @Size(min =2, max = 10)
     private String nickname;
 
     @Column
@@ -47,7 +47,9 @@ public class User{
     private String profile;
 
     @Column
-    private float star;
+    @Max(5)
+    @Min(0)
+    private Double star;
 
     @Column
     private int starCount;
@@ -96,8 +98,8 @@ public class User{
                 .phone(userDTO.getPhone())
                 .email(userDTO.getEmail())
                 .profile(userDTO.getProfile())
-                .star(userDTO.getStar())
-                .starCount(userDTO.getStarCount())
+                .star((double) 0)
+                .starCount(0)
                 .tag(userDTO.getTag())
                 .report(0)
                 .role(UserRole.USER)
@@ -121,9 +123,14 @@ public class User{
         user.password = userDTO.getPassword();
     }
 
-    public static void updateStar(User user, UserDTO userDTO) {
-        user.starCount++;
-        user.star = (( user.star + userDTO.getStar() ) / user.starCount);
+    public void updateStar(float star) {
+        this.starCount++;
+        double newStar = (double) Math.round(star * 100) / 100;
+        if (this.starCount != 0) {
+            this.star = (this.star * (this.starCount - 1) + newStar) / this.starCount;
+        } else {
+            this.star = newStar;
+        }
     }
 
     public String getRole() {
@@ -138,7 +145,7 @@ public class User{
         user.phone = "";
         user.email = "";
         user.profile = "";
-        user.star = 0;
+        user.star = Double.valueOf(0);
         user.starCount = 0;
         user.tag = "";
     }

@@ -63,4 +63,14 @@ public class ReviewController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
+    @PatchMapping("/star")
+    public ResponseEntity updateStar(HttpServletRequest request, @Valid @RequestBody StarDTO starDTO) {
+        log.info("별점 줌 : " + starDTO.getStar());
+        reviewService.updateStar(starDTO);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

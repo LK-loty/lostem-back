@@ -39,7 +39,7 @@ public class UserDTO {
     private String profile;  // 프로필 이미지(url)
 
     @Max(2)
-    private float star;  // 별점
+    private double star;  // 별점
 
     private int starCount;  // 별점 평균을 위한 평가자 수
 
