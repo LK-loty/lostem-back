@@ -3,29 +3,35 @@ package loty.lostem.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.ReviewDTO;
+import loty.lostem.dto.StarDTO;
+import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.ReviewService;
 import loty.lostem.service.TokenService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/review")
 public class ReviewController {
     private final ReviewService reviewService;
     private final TokenService tokenService;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/create")
     public ResponseEntity<ReviewDTO> createReview(HttpServletRequest request, @Valid @RequestBody ReviewDTO reviewDTO) {
-        Long userId = tokenService.getUserId(request);
-        if (userId == null) {
+        String userTag = tokenProvider.getUserTag(request.getHeader("Authorization"));
+        if (userTag == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        ReviewDTO dto = reviewService.createReview(reviewDTO, userId);
+        ReviewDTO dto = reviewService.createReview(reviewDTO, userTag);
         if (dto != null) {
             return ResponseEntity.ok(dto);
         } else {
@@ -45,12 +51,12 @@ public class ReviewController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteReview(HttpServletRequest request, @Valid @PathVariable Long id) {
-        Long userId = tokenService.getUserId(request);
-        if (userId == null) {
+        String userTag = tokenProvider.getUserTag(request.getHeader("Authorization"));
+        if (userTag == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        ReviewDTO dto = reviewService.deleteReview(id, userId);
+        ReviewDTO dto = reviewService.deleteReview(id, userTag);
         if (dto != null) {
             return ResponseEntity.ok("평가글 삭제 완료");
         } else {

@@ -25,7 +25,7 @@ public class Review {
 
     @Column
     @NotNull
-    private Long reviewedUser; // 리뷰를 해준 사용자
+    private String reviewedUser; // 리뷰를 해준 사용자
 
     @Column
     @NotNull
@@ -36,10 +36,10 @@ public class Review {
     @NotNull
     private LocalDateTime time;
 
-    public static Review createReview(ReviewDTO reviewDTO, User user, Long userId) {
+    public static Review createReview(ReviewDTO reviewDTO, User user, String reviewedUser) {
         return Review.builder()
                 .user(user)
-                .reviewedUser(userId)
+                .reviewedUser(reviewedUser)
                 .contents(reviewDTO.getContents())
                 .time(LocalDateTime.now())
                 .build();

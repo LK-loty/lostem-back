@@ -19,12 +19,12 @@ public class ReviewService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ReviewDTO createReview(ReviewDTO reviewDTO, Long userId) {
+    public ReviewDTO createReview(ReviewDTO reviewDTO, String userTag) {
         User user = userRepository.findByTag(reviewDTO.getTag())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided userId"));
 
-        if (!userId.equals(user.getUserId())) {
-            Review created = Review.createReview(reviewDTO, user, userId);
+        if (!userTag.equals(user.getTag())) {
+            Review created = Review.createReview(reviewDTO, user, userTag);
             reviewRepository.save(created);
             ReviewDTO createdDTO = reviewToDTO(created);
             return createdDTO;
@@ -41,11 +41,11 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewDTO deleteReview(Long reviewId, Long userId) {
+    public ReviewDTO deleteReview(Long reviewId, String userTag) {
         Review selectedReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found"));
 
-        if (selectedReview.getReviewedUser().equals(userId)) {
+        if (selectedReview.getReviewedUser().equals(userTag)) {
             ReviewDTO selectedDTO = reviewToDTO(selectedReview);
             reviewRepository.deleteById(reviewId);
             return selectedDTO;
@@ -57,7 +57,8 @@ public class ReviewService {
     public ReviewDTO reviewToDTO(Review review) {
         return ReviewDTO.builder()
                 .reviewId(review.getReviewId())
-                .reviewedUser(review.getReviewedUser())
+                .tag(review.getUser().getTag())
+                .reviewedUserTag(review.getReviewedUser())
                 .contents(review.getContents())
                 .time(review.getTime())
                 .build();
