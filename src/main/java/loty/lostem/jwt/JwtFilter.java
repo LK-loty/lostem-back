@@ -49,7 +49,7 @@ public class JwtFilter extends GenericFilterBean {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) { // 공백도 검사하기 위해
             return bearerToken.substring(TOKEN_PREFIX.length());
         }
         return null;

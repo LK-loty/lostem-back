@@ -1,5 +1,6 @@
 package loty.lostem.chat;
 
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import loty.lostem.jwt.TokenProvider;
@@ -29,10 +30,20 @@ public class StompHandler implements ChannelInterceptor {
         //// 웹소켓 연결 시 헤더 jwt 검증
         if (StompCommand.CONNECT == headerAccessor.getCommand()) {
             try {
-                tokenProvider.validateToken(headerAccessor.getFirstNativeHeader("Authorization").substring(7));
-                log.info("헤더 검증 완료");
+                String jwtToken = headerAccessor.getFirstNativeHeader("Authorization");
+                if(jwtToken == null || jwtToken.equals("null")){
+                    throw new MessageDeliveryException("메세지 예외");
+                }
+                log.info("CONNECT {}", jwtToken);
+
+                String token = jwtToken.substring(7);
+                tokenProvider.validateToken(token);
             } catch (AccessDeniedException e) {
-                throw new MessageDeliveryException("토큰 검증 실패");
+                throw new MessageDeliveryException("권한 오류");
+            }  catch (MessageDeliveryException e){
+            throw new MessageDeliveryException("메세지 에러");
+        }catch (MalformedJwtException e) {
+                throw new MessageDeliveryException("잘못된 JWT 형식");
             }
         }
 
