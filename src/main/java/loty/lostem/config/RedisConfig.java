@@ -1,3 +1,4 @@
+/*
 package loty.lostem.config;
 
 import lombok.RequiredArgsConstructor;
@@ -9,11 +10,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableRedisRepositories
 public class RedisConfig {
     //단일 Topic 사용을 위한 Bean 설정
     @Bean
@@ -32,13 +35,13 @@ public class RedisConfig {
         return container;
     }
 
-    // 실제 메시지를 처리하는 subscriber 설정
+    // 실제 메시지 처리하는 subscriber 설정
     @Bean
     public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "sendMessage");
     }
 
-    // 어플리케이션에서 사용할 redisTemplate 설정
+    // 어플리케이션에서 사용할 redisTemplate 설정. Redis 사용하여 데이터를 저장하고 교환하기 위해 RedisTemplate 설정
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -48,3 +51,4 @@ public class RedisConfig {
         return redisTemplate;
     }
 }
+*/

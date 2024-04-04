@@ -23,6 +23,8 @@ public class MessageController {
     private final SimpMessageSendingOperations simpMessageSendingOperations;
     private final TokenProvider tokenProvider;
     private final ChatService chatService;
+    //private final RedisTemplate<String, Object> redisTemplate;
+    //private final ChannelTopic channelTopic;
 
     @MessageMapping("/chat/enter") // 처음 입장 시 메세지 출력
     public void enterRoom(@Payload ChatRoomIdDTO roomIdDTO, @Header("Authorization") String token) {
@@ -33,6 +35,8 @@ public class MessageController {
         if (messageDTO.getRoomId() != null || !messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
             //ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
             messageDTO.setMessageType(ChatMessageDTO.MessageType.ENTER);
+
+            //redisTemplate.convertAndSend(channelTopic.getTopic(), messageDTO);
 
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getSenderTag(), messageDTO);
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
