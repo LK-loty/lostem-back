@@ -1,4 +1,4 @@
-package loty.lostem.service;
+package loty.lostem.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
