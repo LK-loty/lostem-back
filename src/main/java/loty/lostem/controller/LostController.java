@@ -27,7 +27,9 @@ public class LostController {
     private final TokenService tokenService;
 
     @PostMapping("/create")
-    public ResponseEntity<PostLostDTO> createPost(HttpServletRequest request, @Valid @RequestPart("data") PostLostDTO postLostDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
+    public ResponseEntity<PostLostDTO> createPost(HttpServletRequest request,
+                                                  @Valid @RequestPart("data") PostLostDTO postLostDTO,
+                                                  @RequestPart(value = "image", required = false) MultipartFile[] images) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
@@ -70,16 +72,16 @@ public class LostController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestPart("data") PostLostDTO postLostDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
+    public ResponseEntity<String> update(HttpServletRequest request,
+                                         @Valid @RequestPart("data") PostLostDTO postLostDTO,
+                                         @RequestPart(value = "image", required = false) MultipartFile[] images) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
         }
 
-        PostLostDTO dto = null;
-        if (userId.equals(postLostDTO.getUserId())) {
-            dto = lostService.updatePost(postLostDTO);
-        } // else >> id 가 같은데 오류나는 경우, id 달라서 나는 오류 구분? 아니면 delete 처럼 null 통일?
+        PostLostDTO dto = lostService.updatePost(userId, postLostDTO);
+
         if (dto != null) {
             return ResponseEntity.ok("게시물 수정 완료");
         } else {

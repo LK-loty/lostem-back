@@ -63,13 +63,21 @@ public class FoundService {
     }
 
     @Transactional
-    public PostFoundDTO updatePost(PostFoundDTO postDTO) {
+    public PostFoundDTO updatePost(Long userId, PostFoundDTO postDTO) {
+        User writer = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No user"));
+
         PostFound selectedPost = postFoundRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        selectedPost.updatePostFields(postDTO);
-        postFoundRepository.save(selectedPost);
-        PostFoundDTO changedDTO = postToDTO(selectedPost);
-        return changedDTO;
+        if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
+            selectedPost.updatePostFields(postDTO);
+            postFoundRepository.save(selectedPost);
+            PostFoundDTO changedDTO = postToDTO(selectedPost);
+
+            return changedDTO;
+        } else {
+            return null;
+        }
     }
 
     @Transactional

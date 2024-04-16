@@ -27,7 +27,9 @@ public class FoundController {
     private final TokenService tokenService;
 
     @PostMapping("/create")
-    public ResponseEntity<PostFoundDTO> createPost(HttpServletRequest request, @Valid @RequestPart("data") PostFoundDTO postFoundDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
+    public ResponseEntity<PostFoundDTO> createPost(HttpServletRequest request,
+                                                   @Valid @RequestPart("data") PostFoundDTO postFoundDTO,
+                                                   @RequestPart(value = "image", required = false) MultipartFile[] images) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
@@ -69,27 +71,17 @@ public class FoundController {
         }
     }
 
-    /*@GetMapping("/read/search") // 검색 필터 적용 후 글 목록
-    public ResponseEntity<List<PostLostDTO>> searchPost(@PathVariable PostLostDTO postDTO) {
-        List<PostLostDTO> dtoList = lostService.searchPost(postDTO);
-        if (dtoList != null) {
-            return ResponseEntity.ok(dtoList);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }*/
-
     @PatchMapping("/update")
-    public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestPart("data") PostFoundDTO postFoundDTO, @RequestPart(value = "image", required = false) MultipartFile[] images) {
+    public ResponseEntity<String> update(HttpServletRequest request,
+                                         @Valid @RequestPart("data") PostFoundDTO postFoundDTO,
+                                         @RequestPart(value = "image", required = false) MultipartFile[] images) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
         }
 
-        PostFoundDTO dto = null;
-        if (userId.equals(postFoundDTO.getUserId())) {
-            dto = foundService.updatePost(postFoundDTO);
-        }
+        PostFoundDTO dto = foundService.updatePost(userId, postFoundDTO);
+
         if (dto != null) {
             return ResponseEntity.ok("게시물 수정 완료");
         } else {
