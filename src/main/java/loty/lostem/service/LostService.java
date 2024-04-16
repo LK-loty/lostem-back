@@ -24,13 +24,12 @@ public class LostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PostLostDTO createPost(PostLostDTO postLostDTO, Long userId) {
+    public String createPost(PostLostDTO postLostDTO, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostLost created = PostLost.createPost(postLostDTO, user);
         postLostRepository.save(created);
-        PostLostDTO createdDTO = postToDTO(created);
-        return createdDTO;
+        return "OK";
     }
 
     // 하나의 게시물에 대한 정보 리턴
@@ -39,14 +38,20 @@ public class LostService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         User user = userRepository.findById(selectPost.getUser().getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for user"));
-        PostUserDTO readOnePost = postUserToDTO(user);
-        PostLostDTO selectedDTO = postToDTO(selectPost);
-        PostLostDetailsDTO postLostDetailsDTO =
-                PostLostDetailsDTO.builder()
-                        .postLostDTO(selectedDTO)
-                        .postUserDTO(readOnePost)
-                        .build();
-        return postLostDetailsDTO;
+
+        if (selectPost.getPostId() != null) {
+            PostLostInfoDTO selectedDTO = postToDTO(selectPost);
+            PostUserDTO readOnePost = postUserToDTO(user);
+
+            PostLostDetailsDTO postLostDetailsDTO =
+                    PostLostDetailsDTO.builder()
+                            .postLostDTO(selectedDTO)
+                            .postUserDTO(readOnePost)
+                            .build();
+            return postLostDetailsDTO;
+        } else {
+            return null;
+        }
     }
 
     // 전체 목록 보기
@@ -55,14 +60,14 @@ public class LostService {
                 .map(this::listToDTO);
     }
 
-    public List<PostLostDTO> userPost(String tag) {
+    public List<PostLostInfoDTO> userPost(String tag) {
         return postLostRepository.findByUser_TagAndStateNot(tag, "삭제").stream()
                 .map(this::postToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public PostLostDTO updatePost(Long userId, PostLostDTO postDTO) {
+    public String updatePost(Long userId, PostLostDTO postDTO) {
         User writer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
 
@@ -72,16 +77,15 @@ public class LostService {
         if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
             selectedPost.updatePostFields(postDTO);
             postLostRepository.save(selectedPost);
-            PostLostDTO changedDTO = postToDTO(selectedPost);
 
-            return changedDTO;
+            return "OK";
         } else {
             return null;
         }
     }
 
     @Transactional
-    public PostLostDTO updateState(Long userId, PostStateDTO stateDTO) {
+    public String updateState(Long userId, PostStateDTO stateDTO) {
         PostLost selectedPost = postLostRepository.findById(stateDTO.getPostId())
                 .orElseThrow(()-> new IllegalArgumentException("No data found for the provided id"));
 
@@ -91,20 +95,18 @@ public class LostService {
 
         selectedPost.updatePostState(stateDTO);
         postLostRepository.save(selectedPost);
-        PostLostDTO changedDTO = postToDTO(selectedPost);
-        return changedDTO;
+        return "OK";
     }
 
     @Transactional
-    public PostLostDTO deletePost(Long postId, Long userId) {
+    public String deletePost(Long postId, Long userId) {
         PostLost selectedPost = postLostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
         if (selectedPost.getUser().getUserId().equals(userId)) {
             selectedPost.deletePost(selectedPost);
             postLostRepository.save(selectedPost);
-            PostLostDTO selectedDTO = postToDTO(selectedPost);
-            return selectedDTO;
+            return "OK";
         } else {
             return null;
         }
@@ -113,7 +115,7 @@ public class LostService {
     public Page<PostLostListDTO> search(String title, String category, LocalDateTime start, LocalDateTime end,
                                         String area, String place, String item, String contents, String state, Pageable pageable){
         Specification<PostLost> spec = (root, query, criteriaBuilder) -> null;
-        // Specification<PostLost> spec = Specification.where(LostSpecification.findByCategory(category));
+
         if (title != null)
             spec = spec.and(LostSpecification.likeTitle(title));
         if (category != null)
@@ -135,25 +137,19 @@ public class LostService {
 
         return postLostRepository.findAll(spec, pageable)
                 .map(this::listToDTO);
-        /*return postLostRepository.findAll(spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.notEqual(root.get("state"), "삭제")), pageable)
-                .map(this::listToDTO);*/
     }
 
-    public PostLostDTO postToDTO(PostLost post) {
-        return PostLostDTO.builder()
+    public PostLostInfoDTO postToDTO(PostLost post) {
+        return PostLostInfoDTO.builder()
                 .postId(post.getPostId())
-                .userId(post.getUser().getUserId())
                 .title(post.getTitle())
                 .images(post.getImages())
-                .start(post.getStart())
-                .end((post.getEnd()))
+                .date(post.getDate())
                 .area(post.getArea())
                 .place(post.getPlace())
                 .item(post.getItem())
                 .contents(post.getContents())
                 .state(post.getState())
-                .report(post.getReport())
                 .time(post.getTime())
                 .category(post.getCategory())
                 .build();

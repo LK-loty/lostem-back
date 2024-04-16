@@ -40,10 +40,7 @@ public class PostLost {
     private String category;
 
     @Column
-    private LocalDateTime start;
-
-    @Column
-    private LocalDateTime end;
+    private LocalDateTime date;
 
     @Column
     @NotNull
@@ -91,8 +88,7 @@ public class PostLost {
                 .user(user)
                 .title(postLostDTO.getTitle())
                 .images(postLostDTO.getImages())
-                .start(postLostDTO.getStart())
-                .end(postLostDTO.getEnd())
+                .date(postLostDTO.getDate())
                 .area(postLostDTO.getArea())
                 .place(postLostDTO.getPlace())
                 .item(postLostDTO.getItem())
@@ -108,8 +104,7 @@ public class PostLost {
         this.title = postLostDTO.getTitle();
         this.images = postLostDTO.getImages();
         this.category = postLostDTO.getCategory();
-        this.start = postLostDTO.getStart();
-        this.end = postLostDTO.getEnd();
+        this.date = postLostDTO.getDate();
         this.area = postLostDTO.getArea();
         this.place = postLostDTO.getPlace();
         this.item = postLostDTO.getItem();
@@ -126,8 +121,7 @@ public class PostLost {
         this.title = "삭제된 게시물입니다.";
         this.images = " "; // 기본 이미지 주소
         this.category = " ";
-        this.start = null;
-        this.end = null;
+        this.date = null;
         this.area = " ";
         this.place = " ";
         this.item = " ";

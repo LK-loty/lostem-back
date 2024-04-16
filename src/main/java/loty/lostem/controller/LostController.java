@@ -3,10 +3,7 @@ package loty.lostem.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.PostLostDTO;
-import loty.lostem.dto.PostLostDetailsDTO;
-import loty.lostem.dto.PostLostListDTO;
-import loty.lostem.dto.PostStateDTO;
+import loty.lostem.dto.*;
 import loty.lostem.service.LostService;
 import loty.lostem.service.TokenService;
 import org.springframework.data.domain.Page;
@@ -27,7 +24,7 @@ public class LostController {
     private final TokenService tokenService;
 
     @PostMapping("/create")
-    public ResponseEntity<PostLostDTO> createPost(HttpServletRequest request,
+    public ResponseEntity<String> createPost(HttpServletRequest request,
                                                   @Valid @RequestPart("data") PostLostDTO postLostDTO,
                                                   @RequestPart(value = "image", required = false) MultipartFile[] images) {
         Long userId = tokenService.getUserId(request);
@@ -35,9 +32,9 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        PostLostDTO dto = lostService.createPost(postLostDTO, userId);
-        if (dto != null) {
-            return ResponseEntity.ok(dto);
+        String check = lostService.createPost(postLostDTO, userId);
+        if (check.equals("OK")) {
+            return ResponseEntity.ok("게시물 생성 완료");
         } else {
             return ResponseEntity.badRequest().build();
         }
@@ -62,8 +59,8 @@ public class LostController {
     }
 
     @GetMapping("/read/user") // 사용자 관련 글 목록
-    public ResponseEntity<List<PostLostDTO>> userPost(@RequestParam String tag) {
-        List<PostLostDTO> dtoList = lostService.userPost(tag);
+    public ResponseEntity<List<PostLostInfoDTO>> userPost(@RequestParam String tag) {
+        List<PostLostInfoDTO> dtoList = lostService.userPost(tag);
         if (dtoList != null) {
             return ResponseEntity.ok(dtoList);
         } else {
@@ -80,9 +77,9 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        PostLostDTO dto = lostService.updatePost(userId, postLostDTO);
+        String check = lostService.updatePost(userId, postLostDTO);
 
-        if (dto != null) {
+        if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 수정 완료");
         } else {
             return ResponseEntity.notFound().build();
@@ -96,8 +93,8 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        PostLostDTO dto = lostService.updateState(userId, stateDTO);
-        if (dto != null) {
+        String check = lostService.updateState(userId, stateDTO);
+        if (check.equals("OK")) {
             return ResponseEntity.ok("상태 수정 완료");
         } else {
             return ResponseEntity.badRequest().build();
@@ -111,8 +108,8 @@ public class LostController {
             return ResponseEntity.badRequest().build();
         }
 
-        PostLostDTO dto = lostService.deletePost(id, userId);
-        if (dto != null) {
+        String check = lostService.deletePost(id, userId);
+        if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 삭제 완료");
         } else {
             return ResponseEntity.notFound().build();

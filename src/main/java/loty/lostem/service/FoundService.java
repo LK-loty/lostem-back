@@ -25,13 +25,12 @@ public class FoundService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PostFoundDTO createPost(PostFoundDTO postFoundDTO, Long userId) {
+    public String createPost(PostFoundDTO postFoundDTO, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostFound created = PostFound.createPost(postFoundDTO, user);
         postFoundRepository.save(created);
-        PostFoundDTO createdDTO = postToDTO(created);
-        return createdDTO;
+        return "OK";
     }
 
     // 하나의 게시물에 대한 정보 리턴
@@ -40,14 +39,20 @@ public class FoundService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         User user = userRepository.findById(selectPost.getUser().getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No data for user"));
-        PostUserDTO readOnePost = postUserToDTO(user);
-        PostFoundDTO selectedDTO = postToDTO(selectPost);
-        PostFoundDetailsDTO postFoundDetailsDTO =
-                PostFoundDetailsDTO.builder()
-                        .postFoundDTO(selectedDTO)
-                        .postUserDTO(readOnePost)
-                        .build();
-        return postFoundDetailsDTO;
+
+        if (selectPost.getPostId() != null) {
+            PostFoundInfoDTO selectedDTO = postToDTO(selectPost);
+            PostUserDTO readOnePost = postUserToDTO(user);
+
+            PostFoundDetailsDTO postFoundDetailsDTO =
+                    PostFoundDetailsDTO.builder()
+                            .postFoundDTO(selectedDTO)
+                            .postUserDTO(readOnePost)
+                            .build();
+            return postFoundDetailsDTO;
+        } else {
+            return null;
+        }
     }
 
     // 전체 목록 보기
@@ -56,14 +61,14 @@ public class FoundService {
                 .map(this::listToDTO);
     }
 
-    public List<PostFoundDTO> userPost(String tag) {
+    public List<PostFoundInfoDTO> userPost(String tag) {
         return postFoundRepository.findByUser_TagAndStateNot(tag, "삭제").stream()
                 .map(this::postToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public PostFoundDTO updatePost(Long userId, PostFoundDTO postDTO) {
+    public String updatePost(Long userId, PostFoundDTO postDTO) {
         User writer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
 
@@ -72,16 +77,15 @@ public class FoundService {
         if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
             selectedPost.updatePostFields(postDTO);
             postFoundRepository.save(selectedPost);
-            PostFoundDTO changedDTO = postToDTO(selectedPost);
 
-            return changedDTO;
+            return "OK";
         } else {
             return null;
         }
     }
 
     @Transactional
-    public PostFoundDTO updateState(Long userId, PostStateDTO stateDTO) {
+    public String updateState(Long userId, PostStateDTO stateDTO) {
         PostFound selectedPost = postFoundRepository.findById(stateDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
@@ -91,26 +95,24 @@ public class FoundService {
 
         selectedPost.updatePostState(stateDTO);
         postFoundRepository.save(selectedPost);
-        PostFoundDTO changedDTO = postToDTO(selectedPost);
-        return changedDTO;
+        return "OK";
     }
 
     @Transactional
-    public PostFoundDTO deletePost(Long postId, Long userId) {
+    public String deletePost(Long postId, Long userId) {
         PostFound selectedPost = postFoundRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
         if (selectedPost.getUser().getUserId().equals(userId)) {
             selectedPost.deletePost(selectedPost);
             postFoundRepository.save(selectedPost);
-            PostFoundDTO selectedDTO = postToDTO(selectedPost);
-            return selectedDTO;
+            return "OK";
         } else {
             return null;
         }
     }
 
-    public Page<PostFoundListDTO> search(String title, String category, LocalDateTime date,
+    public Page<PostFoundListDTO> search(String title, String category, LocalDateTime start, LocalDateTime end,
                                          String area, String place, String item, String contents, String state, String storage, Pageable pageable) {
         Specification<PostFound> spec = (root, query, criteriaBuilder) -> null;
 
@@ -118,8 +120,8 @@ public class FoundService {
             spec = spec.and(FoundSpecification.likeTitle(title));
         if (category != null)
             spec = spec.and(FoundSpecification.equalCategory(category));
-        if (date != null)
-            spec = spec.and(FoundSpecification.equalDate(date));
+        if (start != null || end != null)
+            spec = spec.and(FoundSpecification.betweenPeriod(start, end));
         if (area != null)
             spec = spec.and(FoundSpecification.likeArea(area));
         if (place != null)
@@ -140,10 +142,9 @@ public class FoundService {
     }
 
 
-    public PostFoundDTO postToDTO(PostFound post) {
-        return PostFoundDTO.builder()
+    public PostFoundInfoDTO postToDTO(PostFound post) {
+        return PostFoundInfoDTO.builder()
                 .postId(post.getPostId())
-                .userId(post.getUser().getUserId())
                 .title(post.getTitle())
                 .images(post.getImages())
                 .date(post.getDate())
@@ -152,9 +153,9 @@ public class FoundService {
                 .item(post.getItem())
                 .contents(post.getContents())
                 .state(post.getState())
-                .report(post.getReport())
                 .time(post.getTime())
                 .category(post.getCategory())
+                .storage(post.getStorage())
                 .build();
     }
 

@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 @Getter
 public class PostFoundDetailsDTO {
-    private PostFoundDTO postFoundDTO;
+    private PostFoundInfoDTO postFoundDTO;
     private PostUserDTO postUserDTO;
 }

@@ -13,8 +13,8 @@ public class FoundSpecification {
     public static Specification<PostFound> equalCategory(String category) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("category"), category);
     }
-    public static Specification<PostFound> equalDate(LocalDateTime date) {
-        return (root, query, CriteriaBuilder) -> CriteriaBuilder.equal(root.get("date"), date);
+    public static Specification<PostFound> betweenPeriod(LocalDateTime start, LocalDateTime end) {
+        return (root, query, CriteriaBuilder) -> CriteriaBuilder.between(root.get("date"), start, end);
     }
     public static Specification<PostFound> likeArea(String area) {
         return (root, query, CriteriaBuilder) -> CriteriaBuilder.like(root.get("area"), "%" + area + "%");

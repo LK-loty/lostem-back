@@ -25,9 +25,7 @@ public class PostLostDTO {
     @Size(max = 10)
     private String category;  // 카테고리 : 물건 종류
 
-    private LocalDateTime start;  // 기간
-
-    private LocalDateTime end;
+    private LocalDateTime date;  // 기간
 
     @NotNull
     @Size(max = 20)
