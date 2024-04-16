@@ -114,13 +114,8 @@ public class User{
         user.profile = userDTO.getProfile();
     }
 
-    /*public void modify(String nickname, String password) {
-        this.nickname = nickname;
+    public void updatePassword(String password) {
         this.password = password;
-    }*/
-
-    public static void updatePassword(User user, UserDTO userDTO) {
-        user.password = userDTO.getPassword();
     }
 
     public void updateStar(float star) {

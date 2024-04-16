@@ -46,12 +46,10 @@ public class UserService {
     public LoginDTO resetPassword(LoginDTO loginDTO) {
         User selectedUser = userRepository.findByUsername(loginDTO.getUsername())
                         .orElseThrow(() -> new IllegalArgumentException("No data for provided username"));
-        UserDTO userDTO = userToDTO(selectedUser);
 
         String encoded = bCryptPasswordEncoder.encode(loginDTO.getPassword());
-        UserDTO.setPasswordEncode(userDTO, encoded);
 
-        selectedUser.updateUserFields(selectedUser, userDTO);
+        selectedUser.updatePassword(encoded);
         userRepository.save(selectedUser);
 
         return LoginDTO.builder().build();
@@ -93,7 +91,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDetailDTO updateUser(Long userId, UserDTO userDTO) {
+    public String updateUser(Long userId, UserDTO userDTO) {
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         if (selectedUser.getName().equals("알 수 없음")) {
@@ -102,8 +100,8 @@ public class UserService {
 
         selectedUser.updateUserFields(selectedUser, userDTO);
         userRepository.save(selectedUser);
-        UserDetailDTO changedDTO = detailToDTO(selectedUser);
-        return changedDTO;
+
+        return "OK";
     }
 
     @Transactional
@@ -146,9 +144,6 @@ public class UserService {
                 .username(user.getUsername())
                 .phone(user.getPhone())
                 .email(user.getEmail())
-                .profile(user.getProfile())
-                .star(user.getStar())
-                .tag(user.getTag())
                 .build();
     }
 

@@ -79,8 +79,8 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        UserDetailDTO dto = userService.updateUser(userId, userDTO);
-        if (dto != null) {
+        String check = userService.updateUser(userId, userDTO);
+        if (check.equals("OK")) {
             return ResponseEntity.ok("정보 수정 완료");
         } else {
             return ResponseEntity.notFound().build();
