@@ -78,7 +78,7 @@ public class SecurityConfig {
                         .hasRole(UserRole.ADMIN.name())
 
                         .requestMatchers(
-                                "/api/posts", "/api/users", "/api/lost", "/api/found",
+                                "/api/users", "/api/lost", "/api/found",
                                 "/api/review", "/api/reports", "/api/keyword",
                                 "/api/chat"
                         )

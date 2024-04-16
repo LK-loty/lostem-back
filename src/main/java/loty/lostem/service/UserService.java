@@ -113,6 +113,7 @@ public class UserService {
             User.deleteUser(selectedUser);
             userRepository.save(selectedUser);
 
+            System.out.println(password  +  "이런 상태");
             return "OK";
         } else {
             throw new IllegalArgumentException("Incorrect password");

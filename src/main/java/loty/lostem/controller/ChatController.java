@@ -57,6 +57,28 @@ public class ChatController {
         return ResponseEntity.ok(chatRoomListDTO);
     }
 
+    // 특정 채팅방 조회
+    @GetMapping("/room/read/{roomId}")
+    public ResponseEntity<ChatRoomSelectedDTO> selectRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
+        Long userId;
+        ChatRoomSelectedDTO chatRoomDTO = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+                chatRoomDTO = chatService.selectRoom(roomId, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        if (chatRoomDTO != null) {
+            return ResponseEntity.ok(chatRoomDTO);
+        } else  {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/get/post")
     public ResponseEntity<Long> getRoomIdByPost(@RequestHeader("Authorization") String authorization, @RequestParam String postType, @RequestParam Long postId) {
         Long userId;
@@ -91,28 +113,6 @@ public class ChatController {
         }
 
         return ResponseEntity.ok(chatRoomListDTO);
-    }
-
-    // 특정 채팅방 조회
-    @GetMapping("/room/read/{roomId}")
-    public ResponseEntity<ChatRoomSelectedDTO> selectRoom(@PathVariable Long roomId, @RequestHeader("Authorization") String authorization) {
-        Long userId;
-        ChatRoomSelectedDTO chatRoomDTO = null;
-
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            try {
-                String token = authorization.substring(7);
-                userId = tokenProvider.getUserId(token);
-                chatRoomDTO = chatService.selectRoom(roomId, userId);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-        if (chatRoomDTO != null) {
-            return ResponseEntity.ok(chatRoomDTO);
-        } else  {
-            return ResponseEntity.notFound().build();
-        }
     }
 
 

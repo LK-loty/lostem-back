@@ -31,9 +31,6 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("No guest"));
         ChatRoomDTO chatRoomDTO = null;
 
-        //Optional<? extends ChatRoom> existingRoom = roomRepository.findByHostUserAndGuestUserAndPostLost(host, guest, (PostLost) post);
-        //ChatRoom chatRoom = roomRepository.findByPostIdAndGuestUserTag(messageDTO.getPostId(), guest.getTag());
-
         if (messageDTO.getPostType().equals("lost")) {
             log.info("lost 게시글");
             PostLost post = lostRepository.findById(messageDTO.getPostId())
@@ -45,9 +42,6 @@ public class ChatService {
 
             if (chatRoom == null) {
                 log.info("채팅방을 생성합니다");
-                //LostChatRoom lostChatRoom = new LostChatRoom(post.getPostId(), host.getTag(), guest.getTag());
-                //chatRoom = new LostChatRoom(host.getTag(), guest.getTag(), post.getPostId());
-                //chatRoom = LostChatRoom.createChatRoom(post.getPostId(), host.getTag(), guest.getTag());
 
                 chatRoom = ChatRoom.builder()
                         .postType("lost")
@@ -55,7 +49,7 @@ public class ChatService {
                         .hostUserTag(host.getTag())
                         .guestUserTag(guest.getTag())
                         .build();
-                roomRepository.save(chatRoom); // user 마다 채팅방 리스트화하면 저장할 때 힘듦+검색은 비교적 편함? 지금 로직은 생성할 때 바로 저장+검색은 오래 걸릴수도?
+                roomRepository.save(chatRoom);
 
                 ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest.getTag());
                 messageRepository.save(chatMessage);
