@@ -3,9 +3,7 @@ package loty.lostem.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.LoginDTO;
-import loty.lostem.dto.UserDTO;
-import loty.lostem.dto.UserPreviewDTO;
+import loty.lostem.dto.*;
 import loty.lostem.service.TokenService;
 import loty.lostem.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,7 @@ public class UserController {
     // find, pw >> 본인 인증 먼저 하고 나서
 
     @PostMapping("/find")
-    public ResponseEntity<String> findUsername(@Valid @RequestBody String phone) {
+    public ResponseEntity<String> findUsername(@Valid @RequestBody AStringDTO phone) {
         String username = userService.findUser(phone);
         return ResponseEntity.ok(username);
     }
@@ -49,13 +47,8 @@ public class UserController {
     }
 
     @GetMapping("/preview")
-    public ResponseEntity<UserPreviewDTO> userPreview(HttpServletRequest request) {
-        Long userId = tokenService.getUserId(request);
-        if (userId == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        UserPreviewDTO userPreviewDTO = userService.loginData(userId);
+    public ResponseEntity<UserPreviewDTO> userPreview(@RequestParam String tag) {
+        UserPreviewDTO userPreviewDTO = userService.previewUser(tag);
 
         if (userPreviewDTO != null) {
             return ResponseEntity.ok(userPreviewDTO);
@@ -65,8 +58,13 @@ public class UserController {
     }
 
     @GetMapping("/read")
-    public ResponseEntity<UserDTO> selectUser(@RequestParam String tag) {
-        UserDTO dto = userService.readUser(tag);
+    public ResponseEntity<UserDetailDTO> selectUser(HttpServletRequest request) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDetailDTO dto = userService.readUser(userId);
         if (dto != null) {
             return ResponseEntity.ok(dto);
         } else {
@@ -75,8 +73,13 @@ public class UserController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<String> update(@Valid @RequestBody UserDTO userDTO) {
-        UserDTO dto = userService.updateUser(userDTO);
+    public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestBody UserDTO userDTO) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDetailDTO dto = userService.updateUser(userId, userDTO);
         if (dto != null) {
             return ResponseEntity.ok("정보 수정 완료");
         } else {
@@ -85,9 +88,14 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@Valid @RequestBody UserDTO userDTO) {
-        UserDTO dto = userService.deleteUser(userDTO);
-        if (dto != null) {
+    public ResponseEntity<String> delete(HttpServletRequest request, @RequestBody AStringDTO password) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String check = userService.deleteUser(userId, password.getWord());
+        if (check.equals("OK")) {
             return ResponseEntity.ok("유저 삭제 완료");
         } else {
             return ResponseEntity.notFound().build();

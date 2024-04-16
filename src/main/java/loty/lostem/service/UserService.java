@@ -2,9 +2,7 @@ package loty.lostem.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.LoginDTO;
-import loty.lostem.dto.UserDTO;
-import loty.lostem.dto.UserPreviewDTO;
+import loty.lostem.dto.*;
 import loty.lostem.entity.RefreshToken;
 import loty.lostem.entity.User;
 import loty.lostem.repository.RefreshTokenRepository;
@@ -38,8 +36,8 @@ public class UserService {
     }
 
     @Transactional
-    public String findUser(String phone) {
-        User user = userRepository.findByPhone(phone)
+    public String findUser(AStringDTO phone) {
+        User user = userRepository.findByPhone(phone.getWord())
                 .orElseThrow(() -> new IllegalArgumentException("No data for provided phone"));
         return user.getUsername();
     }
@@ -67,10 +65,10 @@ public class UserService {
         }
     }
 
-    public UserDTO readUser(String tag) { // 프로필 정보 확인 창
-        User selectedUser = userRepository.findByTag(tag)
+    public UserDetailDTO readUser(Long userId) { // 프로필 정보 확인 창
+        User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        UserDTO selectedDTO = userToDTO(selectedUser);
+        UserDetailDTO selectedDTO = detailToDTO(selectedUser);
         return selectedDTO;
     }
 
@@ -87,32 +85,41 @@ public class UserService {
         }
     }
 
-    public UserPreviewDTO loginData(Long userId) {
-        User loginUser = userRepository.findById(userId)
+    public UserPreviewDTO previewUser(String tag) {
+        User loginUser = userRepository.findByTag(tag)
                 .orElseThrow(() -> new IllegalArgumentException("No user data found for the provided token"));
         UserPreviewDTO dto = previewToDTO(loginUser);
         return dto;
     }
 
     @Transactional
-    public UserDTO updateUser(UserDTO userDTO) {
-        User selectedUser = userRepository.findByUsername(userDTO.getUsername())
+    public UserDetailDTO updateUser(Long userId, UserDTO userDTO) {
+        User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
+        if (selectedUser.getName().equals("알 수 없음")) {
+            return null;
+        }
+
         selectedUser.updateUserFields(selectedUser, userDTO);
         userRepository.save(selectedUser);
-        UserDTO changedDTO = userToDTO(selectedUser);
+        UserDetailDTO changedDTO = detailToDTO(selectedUser);
         return changedDTO;
     }
 
     @Transactional
-    public UserDTO deleteUser(UserDTO userDTO) {
-        User selectedUser = userRepository.findByUsername(userDTO.getUsername())
+    public String deleteUser(Long userId, String password) {
+        User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        User.deleteUser(selectedUser);
-        userRepository.save(selectedUser);
-        return userDTO;
-    }
 
+        if (bCryptPasswordEncoder.matches(password, selectedUser.getPassword())) {
+            User.deleteUser(selectedUser);
+            userRepository.save(selectedUser);
+
+            return "OK";
+        } else {
+            throw new IllegalArgumentException("Incorrect password");
+        }
+    }
 
 
     public UserDTO userToDTO(User user) {
@@ -132,9 +139,21 @@ public class UserService {
                 .build();
     }
 
+    public UserDetailDTO detailToDTO(User user) {
+        return UserDetailDTO.builder()
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .username(user.getUsername())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .profile(user.getProfile())
+                .star(user.getStar())
+                .tag(user.getTag())
+                .build();
+    }
+
     public UserPreviewDTO previewToDTO(User user) {
         return UserPreviewDTO.builder()
-                .userId(user.getUserId())
                 .nickname(user.getNickname())
                 .profile(user.getProfile())
                 .star(user.getStar())

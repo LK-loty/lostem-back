@@ -139,7 +139,7 @@ public class User{
 
     public static void deleteUser(User user) {
         user.name = "알 수 없음";
-        user.nickname = "알 수 없음";
+        user.nickname = "(알 수 없음)";
         user.username = "";
         user.password = "";
         user.phone = "";

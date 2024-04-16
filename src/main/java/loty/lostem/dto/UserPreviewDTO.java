@@ -7,8 +7,6 @@ import lombok.*;
 @Builder
 @Getter
 public class UserPreviewDTO {
-    private Long userId;
-
     private String nickname;
 
     private String profile;
