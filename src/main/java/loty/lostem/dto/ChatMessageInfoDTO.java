@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
+import loty.lostem.chat.MessageType;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,11 @@ import java.time.LocalDateTime;
 @Getter
 public class ChatMessageInfoDTO {
     private String senderTag;
+    private MessageType messageType;
     private String message;
     private LocalDateTime time;
+
+    public void setMessageType(MessageType messageType) {
+        this.messageType = messageType;
+    }
 }

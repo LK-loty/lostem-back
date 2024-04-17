@@ -2,10 +2,8 @@ package loty.lostem.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import loty.lostem.dto.ChatMessageDTO;
-import loty.lostem.dto.ChatRoomDTO;
-import loty.lostem.dto.ChatRoomIdDTO;
-import loty.lostem.dto.ChatRoomListDTO;
+import loty.lostem.chat.MessageType;
+import loty.lostem.dto.*;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.ChatService;
 import org.springframework.http.ResponseEntity;
@@ -31,15 +29,17 @@ public class MessageController {
         String userTag = tokenProvider.getUserTag(token);
         log.info("채팅방 생성 토큰 확인");
 
-        ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
-        if (messageDTO.getRoomId() != null || !messageDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
+        ChatRoomInfoDTO roomInfoDTO = chatService.socketRoom(roomIdDTO.getRoomId());
+        ChatRoomListDTO chatRoomListDTO = chatService.sendChatData(roomIdDTO.getRoomId(), userTag, roomInfoDTO);
+
+        if (roomInfoDTO.getRoomId() != null || !roomInfoDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
             //ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
-            messageDTO.setMessageType(ChatMessageDTO.MessageType.ENTER);
+            chatRoomListDTO.setMessageType(MessageType.ENTER);
 
             //redisTemplate.convertAndSend(channelTopic.getTopic(), messageDTO);
 
-            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getSenderTag(), messageDTO);
-            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), chatRoomListDTO);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), chatRoomListDTO);
 
             log.info("채팅방 생성 알림을 보냅니다.");
         }
@@ -50,12 +50,14 @@ public class MessageController {
         String userTag = tokenProvider.getUserTag(token);
         log.info("채팅방 퇴장 토큰 확인");
 
-        ChatMessageDTO messageDTO = chatService.socketRoom(roomIdDTO);
-        if (messageDTO.getRoomId() != null || !messageDTO.equals("null")) {
-            messageDTO.setMessageType(ChatMessageDTO.MessageType.LEAVE);
+        ChatRoomInfoDTO roomInfoDTO = chatService.socketRoom(roomIdDTO.getRoomId());
+        ChatRoomListDTO chatRoomListDTO = chatService.sendChatData(roomIdDTO.getRoomId(), userTag, roomInfoDTO);
 
-            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getSenderTag(), messageDTO);
-            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + messageDTO.getReceiverTag(), messageDTO);
+        if (chatRoomListDTO.getRoomId() != null || !chatRoomListDTO.equals("null")) {
+            chatRoomListDTO.setMessageType(MessageType.LEAVE);
+
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), chatRoomListDTO);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), chatRoomListDTO);
 
             log.info("채팅방 퇴장 알림을 보냅니다.");
         }
@@ -79,12 +81,13 @@ public class MessageController {
         log.info("유효한 토큰이므로 채팅을 계속합니다.");
         Long userId = tokenProvider.getUserId(token);
 
-        ChatMessageDTO createdDTO = chatService.createMessage(messageDTO, userId);
-        createdDTO.setMessageType(ChatMessageDTO.MessageType.TALK);
+        ChatRoomInfoDTO roomInfoDTO = chatService.socketRoom(messageDTO.getRoomId());
+        ChatMessageInfoDTO createdDTO = chatService.createMessage(messageDTO, userId);
+        createdDTO.setMessageType(MessageType.TALK);
 
-        simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + createdDTO.getRoomId(), createdDTO);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getSenderTag(), createdDTO);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + createdDTO.getReceiverTag(), createdDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomInfoDTO.getRoomId(), createdDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), createdDTO);
+        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), createdDTO);
         /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
         redisTemplate.convertAndSend("/topic/public", chatMessage);*/
     }

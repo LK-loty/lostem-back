@@ -335,8 +335,8 @@ public class ChatService {
         return selectedDTO;
     }
 
-    public ChatMessageDTO socketRoom(ChatRoomIdDTO roomIdDTO) {
-        ChatRoom chatRoom = roomRepository.findById(roomIdDTO.getRoomId())
+    public ChatRoomInfoDTO socketRoom(Long roomId) {
+        ChatRoom chatRoom = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
 
         User host = userRepository.findByTag(chatRoom.getHostUserTag())
@@ -344,10 +344,46 @@ public class ChatService {
         User guest = userRepository.findByTag(chatRoom.getGuestUserTag())
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
 
-        return ChatMessageDTO.builder()
+        return ChatRoomInfoDTO.builder()
                 .roomId(chatRoom.getRoomId())
-                .senderTag(guest.getTag())
-                .receiverTag(host.getTag())
+                .hostUserTag(host.getTag())
+                .guestUserTag(guest.getTag())
+                .build();
+    }
+
+    public ChatRoomListDTO sendChatData(Long roomId, String userTag, ChatRoomInfoDTO roomInfoDTO) {
+        String profile = null;
+        String nickname = null;
+        String tag = null;
+
+        if (userTag.equals(roomInfoDTO.getGuestUserTag())) {
+            User user = userRepository.findByTag(roomInfoDTO.getHostUserTag())
+                    .orElseThrow(() -> new IllegalArgumentException("No user"));
+            profile = user.getProfile();
+            nickname = user.getNickname();
+            tag = user.getTag();
+        } else if (userTag.equals(roomInfoDTO.getHostUserTag())) {
+            User user = userRepository.findByTag(roomInfoDTO.getGuestUserTag())
+                    .orElseThrow(() -> new IllegalArgumentException("No user"));
+
+            profile = user.getProfile();
+            nickname = user.getNickname();
+            tag = user.getTag();
+        }
+        ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
+                .profile(profile)
+                .nickname(nickname)
+                .tag(tag)
+                .build();
+
+        ChatMessage lastMessage = messageRepository.findByChatRoom_RoomId(roomId)
+                .stream().reduce((first, second) -> second).orElse(null);
+        ChatLastMessageDTO messageDTO = lastMsgToDTO(lastMessage);
+
+        return ChatRoomListDTO.builder()
+                .roomId(roomId)
+                .chatUserDTO(userInfoDTO)
+                .chatMessageDTO(messageDTO)
                 .build();
     }
 
@@ -355,7 +391,7 @@ public class ChatService {
 
     // 메시지
     @Transactional
-    public ChatMessageDTO createMessage(ChatMessageDTO chatMessageDTO, Long userId) {
+    public ChatMessageInfoDTO createMessage(ChatMessageDTO chatMessageDTO, Long userId) {
         ChatRoom chatRoom = roomRepository.findById(chatMessageDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("No room found for the provide id"));
         User sender = userRepository.findById(userId)
@@ -373,10 +409,7 @@ public class ChatService {
         ChatMessage newMessage = ChatMessage.createChatMessage(chatMessageDTO, chatRoom, sender.getTag());
         newMessage = messageRepository.save(newMessage);
 
-        ChatMessageDTO messageDTO = messageToDTO(newMessage);
-        messageDTO.setReceiverTag(receiver.getTag());
-
-        return messageDTO;
+        return messageToDTO(newMessage);
     }
 
 
@@ -412,10 +445,8 @@ public class ChatService {
                 .build();
     }
 
-    public ChatMessageDTO messageToDTO(ChatMessage message) {
-        return ChatMessageDTO.builder()
-                .messageId(message.getMessageId())
-                .roomId(message.getChatRoom().getRoomId())
+    public ChatMessageInfoDTO messageToDTO(ChatMessage message) {
+        return ChatMessageInfoDTO.builder()
                 .senderTag(message.getSender())
                 .message(message.getMessage())
                 .time(message.getTime())

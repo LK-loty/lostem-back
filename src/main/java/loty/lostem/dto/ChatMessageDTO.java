@@ -3,6 +3,7 @@ package loty.lostem.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import loty.lostem.chat.MessageType;
 
 import java.time.LocalDateTime;
 
@@ -11,9 +12,6 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class ChatMessageDTO {  //(채팅방 대화 내역 = 기존 메시지 리스트), (게시물 id, 사진, 제목, 상태), (상대방 이미지, 닉네임, 태그)
-    public enum MessageType{
-        ENTER, TALK, LEAVE;
-    }
     private MessageType type;
 
     private Long messageId;
@@ -32,10 +30,9 @@ public class ChatMessageDTO {  //(채팅방 대화 내역 = 기존 메시지 리
 
     private LocalDateTime time;
 
-    public void setMessageType(MessageType messageType) {
+    /*public void setMessageType(MessageType messageType) {
         this.type = messageType;
-    }
-
+    }*/
     public void setReceiverTag(String receiverTag) {
         this.receiverTag = receiverTag;
     }

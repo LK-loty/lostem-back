@@ -79,24 +79,6 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/get/post")
-    public ResponseEntity<Long> getRoomIdByPost(@RequestHeader("Authorization") String authorization, @RequestParam String postType, @RequestParam Long postId) {
-        Long userId;
-        Long roomId = null;
-
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            try {
-                String token = authorization.substring(7);
-                userId = tokenProvider.getUserId(token);
-                roomId = chatService.getRoomIdByPost(postType, postId, userId);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-
-        return ResponseEntity.ok(roomId);
-    }
-
     @GetMapping("/get/list")
     public ResponseEntity<List<ChatRoomListDTO>> getRoomListByPost(@RequestHeader("Authorization") String authorization, @RequestParam String postType, @RequestParam Long postId) {
         Long userId;
@@ -115,12 +97,30 @@ public class ChatController {
         return ResponseEntity.ok(chatRoomListDTO);
     }
 
+    @GetMapping("/get/post")
+    public ResponseEntity<Long> getRoomIdByPost(@RequestHeader("Authorization") String authorization, @RequestParam String postType, @RequestParam Long postId) {
+        Long userId;
+        Long roomId = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userId = tokenProvider.getUserId(token);
+                roomId = chatService.getRoomIdByPost(postType, postId, userId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        return ResponseEntity.ok(roomId);
+    }
+
 
 
     @PostMapping("/message/create")
-    public ResponseEntity<ChatMessageDTO> createMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<ChatMessageInfoDTO> createMessage(@RequestBody ChatMessageDTO messageDTO, @RequestHeader("Authorization") String authorization) {
         Long userId;
-        ChatMessageDTO dto = null;
+        ChatMessageInfoDTO dto = null;
 
         if (authorization != null && authorization.startsWith("Bearer ")) {
             try {
