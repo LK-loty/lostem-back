@@ -8,6 +8,7 @@ import loty.lostem.service.TokenService;
 import loty.lostem.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -73,7 +74,9 @@ public class UserController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<String> update(HttpServletRequest request, @Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<String> update(HttpServletRequest request,
+                                         @Valid @RequestPart("data") UserDTO userDTO,
+                                         @RequestPart(value = "image", required = false)MultipartFile image) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
