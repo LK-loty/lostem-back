@@ -9,6 +9,7 @@ import loty.lostem.service.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +58,7 @@ public class FoundController {
     @GetMapping("/read")
     public ResponseEntity<Page<PostFoundListDTO>> allLists(@RequestParam(value = "page", defaultValue = "0") int page,
                                                            @RequestParam(value = "size", defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("time").descending());
         Page<PostFoundListDTO> listDTOS = foundService.allLists(pageable);
         return ResponseEntity.ok(listDTOS);
     }
@@ -134,7 +135,7 @@ public class FoundController {
             @RequestParam(value = "storage", required = false) String storage,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("time").descending());
         Page<PostFoundListDTO> listDTOS = foundService.search(title, category, start, end, area, place, item, contents, state, storage, pageable);
 
         return ResponseEntity.ok(listDTOS);
