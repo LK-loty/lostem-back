@@ -90,6 +90,21 @@ public class UserController {
         }
     }
 
+    @PatchMapping("/change")
+    public ResponseEntity<String> change(HttpServletRequest request, @RequestBody AStringDTO password) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String check = userService.changePassword(userId, password.getWord());
+        if (check.equals("OK")) {
+            return ResponseEntity.ok("비밀번호 변경 완료");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/delete")
     public ResponseEntity<String> delete(HttpServletRequest request, @RequestBody AStringDTO password) {
         Long userId = tokenService.getUserId(request);

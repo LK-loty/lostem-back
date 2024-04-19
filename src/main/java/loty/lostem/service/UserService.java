@@ -105,6 +105,19 @@ public class UserService {
     }
 
     @Transactional
+    public String changePassword(Long userId, String password) {
+        User selectedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No data for user"));
+
+        String encoded = bCryptPasswordEncoder.encode(password);
+
+        selectedUser.updatePassword(encoded);
+        userRepository.save(selectedUser);
+
+        return "OK";
+    }
+
+    @Transactional
     public String deleteUser(Long userId, String password) {
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
