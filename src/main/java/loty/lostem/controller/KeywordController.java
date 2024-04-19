@@ -51,13 +51,13 @@ public class KeywordController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<KeywordListDTO> searchKeyword(HttpServletRequest request) {
+    public ResponseEntity<List<KeywordListDTO>> searchKeyword(HttpServletRequest request) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        KeywordListDTO listDTO = keywordService.searchKeyword(userId);
+        List<KeywordListDTO> listDTO = keywordService.searchKeyword(userId);
         if (listDTO != null ) {
             return ResponseEntity.ok(listDTO);
         } else {

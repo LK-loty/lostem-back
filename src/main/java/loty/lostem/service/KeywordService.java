@@ -2,10 +2,7 @@ package loty.lostem.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.KeywordDTO;
-import loty.lostem.dto.KeywordListDTO;
-import loty.lostem.dto.PostFoundListDTO;
-import loty.lostem.dto.PostLostListDTO;
+import loty.lostem.dto.*;
 import loty.lostem.entity.Keyword;
 import loty.lostem.entity.PostFound;
 import loty.lostem.entity.PostLost;
@@ -18,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,10 +26,6 @@ public class KeywordService {
     private final UserRepository userRepository;
     private final PostLostRepository lostRepository;
     private final PostFoundRepository foundRepository;
-
-    private final LostService lostService;
-
-    private final FoundService foundService;
 
     @Transactional
     public KeywordDTO createKeyword(KeywordDTO keywordDTO, Long userId) {
@@ -54,28 +48,29 @@ public class KeywordService {
         return keywordDTOList;
     }
 
-    public KeywordListDTO searchKeyword(Long userId) {
+    public List<KeywordListDTO> searchKeyword(Long userId) {
         List<Keyword> keywords = keywordRepository.findByUser_UserId(userId);
 
-        List<PostLostListDTO> lostListDTOS = new ArrayList<>();
-        List<PostFoundListDTO> foundListDTOS = new ArrayList<>();
+        List<KeywordListDTO> listDTOS = new ArrayList<>();
 
         for (Keyword keyword : keywords) {
             List<PostLost> lostList = lostRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
             List<PostFound> foundList = foundRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
 
             for (PostLost postLost : lostList) {
-                lostListDTOS.add(lostService.listToDTO(postLost));
+                listDTOS.add(listToDTO(postLost));
             }
             for (PostFound postFound : foundList) {
-                foundListDTOS.add(foundService.listToDTO(postFound));
+                listDTOS.add(listToDTO(postFound));
             }
         }
 
-        return KeywordListDTO.builder()
-                .postLostDTO(lostListDTOS)
-                .postFoundDTO(foundListDTOS)
-                .build();
+        Collections.sort(listDTOS, (a, b) -> a.getTime().compareTo(b.getTime()));
+
+        /*return KeywordListDTO.builder()
+                .postListDTOs(listDTOS)
+                .build();*/
+        return listDTOS;
     }
 
     @Transactional
@@ -99,6 +94,28 @@ public class KeywordService {
         return KeywordDTO.builder()
                 .keyword(keyword.getKeyword())
                 .time(keyword.getTime())
+                .build();
+    }
+
+    public KeywordListDTO listToDTO(PostFound post) {
+        return KeywordListDTO.builder()
+                .postId(post.getPostId())
+                .type("Found")
+                .title(post.getTitle())
+                .image(post.getImages())
+                .area(post.getArea())
+                .time(post.getTime())
+                .build();
+    }
+
+    public KeywordListDTO listToDTO(PostLost post) {
+        return KeywordListDTO.builder()
+                .postId(post.getPostId())
+                .type("Lost")
+                .title(post.getTitle())
+                .image(post.getImages())
+                .area(post.getArea())
+                .time(post.getTime())
                 .build();
     }
 }

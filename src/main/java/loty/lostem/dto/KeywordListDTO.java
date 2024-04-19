@@ -2,6 +2,7 @@ package loty.lostem.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -9,6 +10,10 @@ import java.util.List;
 @Builder
 @Getter
 public class KeywordListDTO {
-    private List<PostLostListDTO> postLostDTO;
-    private List<PostFoundListDTO> postFoundDTO;
+    private Long postId;
+    private String type;
+    private String title;
+    private String image;
+    private String area;
+    private LocalDateTime time;
 }
