@@ -36,11 +36,12 @@ public class FoundService {
     // 하나의 게시물에 대한 정보 리턴
     public PostFoundDetailsDTO readPost(Long postId) {
         PostFound selectPost = postFoundRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        User user = userRepository.findById(selectPost.getUser().getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("No data for user"));
+                .orElse(null);
 
-        if (selectPost.getPostId() != null) {
+        if (selectPost != null) {
+            User user = userRepository.findById(selectPost.getUser().getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("No data for user"));
+
             PostFoundInfoDTO selectedDTO = postToDTO(selectPost);
             PostUserDTO readOnePost = postUserToDTO(user);
 

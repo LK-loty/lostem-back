@@ -42,6 +42,10 @@ public class LostController {
 
     @GetMapping("/read/{id}") // 해당 글에 대한 정보
     public ResponseEntity<PostLostDetailsDTO> selectPost(@PathVariable Long id) {
+        if (id == null || id.equals(0L)) {
+            return ResponseEntity.notFound().build();
+        }
+
         PostLostDetailsDTO dto = lostService.readPost(id);
         if (dto != null) {
             return ResponseEntity.ok(dto);

@@ -42,6 +42,10 @@ public class FoundController {
 
     @GetMapping("/read/{id}") // 해당 글에 대한 정보
     public ResponseEntity<PostFoundDetailsDTO> selectPost(@PathVariable Long id) {
+        if (id == null || id.equals(0L)) {
+            return ResponseEntity.notFound().build();
+        }
+
         PostFoundDetailsDTO dto = foundService.readPost(id);
         if (dto != null) {
             return ResponseEntity.ok(dto);

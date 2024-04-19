@@ -35,11 +35,12 @@ public class LostService {
     // 하나의 게시물에 대한 정보 리턴
     public PostLostDetailsDTO readPost(Long postId) {
         PostLost selectPost = postLostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        User user = userRepository.findById(selectPost.getUser().getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("No data found for user"));
+                .orElse(null);
 
-        if (selectPost.getPostId() != null) {
+        if (selectPost != null) {
+            User user = userRepository.findById(selectPost.getUser().getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("No data found for user"));
+
             PostLostInfoDTO selectedDTO = postToDTO(selectPost);
             PostUserDTO readOnePost = postUserToDTO(user);
 
