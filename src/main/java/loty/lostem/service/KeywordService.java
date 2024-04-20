@@ -58,10 +58,14 @@ public class KeywordService {
             List<PostFound> foundList = foundRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
 
             for (PostLost postLost : lostList) {
-                listDTOS.add(listToDTO(postLost));
+                if (!postLost.getUser().getUserId().equals(userId)) {
+                    listDTOS.add(listToDTO(postLost));
+                }
             }
             for (PostFound postFound : foundList) {
-                listDTOS.add(listToDTO(postFound));
+                if (!postFound.getUser().getUserId().equals(userId)) {
+                    listDTOS.add(listToDTO(postFound));
+                }
             }
         }
 
