@@ -26,7 +26,9 @@ public class ReviewService {
     private final PostFoundRepository foundRepository;
 
     @Transactional
-    public String createReview(ReviewDTO reviewDTO, String userTag) {
+    public String createReview(ReviewDTO reviewDTO, Long userId) {
+        User self = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No user"));
         if (reviewDTO.getPostType().equals("lost")) {
             PostLost post = lostRepository.findById(reviewDTO.getPostId())
                     .orElse(null);
@@ -34,8 +36,8 @@ public class ReviewService {
                 return "NO DATA";
             }
 
-            if (!userTag.equals(post.getUser().getTag())) {
-                Review created = Review.createReview(reviewDTO, post.getUser(), userTag, "거래자");
+            if (!self.getTag().equals(post.getUser().getTag())) { // 요청자가 글쓴이가 아닐 때 (태그 없음)
+                Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), "거래자");
                 reviewRepository.save(created);
 
                 updateStar(post.getUser().getTag(), reviewDTO.getStar());
@@ -44,7 +46,7 @@ public class ReviewService {
                 User user = userRepository.findByTag(reviewDTO.getTag())
                         .orElseThrow(() -> new IllegalArgumentException("No user"));
 
-                Review created = Review.createReview(reviewDTO, user, userTag, "글쓴이");
+                Review created = Review.createReview(reviewDTO, user, self.getTag(), "글쓴이");
                 reviewRepository.save(created);
 
                 updateStar(user.getTag(), reviewDTO.getStar());
@@ -57,8 +59,8 @@ public class ReviewService {
                 return "NO DATA";
             }
 
-            if (!userTag.equals(post.getUser().getTag())) {
-                Review created = Review.createReview(reviewDTO, post.getUser(), userTag, "거래자");
+            if (!self.getTag().equals(post.getUser().getTag())) {
+                Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), "거래자");
                 reviewRepository.save(created);
 
                 updateStar(post.getUser().getTag(), reviewDTO.getStar());
@@ -67,7 +69,7 @@ public class ReviewService {
                 User user = userRepository.findByTag(reviewDTO.getTag())
                         .orElseThrow(() -> new IllegalArgumentException("No user"));
 
-                Review created = Review.createReview(reviewDTO, user, userTag, "글쓴이");
+                Review created = Review.createReview(reviewDTO, user, self.getTag(), "글쓴이");
                 reviewRepository.save(created);
 
                 updateStar(user.getTag(), reviewDTO.getStar());

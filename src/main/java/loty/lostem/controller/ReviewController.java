@@ -26,22 +26,15 @@ public class ReviewController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createReview(@RequestHeader("Authorization") String authorization, @Valid @RequestBody ReviewDTO reviewDTO) {
-        String userTag;
-        if (authorization != null && authorization.startsWith("Bearer ")) {
+    public ResponseEntity<String> createReview(HttpServletRequest request, @Valid @RequestBody ReviewDTO reviewDTO) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
             return ResponseEntity.badRequest().body("토큰 오류");
         }
-        try {
-            String token = authorization.substring(7);
-            userTag = tokenProvider.getUserTag(token);
-            String check = reviewService.createReview(reviewDTO, userTag);
-
-            if (check.equals("OK")) {
-                return ResponseEntity.ok("평가글 생성 완료");
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-        } catch (IllegalArgumentException e) {
+        String check = reviewService.createReview(reviewDTO, userId);
+        if (check.equals("OK")) {
+            return ResponseEntity.ok("평가글 생성 완료");
+        } else {
             return ResponseEntity.badRequest().build();
         }
     }
