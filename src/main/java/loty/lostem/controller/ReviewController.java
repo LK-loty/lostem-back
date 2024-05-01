@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,16 +26,22 @@ public class ReviewController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createReview(@RequestHeader("Authorization") String token, @Valid @RequestBody ReviewDTO reviewDTO) {
-        String userTag = tokenProvider.getUserTag(token);
-        if (userTag == null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> createReview(@RequestHeader("Authorization") String authorization, @Valid @RequestBody ReviewDTO reviewDTO) {
+        String userTag;
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("토큰 오류");
         }
+        try {
+            String token = authorization.substring(7);
+            userTag = tokenProvider.getUserTag(token);
+            String check = reviewService.createReview(reviewDTO, userTag);
 
-        String check = reviewService.createReview(reviewDTO, userTag);
-        if (check.equals("OK")) {
-            return ResponseEntity.ok("평가글 생성 완료");
-        } else {
+            if (check.equals("OK")) {
+                return ResponseEntity.ok("평가글 생성 완료");
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
