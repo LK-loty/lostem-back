@@ -3,9 +3,13 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.ReviewDTO;
-import loty.lostem.dto.StarDTO;
+import loty.lostem.dto.ReviewReturnDTO;
+import loty.lostem.entity.PostFound;
+import loty.lostem.entity.PostLost;
 import loty.lostem.entity.Review;
 import loty.lostem.entity.User;
+import loty.lostem.repository.PostFoundRepository;
+import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.ReviewRepository;
 import loty.lostem.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -18,58 +22,95 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final PostLostRepository lostRepository;
+    private final PostFoundRepository foundRepository;
 
     @Transactional
-    public ReviewDTO createReview(ReviewDTO reviewDTO, String userTag) {
-        User user = userRepository.findByTag(reviewDTO.getTag())
-                .orElseThrow(() -> new IllegalArgumentException("No data found for the provided userId"));
+    public String createReview(ReviewDTO reviewDTO, String userTag) {
+        if (reviewDTO.getPostType().equals("lost")) {
+            PostLost post = lostRepository.findById(reviewDTO.getPostId())
+                    .orElse(null);
+            if (post == null) {
+                return "NO DATA";
+            }
 
-        if (!userTag.equals(user.getTag())) {
-            Review created = Review.createReview(reviewDTO, user, userTag);
-            reviewRepository.save(created);
-            ReviewDTO createdDTO = reviewToDTO(created);
-            return createdDTO;
-        } else {
+            if (!userTag.equals(post.getUser().getTag())) {
+                Review created = Review.createReview(reviewDTO, post.getUser(), userTag, "거래자");
+                reviewRepository.save(created);
+
+                updateStar(post.getUser().getTag(), reviewDTO.getStar());
+                return "OK";
+            } else {
+                User user = userRepository.findByTag(reviewDTO.getTag())
+                        .orElseThrow(() -> new IllegalArgumentException("No user"));
+
+                Review created = Review.createReview(reviewDTO, user, userTag, "글쓴이");
+                reviewRepository.save(created);
+
+                updateStar(user.getTag(), reviewDTO.getStar());
+                return "OK";
+            }
+        } else if (reviewDTO.getPostType().equals("found")) {
+            PostFound post = foundRepository.findById(reviewDTO.getPostId())
+                    .orElse(null);
+            if (post == null) {
+                return "NO DATA";
+            }
+
+            if (!userTag.equals(post.getUser().getTag())) {
+                Review created = Review.createReview(reviewDTO, post.getUser(), userTag, "거래자");
+                reviewRepository.save(created);
+
+                updateStar(post.getUser().getTag(), reviewDTO.getStar());
+                return "OK";
+            } else {
+                User user = userRepository.findByTag(reviewDTO.getTag())
+                        .orElseThrow(() -> new IllegalArgumentException("No user"));
+
+                Review created = Review.createReview(reviewDTO, user, userTag, "글쓴이");
+                reviewRepository.save(created);
+
+                updateStar(user.getTag(), reviewDTO.getStar());
+                return "OK";
+            }
+        } else
             return null;
-        }
     }
 
     // 상세 보기는 지원하지 않음. 전체 목록만
-    public List<ReviewDTO> readReview(String tag) {
+    public List<ReviewReturnDTO> readReview(String tag) {
         return reviewRepository.findByUser_Tag(tag).stream()
                 .map(this::reviewToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ReviewDTO deleteReview(Long reviewId, String userTag) {
+    public String deleteReview(Long reviewId, String userTag) {
         Review selectedReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found"));
 
         if (selectedReview.getReviewedUser().equals(userTag)) {
-            ReviewDTO selectedDTO = reviewToDTO(selectedReview);
             reviewRepository.deleteById(reviewId);
-            return selectedDTO;
+            return "OK";
         } else {
             return null;
         }
     }
 
     @Transactional
-    public void updateStar(StarDTO starDTO) {
-        User user = userRepository.findByTag(starDTO.getUserTag())
+    public void updateStar(String userTag, float star) {
+        User user = userRepository.findByTag(userTag)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
-        user.updateStar(starDTO.getStar());
+        user.updateStar(star);
         userRepository.save(user);
     }
 
 
 
-    public ReviewDTO reviewToDTO(Review review) {
-        return ReviewDTO.builder()
-                .reviewId(review.getReviewId())
-                .tag(review.getUser().getTag())
+    public ReviewReturnDTO reviewToDTO(Review review) {
+        return ReviewReturnDTO.builder()
                 .reviewedUserTag(review.getReviewedUser())
+                .role(review.getRole())
                 .contents(review.getContents())
                 .time(review.getTime())
                 .build();

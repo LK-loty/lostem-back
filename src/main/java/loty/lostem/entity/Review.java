@@ -27,6 +27,8 @@ public class Review {
     @NotNull
     private String reviewedUser; // 리뷰를 해준 사용자
 
+    private String role; // 글쓴이 || 거래자
+
     @Column
     @NotNull
     @Size(max = 100)
@@ -36,10 +38,11 @@ public class Review {
     @NotNull
     private LocalDateTime time;
 
-    public static Review createReview(ReviewDTO reviewDTO, User user, String reviewedUser) {
+    public static Review createReview(ReviewDTO reviewDTO, User user, String reviewedUser, String role) {
         return Review.builder()
                 .user(user)
                 .reviewedUser(reviewedUser)
+                .role(role)
                 .contents(reviewDTO.getContents())
                 .time(LocalDateTime.now())
                 .build();

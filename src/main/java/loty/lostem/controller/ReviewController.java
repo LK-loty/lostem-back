@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.ReviewDTO;
-import loty.lostem.dto.StarDTO;
+import loty.lostem.dto.ReviewReturnDTO;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.ReviewService;
 import loty.lostem.service.TokenService;
@@ -25,23 +25,23 @@ public class ReviewController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/create")
-    public ResponseEntity<ReviewDTO> createReview(HttpServletRequest request, @Valid @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<String> createReview(HttpServletRequest request, @Valid @RequestBody ReviewDTO reviewDTO) {
         String userTag = tokenProvider.getUserTag(request.getHeader("Authorization"));
         if (userTag == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        ReviewDTO dto = reviewService.createReview(reviewDTO, userTag);
-        if (dto != null) {
-            return ResponseEntity.ok(dto);
+        String check = reviewService.createReview(reviewDTO, userTag);
+        if (check.equals("OK")) {
+            return ResponseEntity.ok("평가글 생성 완료");
         } else {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/read")
-    public ResponseEntity<List<ReviewDTO>> userReview(@RequestParam String tag) {
-        List<ReviewDTO> dtoList = reviewService.readReview(tag);
+    public ResponseEntity<List<ReviewReturnDTO>> userReview(@RequestParam String tag) {
+        List<ReviewReturnDTO> dtoList = reviewService.readReview(tag);
         if (dtoList != null) {
             return ResponseEntity.ok(dtoList);
         } else {
@@ -56,21 +56,11 @@ public class ReviewController {
             return ResponseEntity.badRequest().build();
         }
 
-        ReviewDTO dto = reviewService.deleteReview(id, userTag);
-        if (dto != null) {
+        String check = reviewService.deleteReview(id, userTag);
+        if (check.equals("OK")) {
             return ResponseEntity.ok("평가글 삭제 완료");
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-
-
-    @PatchMapping("/star")
-    public ResponseEntity updateStar(HttpServletRequest request, @Valid @RequestBody StarDTO starDTO) {
-        log.info("별점 줌 : " + starDTO.getStar());
-        reviewService.updateStar(starDTO);
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
