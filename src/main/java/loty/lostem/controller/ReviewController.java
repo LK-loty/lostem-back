@@ -25,8 +25,8 @@ public class ReviewController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createReview(HttpServletRequest request, @Valid @RequestBody ReviewDTO reviewDTO) {
-        String userTag = tokenProvider.getUserTag(request.getHeader("Authorization"));
+    public ResponseEntity<String> createReview(@RequestHeader("Authorization") String token, @Valid @RequestBody ReviewDTO reviewDTO) {
+        String userTag = tokenProvider.getUserTag(token);
         if (userTag == null) {
             return ResponseEntity.badRequest().build();
         }
