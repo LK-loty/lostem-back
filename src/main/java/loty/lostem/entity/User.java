@@ -118,6 +118,10 @@ public class User{
         this.password = password;
     }
 
+    public void updateImage(String url) {
+        this.profile = url;
+    }
+
     public void updateStar(float star) {
         this.starCount++;
         double newStar = (double) Math.round(star * 100) / 100;

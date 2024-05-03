@@ -25,7 +25,7 @@ public class FoundService {
     private final UserRepository userRepository;
 
     @Transactional
-    public String createPost(PostFoundDTO postFoundDTO, Long userId) {
+    public String createPost(PostFoundDTO postFoundDTO, Long userId, String urls) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostFound created = PostFound.createPost(postFoundDTO, user);
@@ -69,7 +69,7 @@ public class FoundService {
     }
 
     @Transactional
-    public String updatePost(Long userId, PostFoundDTO postDTO) {
+    public String updatePost(Long userId, PostFoundDTO postDTO, String urls) {
         User writer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
 

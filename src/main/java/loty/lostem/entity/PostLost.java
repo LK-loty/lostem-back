@@ -102,7 +102,6 @@ public class PostLost {
 
     public void updatePostFields(PostLostDTO postLostDTO) {
         this.title = postLostDTO.getTitle();
-        this.images = postLostDTO.getImages();
         this.category = postLostDTO.getCategory();
         this.date = postLostDTO.getDate();
         this.area = postLostDTO.getArea();
@@ -115,6 +114,10 @@ public class PostLost {
 
     public void updatePostState(PostStateDTO postStateDTO) {
         this.state = postStateDTO.getState();
+    }
+
+    public void updateImage(String images) {
+        this.images = images;
     }
 
     public void deletePost(PostLost postLost) {

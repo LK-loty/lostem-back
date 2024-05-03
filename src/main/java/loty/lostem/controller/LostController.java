@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.*;
 import loty.lostem.service.LostService;
+import loty.lostem.service.S3ImageService;
 import loty.lostem.service.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/lost")
 public class LostController {
     private final LostService lostService;
+    private final S3ImageService imageService;
     private final TokenService tokenService;
 
     @PostMapping("/create")
@@ -33,7 +36,15 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        String check = lostService.createPost(postLostDTO, userId);
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile image : images) {
+            String url = imageService.upload(image, "lost");
+            urls.add(url);
+        }
+
+        String saveUrl = String.join(", ", urls);
+        String check = lostService.createPost(postLostDTO, userId, saveUrl);
+
         if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 생성 완료");
         } else {
@@ -82,7 +93,19 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        String check = lostService.updatePost(userId, postLostDTO);
+        String[] deleteUrl = postLostDTO.getImages().split(", ");
+        for (String deleteImage : deleteUrl) {
+            imageService.deleteImageFromS3(deleteImage);
+        }
+
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile image : images) {
+            String url = imageService.upload(image, "lost");
+            urls.add(url);
+        }
+
+        String saveUrl = String.join(", ", urls);
+        String check = lostService.updatePost(userId, postLostDTO, saveUrl);
 
         if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 수정 완료");

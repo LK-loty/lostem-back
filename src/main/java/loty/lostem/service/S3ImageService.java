@@ -28,25 +28,25 @@ public class S3ImageService {
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
-    public String upload (MultipartFile image) { // 이미지 파일이 빈 파일인지 검증
+    public String upload (MultipartFile image, String folderPath) { // 이미지 파일이 빈 파일인지 검증
         if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
             throw new AmazonS3Exception("Empty file exception");
         }
-        return this.uploadImage(image); // s3 에 저장된 이미지 url 반환
+        return this.uploadImage(image, folderPath); // s3 에 저장된 이미지 url 반환
     }
 
-    private String uploadImage (MultipartFile image) {
+    private String uploadImage (MultipartFile image, String folderPath) {
         this.validateImageFileExtension(image.getOriginalFilename());
         try {
-            return this.uploadImageToS3(image);
+            return this.uploadImageToS3(image, folderPath);
         } catch (IOException e) {
             throw new AmazonS3Exception("IO Exception on image upload");
         }
     }
 
-    private String uploadImageToS3 (MultipartFile image) throws IOException {
-        String originalFilename = image.getOriginalFilename(); // 원본 파일 명
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+    private String uploadImageToS3 (MultipartFile image, String folderPath) throws IOException {
+        String originalFilename = folderPath + "/" + image.getOriginalFilename(); // 원본 파일 명
+        String extension = originalFilename.substring(originalFilename.lastIndexOf(".")); // 확장자 명
 
         String s3FileName = UUID.randomUUID().toString().substring(0, 10) + originalFilename;
 
@@ -54,9 +54,9 @@ public class S3ImageService {
         byte[] bytes = IOUtils.toByteArray(is);  // image를 byte[] 로 변환
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("image/" + extension);
-        metadata.setContentLength(bytes.length);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        metadata.setContentType("image/" + extension);  // = metaData.setContentType(image.getContentType());
+        metadata.setContentLength(bytes.length);  // = image.getSize()
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes); // s3에 요청할 때 사용할 byteInputStream 생성  // = file.getInputStream()
 
         try {
             PutObjectRequest putObjectRequest =

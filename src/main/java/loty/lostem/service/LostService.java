@@ -24,10 +24,11 @@ public class LostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public String createPost(PostLostDTO postLostDTO, Long userId) {
+    public String createPost(PostLostDTO postLostDTO, Long userId, String urls) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostLost created = PostLost.createPost(postLostDTO, user);
+        created.updateImage(urls);
         postLostRepository.save(created);
         return "OK";
     }
@@ -68,7 +69,7 @@ public class LostService {
     }
 
     @Transactional
-    public String updatePost(Long userId, PostLostDTO postDTO) {
+    public String updatePost(Long userId, PostLostDTO postDTO, String urls) {
         User writer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
 
@@ -157,10 +158,11 @@ public class LostService {
     }
 
     public PostLostListDTO listToDTO(PostLost post) {
+        String[] image = post.getImages().split(", ");
         return PostLostListDTO.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
-                .image(post.getImages())
+                .image(image[0])
                 .area(post.getArea())
                 .time(post.getTime())
                 .build();

@@ -107,7 +107,6 @@ public class PostFound {
 
     public void updatePostFields(PostFoundDTO postFoundDTO) {
         this.title = postFoundDTO.getTitle();
-        this.images = postFoundDTO.getImages();
         this.category = postFoundDTO.getCategory();
         this.date = postFoundDTO.getDate();
         this.area = postFoundDTO.getArea();
@@ -121,6 +120,10 @@ public class PostFound {
 
     public void updatePostState(PostStateDTO postStateDTO) {
         this.state = postStateDTO.getState();
+    }
+
+    public void updateImage(String images) {
+        this.images = images;
     }
 
     public void deletePost(PostFound postFound) {

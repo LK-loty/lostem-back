@@ -12,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
 
@@ -91,7 +92,7 @@ public class UserService {
     }
 
     @Transactional
-    public String updateUser(Long userId, UserDTO userDTO) {
+    public String updateUser(Long userId, UserDTO userDTO, String image) {
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         if (selectedUser.getName().equals("알 수 없음")) {
@@ -99,6 +100,7 @@ public class UserService {
         }
 
         selectedUser.updateUserFields(selectedUser, userDTO);
+        selectedUser.updateImage(image);
         userRepository.save(selectedUser);
 
         return "OK";

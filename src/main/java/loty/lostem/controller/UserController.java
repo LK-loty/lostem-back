@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.*;
+import loty.lostem.service.S3ImageService;
 import loty.lostem.service.TokenService;
 import loty.lostem.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final S3ImageService imageService;
     private final TokenService tokenService;
 
     @PostMapping("/signup")
@@ -82,7 +84,8 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        String check = userService.updateUser(userId, userDTO);
+        String url = imageService.upload(image, "user");
+        String check = userService.updateUser(userId, userDTO, url);
         if (check.equals("OK")) {
             return ResponseEntity.ok("정보 수정 완료");
         } else {
