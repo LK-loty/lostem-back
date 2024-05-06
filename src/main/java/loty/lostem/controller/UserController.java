@@ -84,7 +84,11 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        String url = imageService.upload(image, "user");
+        String url = null;
+        if (image != null && !image.isEmpty()) {
+            url = imageService.upload(image, "user");
+        }
+
         String check = userService.updateUser(userId, userDTO, url);
         if (check.equals("OK")) {
             return ResponseEntity.ok("정보 수정 완료");

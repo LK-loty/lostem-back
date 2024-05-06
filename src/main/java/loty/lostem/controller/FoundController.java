@@ -36,13 +36,16 @@ public class FoundController {
             return ResponseEntity.notFound().build();
         }
 
-        List<String> urls = new ArrayList<>();
-        for (MultipartFile image : images) {
-            String url = imageService.upload(image, "found");
-            urls.add(url);
+        String saveUrl = null;
+        if (images != null && images.length > 0) {
+            List<String> urls = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String url = imageService.upload(image, "found");
+                urls.add(url);
+            }
+            saveUrl = String.join(", ", urls);
         }
 
-        String saveUrl = String.join(", ", urls);
         String check = foundService.createPost(postFoundDTO, userId, saveUrl);
 
         if (check.equals("OK")) {
@@ -98,13 +101,16 @@ public class FoundController {
             imageService.deleteImageFromS3(deleteImage);
         }
 
-        List<String> urls = new ArrayList<>();
-        for (MultipartFile image : images) {
-            String url = imageService.upload(image, "found");
-            urls.add(url);
+        String saveUrl = null;
+        if (images != null && images.length > 0) {
+            List<String> urls = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String url = imageService.upload(image, "found");
+                urls.add(url);
+            }
+            saveUrl = String.join(", ", urls);
         }
 
-        String saveUrl = String.join(", ", urls);
         String check = foundService.updatePost(userId, postFoundDTO, saveUrl);
 
         if (check.equals("OK")) {

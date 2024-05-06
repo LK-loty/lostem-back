@@ -36,13 +36,16 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        List<String> urls = new ArrayList<>();
-        for (MultipartFile image : images) {
-            String url = imageService.upload(image, "lost");
-            urls.add(url);
+        String saveUrl = null;
+        if (images != null && images.length > 0) {
+            List<String> urls = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String url = imageService.upload(image, "lost");
+                urls.add(url);
+            }
+            saveUrl = String.join(", ", urls);
         }
 
-        String saveUrl = String.join(", ", urls);
         String check = lostService.createPost(postLostDTO, userId, saveUrl);
 
         if (check.equals("OK")) {
@@ -98,13 +101,16 @@ public class LostController {
             imageService.deleteImageFromS3(deleteImage);
         }
 
-        List<String> urls = new ArrayList<>();
-        for (MultipartFile image : images) {
-            String url = imageService.upload(image, "lost");
-            urls.add(url);
+        String saveUrl = null;
+        if (images != null && images.length > 0) {
+            List<String> urls = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String url = imageService.upload(image, "lost");
+                urls.add(url);
+            }
+            saveUrl = String.join(", ", urls);
         }
 
-        String saveUrl = String.join(", ", urls);
         String check = lostService.updatePost(userId, postLostDTO, saveUrl);
 
         if (check.equals("OK")) {
