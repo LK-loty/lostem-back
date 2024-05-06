@@ -47,25 +47,25 @@ public class S3ImageService {
     }
 
     private String uploadImageToS3 (MultipartFile image, String folderPath) throws IOException {
-        String originalFilename = folderPath + "/" + image.getOriginalFilename(); // 원본 파일 명
+        String originalFilename = image.getOriginalFilename(); // 원본 파일 명
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".")); // 확장자 명
 
-        String s3FileName = UUID.randomUUID().toString().substring(0, 10) + originalFilename;
+        String s3FileName = folderPath + "/" + UUID.randomUUID().toString().substring(0, 10) + originalFilename;
 
         InputStream is = image.getInputStream();
         byte[] bytes = IOUtils.toByteArray(is);  // image를 byte[] 로 변환
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("image/" + extension);  // = metaData.setContentType(image.getContentType());
+        metadata.setContentType("image/" + extension);  // = metadata.setContentType(image.getContentType());
         metadata.setContentLength(bytes.length);  // = image.getSize()
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes); // s3에 요청할 때 사용할 byteInputStream 생성  // = file.getInputStream()
 
         try {
             PutObjectRequest putObjectRequest =
-                    new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead);  // s3에 putObject 할 때 사용할 요청 객체
+                    new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata);
             amazonS3.putObject(putObjectRequest);
         } catch (Exception e) {
+            log.info("업로드 실패 : {}", e.getMessage());
             throw new AmazonS3Exception("put object exception");
         } finally {
             byteArrayInputStream.close();
