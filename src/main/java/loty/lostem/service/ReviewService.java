@@ -37,7 +37,7 @@ public class ReviewService {
             }
 
             if (!self.getTag().equals(post.getUser().getTag())) { // 요청자가 글쓴이가 아닐 때 (태그 없음)
-                Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), "거래자");
+                Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), self.getNickname(), "거래자");
                 reviewRepository.save(created);
 
                 updateStar(post.getUser().getTag(), reviewDTO.getStar());
@@ -46,7 +46,7 @@ public class ReviewService {
                 User user = userRepository.findByTag(reviewDTO.getTag())
                         .orElseThrow(() -> new IllegalArgumentException("No user"));
 
-                Review created = Review.createReview(reviewDTO, user, self.getTag(), "글쓴이");
+                Review created = Review.createReview(reviewDTO, user, self.getTag(), self.getNickname(), "작성자");
                 reviewRepository.save(created);
 
                 updateStar(user.getTag(), reviewDTO.getStar());
@@ -60,7 +60,7 @@ public class ReviewService {
             }
 
             if (!self.getTag().equals(post.getUser().getTag())) {
-                Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), "거래자");
+                Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), self.getNickname(), "거래자");
                 reviewRepository.save(created);
 
                 updateStar(post.getUser().getTag(), reviewDTO.getStar());
@@ -69,7 +69,7 @@ public class ReviewService {
                 User user = userRepository.findByTag(reviewDTO.getTag())
                         .orElseThrow(() -> new IllegalArgumentException("No user"));
 
-                Review created = Review.createReview(reviewDTO, user, self.getTag(), "글쓴이");
+                Review created = Review.createReview(reviewDTO, user, self.getTag(), self.getNickname(), "글쓴이");
                 reviewRepository.save(created);
 
                 updateStar(user.getTag(), reviewDTO.getStar());
@@ -91,7 +91,7 @@ public class ReviewService {
         Review selectedReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found"));
 
-        if (selectedReview.getReviewedUser().equals(userTag)) {
+        if (selectedReview.getReviewedUserTag().equals(userTag)) {
             reviewRepository.deleteById(reviewId);
             return "OK";
         } else {
@@ -111,7 +111,8 @@ public class ReviewService {
 
     public ReviewReturnDTO reviewToDTO(Review review) {
         return ReviewReturnDTO.builder()
-                .reviewedUserTag(review.getReviewedUser())
+                .reviewedUserTag(review.getReviewedUserTag())
+                .reviewedNickname(review.getReviewedNickname())
                 .role(review.getRole())
                 .contents(review.getContents())
                 .time(review.getTime())

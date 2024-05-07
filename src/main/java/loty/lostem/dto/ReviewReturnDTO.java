@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ReviewReturnDTO {
     private String reviewedUserTag;  // 평가하는 사람
+    private String reviewedNickname;
 
     private String role; // 작성자 || 거래자
 

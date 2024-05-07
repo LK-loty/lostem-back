@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class ChatMessageInfoDTO {
+    private Long roomId;
     private String senderTag;
     private MessageType messageType;
     private String message;

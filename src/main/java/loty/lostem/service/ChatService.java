@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -89,13 +90,11 @@ public class ChatService {
     // 채탕방 목록 정보
     public List<ChatRoomListDTO> getAllRooms(Long userId) { // 상대방 + 메시지
         Optional<User> userOptional = userRepository.findById(userId);
-
-        String userTag;
         List<ChatRoom> chatRooms = new ArrayList<>();
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            userTag = user.getTag();
+            String userTag = user.getTag();
 
             chatRooms = roomRepository.findByHostUserTagOrGuestUserTag(userTag);
         }
@@ -110,25 +109,18 @@ public class ChatService {
             User guest = userRepository.findByTag(chatRoom.getGuestUserTag())
                     .orElseThrow(() -> new IllegalArgumentException("No data"));
             ChatUserInfoDTO userInfoDTO = null;
-            if (userId.equals(host.getUserId())) {
-                String profile = guest.getProfile();
-                String nickname = guest.getNickname();
-                String tag = guest.getTag();
 
+            if (userId.equals(host.getUserId())) {
                 userInfoDTO = ChatUserInfoDTO.builder()
-                        .profile(profile)
-                        .nickname(nickname)
-                        .tag(tag)
+                        .profile(guest.getProfile())
+                        .nickname(guest.getNickname())
+                        .tag(guest.getTag())
                         .build();
             } else if (userId.equals(guest.getUserId())) {
-                String profile = host.getProfile();
-                String nickname = host.getNickname();
-                String tag = host.getTag();
-
                 userInfoDTO = ChatUserInfoDTO.builder()
-                        .profile(profile)
-                        .nickname(nickname)
-                        .tag(tag)
+                        .profile(host.getProfile())
+                        .nickname(host.getNickname())
+                        .tag(host.getTag())
                         .build();
             }
 
@@ -144,7 +136,20 @@ public class ChatService {
             chatRoomListDTOS.add(chatRoomListDTO);
         }
 
-        return chatRoomListDTOS;
+        chatRoomListDTOS.sort((o1, o2) -> {
+            if (o1.getChatMessageDTO() == null || o1.getChatMessageDTO().getTime() == null) {
+                return 1;
+            }
+            if (o2.getChatMessageDTO() == null || o2.getChatMessageDTO().getTime() == null) {
+                return -1;
+            }
+            return o2.getChatMessageDTO().getTime().compareTo(o1.getChatMessageDTO().getTime());
+        });
+
+        return chatRoomListDTOS;/*.stream()
+                .filter(dto -> dto.getChatMessageDTO() != null && dto.getChatMessageDTO().getTime() != null)
+                .sorted(Comparator.comparing(dto -> dto.getChatMessageDTO().getTime()).reversed())
+                .collect(Collectors.toList());*/
     }
 
     // 글쓴이 != 본인
@@ -447,6 +452,7 @@ public class ChatService {
 
     public ChatMessageInfoDTO messageToDTO(ChatMessage message) {
         return ChatMessageInfoDTO.builder()
+                .roomId(message.getChatRoom().getRoomId())
                 .senderTag(message.getSender())
                 .message(message.getMessage())
                 .time(message.getTime())
