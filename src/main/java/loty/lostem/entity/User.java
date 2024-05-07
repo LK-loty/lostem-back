@@ -97,7 +97,7 @@ public class User{
                 .password(userDTO.getPassword())
                 .phone(userDTO.getPhone())
                 .email(userDTO.getEmail())
-                .profile(userDTO.getProfile())
+                .profile("https://lostem-upload.s3.amazonaws.com/userBasic.png")
                 .star((double) 0)
                 .starCount(0)
                 .tag(userDTO.getTag())
@@ -112,6 +112,10 @@ public class User{
         user.phone = userDTO.getPhone();
         user.email = userDTO.getEmail();
         user.profile = userDTO.getProfile();
+
+        if (userDTO.getProfile() == null || userDTO.getProfile().isEmpty()) {
+            user.profile = "https://lostem-upload.s3.amazonaws.com/userBasic.png";
+        }
     }
 
     public void updatePassword(String password) {

@@ -117,6 +117,10 @@ public class PostFound {
         this.state = postFoundDTO.getState();
         this.time = LocalDateTime.now();
         this.storage = postFoundDTO.getStorage();
+
+        if (postFoundDTO.getImages() == null || postFoundDTO.getImages().isEmpty()) {
+            this.images = "https://lostem-upload.s3.amazonaws.com/itemBasic.png";
+        }
     }
 
     public void updatePostState(PostStateDTO postStateDTO) {
