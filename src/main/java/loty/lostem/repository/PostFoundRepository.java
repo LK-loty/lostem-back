@@ -20,11 +20,10 @@ public interface PostFoundRepository extends JpaRepository<PostFound, Long> , Jp
     @Query("SELECT DISTINCT pf FROM PostFound pf WHERE pf.state <> '삭제'")
     Page<PostFound> findAllNonDeleted(Pageable pageable);
 
-    @Query("SELECT DISTINCT pf FROM PostFound pf JOIN pf.user u WHERE u.userId = :userId " +
-            "AND (pf.title LIKE %:keyword% OR pf.contents LIKE %:keyword%) AND pf.time >= :keywordTime " +
+    @Query("SELECT DISTINCT pf FROM PostFound pf WHERE " +
+            "(pf.title LIKE %:keyword% OR pf.contents LIKE %:keyword%) AND pf.time >= :keywordTime " +
             "AND pf.state <> '삭제'")
-    List<PostFound> findPostsAfterKeywordTime(@Param("userId") Long userId,
-                                              @Param("keyword") String keyword,
+    List<PostFound> findPostsAfterKeywordTime(@Param("keyword") String keyword,
                                               @Param("keywordTime") LocalDateTime keywordTime);
 
 }

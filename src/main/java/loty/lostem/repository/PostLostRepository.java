@@ -21,11 +21,11 @@ public interface PostLostRepository extends JpaRepository<PostLost, Long> , JpaS
     @Query("SELECT DISTINCT pf FROM PostLost pf WHERE pf.state <> '삭제'")
     Page<PostLost> findAllNonDeleted(Pageable pageable);
 
-    @Query("SELECT DISTINCT pf FROM PostLost pf JOIN pf.user u WHERE u.userId = :userId " +
-            "AND (pf.title LIKE %:keyword% OR pf.contents LIKE %:keyword%) AND pf.time >= :keywordTime " +
+    @Query("SELECT DISTINCT pf FROM PostLost pf WHERE " +
+            "(pf.title LIKE %:keyword% OR pf.contents LIKE %:keyword%) AND pf.time >= :keywordTime " +
             "AND pf.state <> '삭제'")
-    List<PostLost> findPostsAfterKeywordTime(@Param("userId") Long userId,
-                                              @Param("keyword") String keyword,
-                                              @Param("keywordTime") LocalDateTime keywordTime);
+    List<PostLost> findPostsAfterKeywordTime(@Param("keyword") String keyword,
+                                             @Param("keywordTime") LocalDateTime keywordTime);
+
 
 }

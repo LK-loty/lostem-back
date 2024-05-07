@@ -11,7 +11,6 @@ import loty.lostem.repository.KeywordRepository;
 import loty.lostem.repository.PostFoundRepository;
 import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -54,8 +53,8 @@ public class KeywordService {
         List<KeywordListDTO> listDTOS = new ArrayList<>();
 
         for (Keyword keyword : keywords) {
-            List<PostLost> lostList = lostRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
-            List<PostFound> foundList = foundRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
+            List<PostLost> lostList = lostRepository.findPostsAfterKeywordTime(keyword.getKeyword(), keyword.getTime());
+            List<PostFound> foundList = foundRepository.findPostsAfterKeywordTime(keyword.getKeyword(), keyword.getTime());
 
             for (PostLost postLost : lostList) {
                 if (!postLost.getUser().getUserId().equals(userId)) {
