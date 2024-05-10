@@ -2,8 +2,7 @@ package loty.lostem.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.PostLostDTO;
-import loty.lostem.dto.PostReportDTO;
+import loty.lostem.dto.ReportDTO;
 import loty.lostem.entity.*;
 import loty.lostem.repository.*;
 import org.springframework.stereotype.Service;
@@ -19,11 +18,11 @@ public class PostReportService {
     private final PostFoundRepository foundRepository;
 
     @Transactional
-    public PostReportDTO createLostReport(PostReportDTO postReportDTO, Long userId) {
-        PostLost post = lostRepository.findById(postReportDTO.getPostId())
+    public ReportDTO createLostReport(ReportDTO reportDTO, Long userId) {
+        PostLost post = lostRepository.findById(reportDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided postId"));
 
-        List<LostReport> list = lostReportRepository.findByPostLost_PostId(postReportDTO.getPostId());
+        List<LostReport> list = lostReportRepository.findByPostLost_PostId(reportDTO.getPostId());
 
         for (LostReport report : list) {
             if (report.getUserId().equals(userId)) {
@@ -32,21 +31,21 @@ public class PostReportService {
         }
 
         if (!post.getUser().getUserId().equals(userId)) {
-            LostReport created = LostReport.createPostReport(postReportDTO, post, userId);
+            LostReport created = LostReport.createPostReport(reportDTO, post, userId);
             lostReportRepository.save(created);
 
             post.increaseCount();
             lostRepository.save(post);
         }
-        return postReportDTO;
+        return reportDTO;
     }
 
     @Transactional
-    public PostReportDTO createFoundReport(PostReportDTO postReportDTO, Long userId) {
-        PostFound post = foundRepository.findById(postReportDTO.getPostId())
+    public ReportDTO createFoundReport(ReportDTO reportDTO, Long userId) {
+        PostFound post = foundRepository.findById(reportDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided postId"));
 
-        List<FoundReport> list = foundReportRepository.findByPostFound_PostId(postReportDTO.getPostId());
+        List<FoundReport> list = foundReportRepository.findByPostFound_PostId(reportDTO.getPostId());
 
         for (FoundReport report : list) {
             if (report.getUserId().equals(userId)) {
@@ -55,13 +54,13 @@ public class PostReportService {
         }
 
         if (!post.getUser().getUserId().equals(userId)) {
-            FoundReport created = FoundReport.createPostReport(postReportDTO, post, userId);
+            FoundReport created = FoundReport.createPostReport(reportDTO, post, userId);
             foundReportRepository.save(created);
 
             post.increaseCount();
             foundRepository.save(post);
         }
-        return postReportDTO;
+        return reportDTO;
     }
 
 

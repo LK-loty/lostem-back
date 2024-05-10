@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ChatReportDTO {
-    private Long reportId;
+public class ReportDTO {
+    private String type;
 
-    private Long roomId;  // 채팅방 키
+    private Long location;
 
     @NotNull
     @Size(max = 20)

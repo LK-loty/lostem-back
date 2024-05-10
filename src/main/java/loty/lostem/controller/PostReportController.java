@@ -3,7 +3,7 @@ package loty.lostem.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import loty.lostem.dto.PostReportDTO;
+import loty.lostem.dto.ReportDTO;
 import loty.lostem.service.PostReportService;
 import loty.lostem.service.TokenService;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +20,13 @@ public class PostReportController {
     private final TokenService tokenService;
 
     @PostMapping("/lost")
-    public ResponseEntity<PostReportDTO> createLostReport(HttpServletRequest request, @Valid @RequestBody PostReportDTO reportDTO) {
+    public ResponseEntity<ReportDTO> createLostReport(HttpServletRequest request, @Valid @RequestBody ReportDTO reportDTO) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        PostReportDTO dto = postReportService.createLostReport(reportDTO, userId);
+        ReportDTO dto = postReportService.createLostReport(reportDTO, userId);
         if (dto != null) {
             return ResponseEntity.ok(dto);
         } else {
@@ -35,13 +35,13 @@ public class PostReportController {
     }
 
     @PostMapping("/found")
-    public ResponseEntity<PostReportDTO> createFoundReport(HttpServletRequest request, @Valid @RequestBody PostReportDTO reportDTO) {
+    public ResponseEntity<ReportDTO> createFoundReport(HttpServletRequest request, @Valid @RequestBody ReportDTO reportDTO) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        PostReportDTO dto = postReportService.createFoundReport(reportDTO, userId);
+        ReportDTO dto = postReportService.createFoundReport(reportDTO, userId);
         if (dto != null) {
             return ResponseEntity.ok(dto);
         } else {

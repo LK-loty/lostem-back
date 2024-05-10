@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import loty.lostem.dto.PostReportDTO;
+import loty.lostem.dto.ReportDTO;
 
 import java.time.LocalDateTime;
 
@@ -16,15 +16,17 @@ import java.time.LocalDateTime;
 public class PostReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postReportId;
+    private Long reportId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId", nullable = false)
-    private Post post;
+    private String type;
+
+    private Long location;
 
     @Column
     @NotNull
     private Long userId;
+
+    private Long reporterId;
 
     @Column
     @NotNull
@@ -42,12 +44,14 @@ public class PostReport {
 
 
 
-    public static PostReport createPostReport(PostReportDTO postReportDTO, Post post) {
+    public static PostReport createReport(ReportDTO reportDTO, Long userId, Long reporterId) {
         return PostReport.builder()
-                .post(post)
-                .userId(postReportDTO.getUserId())
-                .title(postReportDTO.getTitle())
-                .contents(postReportDTO.getContents())
+                .type(reportDTO.getType())
+                .location(reportDTO.getLocation())
+                .userId(userId)
+                .reporterId(reporterId)
+                .title(reportDTO.getTitle())
+                .contents(reportDTO.getContents())
                 .time(LocalDateTime.now())
                 .build();
     }
