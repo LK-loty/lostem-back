@@ -132,6 +132,10 @@ public class User{
         }
     }
 
+    public void updateReport() {
+        this.report++;
+    }
+
     public String getRole() {
         return this.role.name();
     }

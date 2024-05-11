@@ -85,9 +85,7 @@ public class Post {
     private LocalDateTime time;
 
 
-
-    @OneToMany(mappedBy = "post")
-    private List<PostReport> postReports = new ArrayList<>();
+    
 
 
 

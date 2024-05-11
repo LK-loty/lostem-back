@@ -66,24 +66,11 @@ public class PostFound {
     private String state;
 
     @Column
-    @NotNull
-    @Max(2)
-    private int report;
-
-    @Column
     @Size(max = 50)
     private String storage;
 
     @Column
     private LocalDateTime time;
-
-
-
-    @OneToMany(mappedBy = "postFound")
-    private List<FoundReport> foundReports = new ArrayList<>();
-
-    /*@OneToMany(mappedBy = "postFound")
-    private List<FoundChatRoom> chatRooms = new ArrayList<>();*/
 
 
 
@@ -98,7 +85,6 @@ public class PostFound {
                 .item(postFoundDTO.getItem())
                 .contents(postFoundDTO.getContents())
                 .state("찾는중")
-                .report(0)
                 .time(LocalDateTime.now())
                 .category(postFoundDTO.getCategory())
                 .storage(postFoundDTO.getStorage())
@@ -139,9 +125,5 @@ public class PostFound {
         this.state = "삭제";
         this.time = null;
         this.storage = " ";
-    }
-
-    public void increaseCount() {
-        this.report++;
     }
 }

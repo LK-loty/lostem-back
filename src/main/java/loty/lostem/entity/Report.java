@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class PostReport {
+public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
@@ -44,8 +44,8 @@ public class PostReport {
 
 
 
-    public static PostReport createReport(ReportDTO reportDTO, Long userId, Long reporterId) {
-        return PostReport.builder()
+    public static Report createReport(ReportDTO reportDTO, Long userId, Long reporterId) {
+        return Report.builder()
                 .type(reportDTO.getType())
                 .location(reportDTO.getLocation())
                 .userId(userId)

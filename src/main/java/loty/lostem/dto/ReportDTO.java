@@ -22,6 +22,4 @@ public class ReportDTO {
     @NotNull
     @Size(max = 50)
     private String contents;  // 신고 내용
-
-    private LocalDateTime time;
 }
