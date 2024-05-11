@@ -30,7 +30,6 @@ public class ChatService {
     public ChatRoomDTO createRoom(ChatMessageDTO messageDTO, Long userId) {
         User guest = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No guest"));
-        ChatRoomDTO chatRoomDTO = null;
 
         if (messageDTO.getPostType().equals("lost")) {
             log.info("lost 게시글");
@@ -39,26 +38,27 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("lost", messageDTO.getPostId(), guest.getTag());
+            Optional<ChatRoom> chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("lost", messageDTO.getPostId(), guest.getTag());
 
-            if (chatRoom == null) {
+            if (chatRoom.isEmpty()) {
                 log.info("채팅방을 생성합니다");
 
-                chatRoom = ChatRoom.builder()
+                ChatRoom createdRoom = ChatRoom.builder()
                         .postType("lost")
                         .postId(post.getPostId())
                         .hostUserTag(host.getTag())
                         .guestUserTag(guest.getTag())
                         .build();
-                roomRepository.save(chatRoom);
+                roomRepository.save(createdRoom);
 
-                ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest.getTag());
+                ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, createdRoom, guest.getTag());
                 messageRepository.save(chatMessage);
 
-                chatRoomDTO = roomToDTO(chatRoom);
-                return chatRoomDTO;
+                return roomToDTO(createdRoom);
+            } else {
+                ChatRoom room = chatRoom.get();
+                return roomToDTO(room);
             }
-            return roomToDTO(chatRoom);
         }
         else if (messageDTO.getPostType().equals("found")){
             log.info("found 게시물");
@@ -67,22 +67,26 @@ public class ChatService {
             User host = userRepository.findById(post.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No host"));
 
-            ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("found", messageDTO.getPostId(), guest.getTag());
+            Optional<ChatRoom> chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("found", messageDTO.getPostId(), guest.getTag());
 
-            if (chatRoom == null) {
+            if (chatRoom.isEmpty()) {
                 log.info("채팅방을 생성합니다.");
-                chatRoom = ChatRoom.builder()
+                ChatRoom createdRoom = ChatRoom.builder()
                         .postType("found")
                         .postId(post.getPostId())
                         .hostUserTag(host.getTag())
                         .guestUserTag(guest.getTag())
                         .build();
-                roomRepository.save(chatRoom);
+                roomRepository.save(createdRoom);
 
-                ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, chatRoom, guest.getTag());
+                ChatMessage chatMessage = ChatMessage.createChatMessage(messageDTO, createdRoom, guest.getTag());
                 messageRepository.save(chatMessage);
+
+                return roomToDTO(createdRoom);
+            } else {
+                ChatRoom room = chatRoom.get();
+                return roomToDTO(room);
             }
-            return roomToDTO(chatRoom);
         }
         return null;
     }
@@ -164,8 +168,9 @@ public class ChatService {
 
             if (!post.getUser().getUserId().equals(userId)) {
                 log.info("글쓴이가 본인이 아니므로 room ID를 반환합니다.");
-                ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag(postType, postId, guest.getTag());
-                return chatRoom.getRoomId();
+                return roomRepository.findByPostTypeAndPostIdAndGuestUserTag(postType, postId, guest.getTag())
+                        .map(ChatRoom::getRoomId)
+                        .orElse(null);
             }
         } else if (postType.equals("found")) {
             log.info("found 타입 확인");
@@ -174,8 +179,9 @@ public class ChatService {
 
             if (!post.getUser().getUserId().equals(userId)) {
                 log.info("글쓴이가 본인이 아니므로 room ID를 반환합니다.");
-                ChatRoom chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag(postType, postId, guest.getTag());
-                return chatRoom.getRoomId();
+                return roomRepository.findByPostTypeAndPostIdAndGuestUserTag(postType, postId, guest.getTag())
+                        .map(ChatRoom::getRoomId)
+                        .orElse(null);
             }
         }
         return null;
