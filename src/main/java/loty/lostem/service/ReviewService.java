@@ -69,7 +69,7 @@ public class ReviewService {
                 User user = userRepository.findByTag(reviewDTO.getTag())
                         .orElseThrow(() -> new IllegalArgumentException("No user"));
 
-                Review created = Review.createReview(reviewDTO, user, self.getTag(), self.getNickname(), "글쓴이");
+                Review created = Review.createReview(reviewDTO, user, self.getTag(), self.getNickname(), "작성자");
                 reviewRepository.save(created);
 
                 updateStar(user.getTag(), reviewDTO.getStar());
