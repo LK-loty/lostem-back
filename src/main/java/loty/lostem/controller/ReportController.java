@@ -29,8 +29,10 @@ public class ReportController {
         String check = reportService.createReport(reportDTO, userId);
         if (check.equals("OK")) {
             return ResponseEntity.ok("신고글 작성 완료");
+        } else if (check.equals("exist")) {
+            return ResponseEntity.status(201).body("이미 신고글을 작성하였습니다.");
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
