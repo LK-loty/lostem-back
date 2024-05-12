@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class ReportDTO {
+    private String userTag;
     private String type;
 
     private Long location;

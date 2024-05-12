@@ -46,7 +46,7 @@ public class User{
     @Column
     private String profile;
 
-    @Column
+    @Column(columnDefinition = "DECIMAL(5,2)")
     @Max(5)
     @Min(0)
     private Double star;
@@ -60,7 +60,6 @@ public class User{
 
     @Column
     @NotNull
-    @Max(2)
     private int report;
 
     @Enumerated(EnumType.STRING)
