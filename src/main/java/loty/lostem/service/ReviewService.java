@@ -81,7 +81,7 @@ public class ReviewService {
 
     // 상세 보기는 지원하지 않음. 전체 목록만
     public List<ReviewReturnDTO> readReview(String tag) {
-        return reviewRepository.findByUser_Tag(tag).stream()
+        return reviewRepository.findByUser_TagOrderByTimeDesc(tag).stream()
                 .map(this::reviewToDTO)
                 .collect(Collectors.toList());
     }

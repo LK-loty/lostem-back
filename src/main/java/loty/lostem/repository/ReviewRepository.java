@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findByUser_Tag(String tag);
+    List<Review> findByUser_TagOrderByTimeDesc(String tag);
 }
