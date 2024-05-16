@@ -66,20 +66,7 @@ public class PostLost {
     private String state;
 
     @Column
-    @NotNull
-    @Max(2)
-    private int report;
-
-    @Column
     private LocalDateTime time;
-
-
-
-    @OneToMany(mappedBy = "postLost")
-    private List<LostReport> lostReports = new ArrayList<>();
-
-    /*@OneToMany(mappedBy = "postLost")
-    private List<LostChatRoom> chatRooms = new ArrayList<>();*/
 
 
 
@@ -94,7 +81,6 @@ public class PostLost {
                 .item(postLostDTO.getItem())
                 .contents(postLostDTO.getContents())
                 .state("찾는중")
-                .report(0)
                 .time(LocalDateTime.now())
                 .category(postLostDTO.getCategory())
                 .build();
@@ -110,6 +96,10 @@ public class PostLost {
         this.contents = postLostDTO.getContents();
         this.state = postLostDTO.getState();
         this.time = LocalDateTime.now();
+
+        if (postLostDTO.getImages() == null || postLostDTO.getImages().isEmpty()) {
+            this.images = "https://lostem-upload.s3.amazonaws.com/itemBasic.png";
+        }
     }
 
     public void updatePostState(PostStateDTO postStateDTO) {
@@ -131,9 +121,5 @@ public class PostLost {
         this.contents = " ";
         this.state = "삭제";
         this.time = null;
-    }
-
-    public void increaseCount() {
-        this.report++;
     }
 }

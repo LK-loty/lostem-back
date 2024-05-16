@@ -11,12 +11,9 @@ import loty.lostem.repository.KeywordRepository;
 import loty.lostem.repository.PostFoundRepository;
 import loty.lostem.repository.PostLostRepository;
 import loty.lostem.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,18 +49,19 @@ public class KeywordService {
         List<Keyword> keywords = keywordRepository.findByUser_UserId(userId);
 
         List<KeywordListDTO> listDTOS = new ArrayList<>();
+        Set<Long> addedPostIds = new HashSet<>();
 
         for (Keyword keyword : keywords) {
-            List<PostLost> lostList = lostRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
-            List<PostFound> foundList = foundRepository.findPostsAfterKeywordTime(userId, keyword.getKeyword(), keyword.getTime());
+            List<PostLost> lostList = lostRepository.findPostsAfterKeywordTime(keyword.getKeyword(), keyword.getTime());
+            List<PostFound> foundList = foundRepository.findPostsAfterKeywordTime(keyword.getKeyword(), keyword.getTime());
 
             for (PostLost postLost : lostList) {
-                if (!postLost.getUser().getUserId().equals(userId)) {
+                if (!postLost.getUser().getUserId().equals(userId) && addedPostIds.add(postLost.getPostId())) {
                     listDTOS.add(listToDTO(postLost));
                 }
             }
             for (PostFound postFound : foundList) {
-                if (!postFound.getUser().getUserId().equals(userId)) {
+                if (!postFound.getUser().getUserId().equals(userId) && addedPostIds.add(postFound.getPostId())) {
                     listDTOS.add(listToDTO(postFound));
                 }
             }

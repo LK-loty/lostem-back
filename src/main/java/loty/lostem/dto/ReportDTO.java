@@ -10,10 +10,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ChatReportDTO {
-    private Long reportId;
+public class ReportDTO {
+    private String userTag;
+    private String type;
 
-    private Long roomId;  // 채팅방 키
+    private Long location;
 
     @NotNull
     @Size(max = 20)
@@ -22,6 +23,4 @@ public class ChatReportDTO {
     @NotNull
     @Size(max = 50)
     private String contents;  // 신고 내용
-
-    private LocalDateTime time;
 }

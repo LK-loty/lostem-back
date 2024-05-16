@@ -112,7 +112,11 @@ public class ChatController {
             }
         }
 
-        return ResponseEntity.ok(roomId);
+        if (roomId == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(roomId);
+        }
     }
 
 
