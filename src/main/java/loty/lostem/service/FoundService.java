@@ -168,10 +168,11 @@ public class FoundService {
     }
 
     public PostFoundListDTO listToDTO(PostFound post) {
+        String[] image = post.getImages().split(", ");
         return PostFoundListDTO.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
-                .image(post.getImages())
+                .image(image[0])
                 .area(post.getArea())
                 .time(post.getTime())
                 .build();
