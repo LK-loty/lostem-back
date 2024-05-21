@@ -12,8 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,12 +25,20 @@ public class LostService {
     private final PostLostRepository postLostRepository;
     private final UserRepository userRepository;
 
+    private final S3ImageService imageService;
+
     @Transactional
     public String createPost(PostLostDTO postLostDTO, Long userId, String urls) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostLost created = PostLost.createPost(postLostDTO, user);
-        created.updateImage(urls);
+
+        if (urls == null || urls.isEmpty()) {
+            created.setBasicImage();
+        } else {
+            created.updateImage(urls);
+        }
+
         postLostRepository.save(created);
         return "OK";
     }

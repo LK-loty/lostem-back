@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 public class PostFoundDTO {
     private Long postId;
 
-    private Long userId;
-
     @NotNull
     @Size(max = 20)
     private String title;  // 제목
@@ -47,16 +45,8 @@ public class PostFoundDTO {
     @Size(max = 5)
     private String state;  // 게시물 상태
 
-    private int report;
-
     @Size(max = 50)
     private String storage;  // 보관 장소
 
     private LocalDateTime time;
-
-
-
-    public void defaultImage(String url) {
-        this.images = url;
-    }
 }

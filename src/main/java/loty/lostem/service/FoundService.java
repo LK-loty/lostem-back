@@ -29,6 +29,13 @@ public class FoundService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostFound created = PostFound.createPost(postFoundDTO, user);
+
+        if (urls == null || urls.isEmpty()) {
+            created.setBasicImage();
+        } else {
+            created.updateImage(urls);
+        }
+
         postFoundRepository.save(created);
         return "OK";
     }
