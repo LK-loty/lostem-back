@@ -92,15 +92,18 @@ public class UserService {
     }
 
     @Transactional
-    public String updateUser(Long userId, UserDTO userDTO, String image) {
+    public String updateUser(Long userId, UserUpdateDTO userDTO, String image) {
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         if (selectedUser.getName().equals("알 수 없음")) {
             return null;
         }
 
-        selectedUser.updateUserFields(selectedUser, userDTO);
-        selectedUser.updateImage(image);
+        if (image == null) {
+            selectedUser.updateUserFields(selectedUser, userDTO);
+        } else {
+            selectedUser.updateImage(image);
+        }
         userRepository.save(selectedUser);
 
         return "OK";

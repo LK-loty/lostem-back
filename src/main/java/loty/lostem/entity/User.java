@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import loty.lostem.dto.UserDTO;
+import loty.lostem.dto.UserUpdateDTO;
 import loty.lostem.security.UserRole;
 
 import java.util.ArrayList;
@@ -105,15 +106,16 @@ public class User{
                 .build();
     }
 
-    public static void updateUserFields(User user, UserDTO userDTO) {
+    public static void updateUserFields(User user, UserUpdateDTO userDTO) {
         user.name = userDTO.getName();
         user.nickname = userDTO.getNickname();
         user.phone = userDTO.getPhone();
         user.email = userDTO.getEmail();
-        user.profile = userDTO.getProfile();
 
         if (userDTO.getProfile() == null || userDTO.getProfile().isEmpty()) {
             user.profile = "https://lostem-upload.s3.amazonaws.com/userBasic.png";
+        } else {
+            user.profile = userDTO.getProfile();
         }
     }
 

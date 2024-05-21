@@ -77,7 +77,7 @@ public class UserController {
 
     @PatchMapping("/update")
     public ResponseEntity<String> update(HttpServletRequest request,
-                                         @Valid @RequestPart("data") UserDTO userDTO,
+                                         @Valid @RequestPart("data") UserUpdateDTO userDTO,
                                          @RequestPart(value = "image", required = false)MultipartFile image) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
