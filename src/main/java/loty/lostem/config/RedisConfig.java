@@ -1,4 +1,3 @@
-/*
 package loty.lostem.config;
 
 import lombok.RequiredArgsConstructor;
@@ -47,8 +46,7 @@ public class RedisConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
         return redisTemplate;
     }
 }
-*/

@@ -31,16 +31,6 @@ public class MailService {
     }
 
     // 발송할 이메일 데이터 설정
-    /*@Transactional
-    public SimpleMailMessage createEmail(String toEmail, String title, String text) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(toEmail);
-        mailMessage.setSubject(title);
-        mailMessage.setText(text);
-
-        return mailMessage;
-    }*/
-
     @Transactional
     public MimeMessage createEmail(String toEmail, String authCode) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();

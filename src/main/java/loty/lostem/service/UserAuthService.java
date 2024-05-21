@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.MailAuthDTO;
 import loty.lostem.entity.User;
 import loty.lostem.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.Random;
 
@@ -17,11 +19,16 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class UserAuthService {
+    private static final String AUTH_CODE_PREFIX = "AuthCode ";
 
     private final UserRepository userRepository;
 
     private final MailService mailService;
 
+    private final RedisService redisService;
+
+    @Value("${spring.mail.auth-code-expiration-millis}")
+    private long authCodeExpirationMillis;
 
 
     public void sendCodeToEmail(MailAuthDTO toEmailDTO) {
@@ -31,10 +38,28 @@ public class UserAuthService {
             toEmailDTO.setAuthCode(authCode);
 
             mailService.sendEmail(toEmailDTO);
+            redisService.setValues(AUTH_CODE_PREFIX + toEmailDTO.getEmail(), authCode, Duration.ofMillis(authCodeExpirationMillis));
             log.info("인증코드 : " + authCode);
         } else {
             log.info("중복된 이메일이 존재합니다");
         }
+    }
+
+    public String validateEmail(MailAuthDTO mailAuthDTO) {
+        String email = this.checkDuplicatedEmail(mailAuthDTO.getEmail());
+        String code = mailAuthDTO.getAuthCode();
+
+        if (email.equals(mailAuthDTO.getEmail())) {
+            String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
+            boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(code);
+
+            if (authResult) {
+                return "OK";
+            } else {
+                return "Fail";
+            }
+        }
+        return "Other user";
     }
 
     private String checkDuplicatedEmail(String email) {

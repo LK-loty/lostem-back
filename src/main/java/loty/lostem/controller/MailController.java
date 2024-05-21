@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import loty.lostem.dto.MailAuthDTO;
 import loty.lostem.service.UserAuthService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,4 +23,13 @@ public class MailController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/validate")
+    public ResponseEntity validateMail(@RequestBody MailAuthDTO mailAuthDTO) {
+        String check = userAuthService.validateEmail(mailAuthDTO);
+        if (check.equals("OK")) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(201));
+        }
+    }
 }
