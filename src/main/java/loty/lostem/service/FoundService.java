@@ -13,8 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,17 +25,28 @@ import java.util.stream.Collectors;
 public class FoundService {
     private final PostFoundRepository postFoundRepository;
     private final UserRepository userRepository;
+    private final S3ImageService imageService;
 
     @Transactional
-    public String createPost(PostFoundDTO postFoundDTO, Long userId, String urls) {
+    public String createPost(PostFoundDTO postFoundDTO, Long userId, MultipartFile[] images) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostFound created = PostFound.createPost(postFoundDTO, user);
 
-        if (urls == null || urls.isEmpty()) {
+        String saveUrl = null;
+        if (images != null && images.length > 0) {
+            List<String> urls = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String url = imageService.upload(image, "found");
+                urls.add(url);
+            }
+            saveUrl = String.join(", ", urls);
+        }
+
+        if (saveUrl == null || saveUrl.isEmpty()) {
             created.setBasicImage();
         } else {
-            created.updateImage(urls);
+            created.updateImage(saveUrl);
         }
 
         postFoundRepository.save(created);
@@ -76,13 +89,29 @@ public class FoundService {
     }
 
     @Transactional
-    public String updatePost(Long userId, PostFoundDTO postDTO, String urls) {
+    public String updatePost(Long userId, PostFoundDTO postDTO, MultipartFile[] images) {
         User writer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
 
         PostFound selectedPost = postFoundRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
+
+            String[] deleteUrl = postDTO.getImages().split(", ");
+            for (String deleteImage : deleteUrl) {
+                imageService.deleteImageFromS3(deleteImage);
+            }
+
+            String saveUrl = null;
+            if (images != null && images.length > 0) {
+                List<String> urls = new ArrayList<>();
+                for (MultipartFile image : images) {
+                    String url = imageService.upload(image, "found");
+                    urls.add(url);
+                }
+                saveUrl = String.join(", ", urls);
+            }
+
             selectedPost.updatePostFields(postDTO);
             postFoundRepository.save(selectedPost);
 

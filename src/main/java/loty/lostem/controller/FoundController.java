@@ -24,7 +24,6 @@ import java.util.List;
 @RequestMapping("/api/found")
 public class FoundController {
     private final FoundService foundService;
-    private final S3ImageService imageService;
     private final TokenService tokenService;
 
     @PostMapping("/create")
@@ -36,17 +35,7 @@ public class FoundController {
             return ResponseEntity.notFound().build();
         }
 
-        String saveUrl = null;
-        if (images != null && images.length > 0) {
-            List<String> urls = new ArrayList<>();
-            for (MultipartFile image : images) {
-                String url = imageService.upload(image, "found");
-                urls.add(url);
-            }
-            saveUrl = String.join(", ", urls);
-        }
-
-        String check = foundService.createPost(postFoundDTO, userId, saveUrl);
+        String check = foundService.createPost(postFoundDTO, userId, images);
 
         if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 생성 완료");
@@ -96,22 +85,7 @@ public class FoundController {
             return ResponseEntity.notFound().build();
         }
 
-        String[] deleteUrl = postFoundDTO.getImages().split(", ");
-        for (String deleteImage : deleteUrl) {
-            imageService.deleteImageFromS3(deleteImage);
-        }
-
-        String saveUrl = null;
-        if (images != null && images.length > 0) {
-            List<String> urls = new ArrayList<>();
-            for (MultipartFile image : images) {
-                String url = imageService.upload(image, "found");
-                urls.add(url);
-            }
-            saveUrl = String.join(", ", urls);
-        }
-
-        String check = foundService.updatePost(userId, postFoundDTO, saveUrl);
+        String check = foundService.updatePost(userId, postFoundDTO, images);
 
         if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 수정 완료");

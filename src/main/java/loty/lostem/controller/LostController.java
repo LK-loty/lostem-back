@@ -24,7 +24,6 @@ import java.util.List;
 @RequestMapping("/api/lost")
 public class LostController {
     private final LostService lostService;
-    private final S3ImageService imageService;
     private final TokenService tokenService;
 
     @PostMapping("/create")
@@ -36,17 +35,7 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        String saveUrl = null;
-        if (images != null && images.length > 0) {
-            List<String> urls = new ArrayList<>();
-            for (MultipartFile image : images) {
-                String url = imageService.upload(image, "lost");
-                urls.add(url);
-            }
-            saveUrl = String.join(", ", urls);
-        }
-
-        String check = lostService.createPost(postLostDTO, userId, saveUrl);
+        String check = lostService.createPost(postLostDTO, userId, images);
 
         if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 생성 완료");
@@ -96,22 +85,7 @@ public class LostController {
             return ResponseEntity.notFound().build();
         }
 
-        String[] deleteUrl = postLostDTO.getImages().split(", ");
-        for (String deleteImage : deleteUrl) {
-            imageService.deleteImageFromS3(deleteImage);
-        }
-
-        String saveUrl = null;
-        if (images != null && images.length > 0) {
-            List<String> urls = new ArrayList<>();
-            for (MultipartFile image : images) {
-                String url = imageService.upload(image, "lost");
-                urls.add(url);
-            }
-            saveUrl = String.join(", ", urls);
-        }
-
-        String check = lostService.updatePost(userId, postLostDTO, saveUrl);
+        String check = lostService.updatePost(userId, postLostDTO, images);
 
         if (check.equals("OK")) {
             return ResponseEntity.ok("게시물 수정 완료");

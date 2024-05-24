@@ -24,19 +24,28 @@ import java.util.stream.Collectors;
 public class LostService {
     private final PostLostRepository postLostRepository;
     private final UserRepository userRepository;
-
     private final S3ImageService imageService;
 
     @Transactional
-    public String createPost(PostLostDTO postLostDTO, Long userId, String urls) {
+    public String createPost(PostLostDTO postLostDTO, Long userId, MultipartFile[] images) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostLost created = PostLost.createPost(postLostDTO, user);
 
-        if (urls == null || urls.isEmpty()) {
+        String saveUrl = null;
+        if (images != null && images.length > 0) {
+            List<String> urls = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String url = imageService.upload(image, "lost");
+                urls.add(url);
+            }
+            saveUrl = String.join(", ", urls);
+        }
+
+        if (saveUrl == null || saveUrl.isEmpty()) {
             created.setBasicImage();
         } else {
-            created.updateImage(urls);
+            created.updateImage(saveUrl);
         }
 
         postLostRepository.save(created);
@@ -79,7 +88,7 @@ public class LostService {
     }
 
     @Transactional
-    public String updatePost(Long userId, PostLostDTO postDTO, String urls) {
+    public String updatePost(Long userId, PostLostDTO postDTO, MultipartFile[] images) {
         User writer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
 
@@ -87,6 +96,22 @@ public class LostService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
         if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
+
+            String[] deleteUrl = postDTO.getImages().split(", ");
+            for (String deleteImage : deleteUrl) {
+                imageService.deleteImageFromS3(deleteImage);
+            }
+
+            String saveUrl = null;
+            if (images != null && images.length > 0) {
+                List<String> urls = new ArrayList<>();
+                for (MultipartFile image : images) {
+                    String url = imageService.upload(image, "lost");
+                    urls.add(url);
+                }
+                saveUrl = String.join(", ", urls);
+            }
+
             selectedPost.updatePostFields(postDTO);
             postLostRepository.save(selectedPost);
 

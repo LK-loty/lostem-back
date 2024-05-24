@@ -23,6 +23,8 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    private final S3ImageService imageService;
+
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
         String encoded = bCryptPasswordEncoder.encode(userDTO.getPassword());
@@ -92,17 +94,22 @@ public class UserService {
     }
 
     @Transactional
-    public String updateUser(Long userId, UserUpdateDTO userDTO, String image) {
+    public String updateUser(Long userId, UserUpdateDTO userDTO, MultipartFile image) {
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         if (selectedUser.getName().equals("알 수 없음")) {
             return null;
         }
 
-        if (image == null) {
+        String url = null;
+        if (image != null && !image.isEmpty()) {
+            url = imageService.upload(image, "user");
+        }
+
+        if (url == null) {
             selectedUser.updateUserFields(selectedUser, userDTO);
         } else {
-            selectedUser.updateImage(image);
+            selectedUser.updateImage(url);
         }
         userRepository.save(selectedUser);
 

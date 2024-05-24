@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-    private final S3ImageService imageService;
     private final TokenService tokenService;
 
     @PostMapping("/signup")
@@ -27,13 +26,13 @@ public class UserController {
 
     // find, pw >> 본인 인증 먼저 하고 나서
 
-    @PostMapping("/find")
+    @PostMapping("/find") // 이메일 보내면 인증코드 확인 후 아이디랑 200 같이
     public ResponseEntity<String> findUsername(@Valid @RequestBody AStringDTO phone) {
         String username = userService.findUser(phone);
         return ResponseEntity.ok(username);
     }
 
-    @PostMapping("/reset")
+    @PostMapping("/reset") // 이메일 인증 후
     public ResponseEntity<String> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
         userService.resetPassword(loginDTO);
         return ResponseEntity.ok("비밀번호 재설정 완료");
@@ -78,18 +77,13 @@ public class UserController {
     @PatchMapping("/update")
     public ResponseEntity<String> update(HttpServletRequest request,
                                          @Valid @RequestPart("data") UserUpdateDTO userDTO,
-                                         @RequestPart(value = "image", required = false)MultipartFile image) {
+                                         @RequestPart(value = "image", required = false) MultipartFile image) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
         }
 
-        String url = null;
-        if (image != null && !image.isEmpty()) {
-            url = imageService.upload(image, "user");
-        }
-
-        String check = userService.updateUser(userId, userDTO, url);
+        String check = userService.updateUser(userId, userDTO, image);
         if (check.equals("OK")) {
             return ResponseEntity.ok("정보 수정 완료");
         } else {
