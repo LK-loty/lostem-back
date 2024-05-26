@@ -111,20 +111,17 @@ public class User{
         user.nickname = userDTO.getNickname();
         user.phone = userDTO.getPhone();
         user.email = userDTO.getEmail();
+    }
 
-        if (userDTO.getProfile() == null || userDTO.getProfile().isEmpty()) {
-            user.profile = "https://lostem-upload.s3.amazonaws.com/userBasic.png";
-        } else {
-            user.profile = userDTO.getProfile();
-        }
+    public void updateProfile(String url) {
+        this.profile = url;
+    }
+    public void updateProfileDefault() {
+        this.profile = "https://lostem-upload.s3.amazonaws.com/userBasic.png";
     }
 
     public void updatePassword(String password) {
         this.password = password;
-    }
-
-    public void updateImage(String url) {
-        this.profile = url;
     }
 
     public void updateStar(float star) {

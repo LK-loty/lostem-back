@@ -101,16 +101,19 @@ public class UserService {
             return null;
         }
 
-        String url = null;
-        if (image != null && !image.isEmpty()) {
-            url = imageService.upload(image, "user");
+        if ((!userDTO.getProfile().equals(selectedUser.getProfile()))) { // 이미지 변경 있을 경우에만
+            String deleteImg = selectedUser.getProfile();
+            imageService.deleteImageFromS3(deleteImg);
+
+            if (image != null && !image.isEmpty()) {
+                String url = imageService.upload(image, "user");
+                selectedUser.updateProfile(url);
+            } else { // 기본 이미지로 변경
+                selectedUser.updateProfileDefault();
+            }
         }
 
-        if (url == null) {
-            selectedUser.updateUserFields(selectedUser, userDTO);
-        } else {
-            selectedUser.updateImage(url);
-        }
+        selectedUser.updateUserFields(selectedUser, userDTO);
         userRepository.save(selectedUser);
 
         return "OK";
