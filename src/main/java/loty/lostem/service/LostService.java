@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,23 +97,46 @@ public class LostService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
         if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
+            StringBuilder saveUrl = new StringBuilder();
+            String[] existingUrl = selectedPost.getImages().split(", ");
 
-            String[] deleteUrl = postDTO.getImages().split(", ");
-            for (String deleteImage : deleteUrl) {
-                imageService.deleteImageFromS3(deleteImage);
-            }
-
-            String saveUrl = null;
-            if (images != null && images.length > 0) {
-                List<String> urls = new ArrayList<>();
-                for (MultipartFile image : images) {
-                    String url = imageService.upload(image, "lost");
-                    urls.add(url);
+            if ((postDTO.getImages().isEmpty() || postDTO.getImages() == null)) {
+                if (!(selectedPost.getImages().equals("https://lostem-upload.s3.amazonaws.com/itemBasic.png") || selectedPost.getImages().isEmpty())) {
+                    for (String deleteImg : existingUrl) {
+                        imageService.deleteImageFromS3(deleteImg);
+                    }
                 }
-                saveUrl = String.join(", ", urls);
+
+                if (images != null && images.length > 0) {
+                    for (MultipartFile image : images) {
+                        String url = imageService.upload(image, "lost");
+                        saveUrl.append(url).append(", ");
+                    }
+                } else {
+                    saveUrl.append("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
+                }
+
+            } else {
+                String[] containUrl = postDTO.getImages().split(", ");
+                List<String> containList = Arrays.asList(containUrl);
+                for (String deleteImage : existingUrl) {
+                    if (!containList.contains(deleteImage)) {
+                        imageService.deleteImageFromS3(deleteImage);
+                    } else {
+                        saveUrl.append(deleteImage).append(", ");
+                    }
+                }
+
+                if (images != null && images.length > 0) {
+                    for (MultipartFile image : images) {
+                        String url = imageService.upload(image, "lost");
+                        saveUrl.append(url).append(", ");
+                    }
+                }
             }
 
             selectedPost.updatePostFields(postDTO);
+            selectedPost.updateImage(saveUrl.toString());
             postLostRepository.save(selectedPost);
 
             return "OK";

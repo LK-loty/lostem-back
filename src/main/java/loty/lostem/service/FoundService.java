@@ -12,11 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,28 +95,72 @@ public class FoundService {
 
         PostFound selectedPost = postFoundRepository.findById(postDTO.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
-        if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
 
-            String[] deleteUrl = postDTO.getImages().split(", ");
-            for (String deleteImage : deleteUrl) {
-                imageService.deleteImageFromS3(deleteImage);
-            }
+            if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
+                // 1. dto x, image x >> 기본 이미지
+                // 2. dto x, image o >> 기존 이미지 지우고 새 이미지 업로드
+                // 3. data o, image x >> 기본 이미지 수정 || 그대로
+                // 4. dto o, image o >> 기존 이미지 수정 및 이미지 추가
+                StringBuilder saveUrl = new StringBuilder();
 
-            String saveUrl = null;
-            if (images != null && images.length > 0) {
-                List<String> urls = new ArrayList<>();
-                for (MultipartFile image : images) {
-                    String url = imageService.upload(image, "found");
-                    urls.add(url);
+                String[] existingUrl = selectedPost.getImages().split(", ");
+                //List<String> existingList = Arrays.asList(existingUrl);
+
+                // 기존 이미지 제거
+                if ((postDTO.getImages().isEmpty() || postDTO.getImages() == null)) {
+                    System.out.println("기존 이미지 삭제 : " + existingUrl);
+                    if (!(selectedPost.getImages().equals("https://lostem-upload.s3.amazonaws.com/itemBasic.png") || selectedPost.getImages().isEmpty())) {
+                        for (String deleteImg : existingUrl) {
+                            imageService.deleteImageFromS3(deleteImg);
+                        }
+                    }
+
+                    // 새 이미지 추가되는 경우
+                    if (images != null && images.length > 0) {
+                        for (MultipartFile image : images) {
+                            String url = imageService.upload(image, "found");
+                            saveUrl.append(url).append(", ");
+                        }
+                        System.out.println("이미지 추가 후 : " + saveUrl);
+                    } else { // 둘 다 없으면 기본 이미지로
+                        saveUrl.append("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
+                    }
+
+                } else { // 기존 이미지 중 변경사항 적용
+                    String[] containUrl = postDTO.getImages().split(", ");
+                    List<String> containList = Arrays.asList(containUrl);
+                    System.out.println("기존 배열 : " + existingUrl);
+            /*for (int i = 0; i < existingUrl.length; i++) {
+                for (int j = 0; j < containUrl.length; j++)
+                if (existingUrl.equals()) {
+                    existingList
                 }
-                saveUrl = String.join(", ", urls);
-            }
+            }*/
+                    for (String deleteImage : existingUrl) {
+                        if (!containList.contains(deleteImage)) {
+                            System.out.println("지울 사진 : " + deleteImage);
+                            imageService.deleteImageFromS3(deleteImage);
+                        } else {
+                            saveUrl.append(deleteImage).append(", ");
+                        }
+                    }
 
-            selectedPost.updatePostFields(postDTO);
-            postFoundRepository.save(selectedPost);
+                    // 새 이미지 추가되는 경우
+                    if (images != null && images.length > 0) {
+                        for (MultipartFile image : images) {
+                            String url = imageService.upload(image, "found");
+                            saveUrl.append(url).append(", ");
+                        }
+                        System.out.println("이미지 추가 후 : " + saveUrl);
+                    }
+                }
 
-            return "OK";
-        } else {
+                selectedPost.updatePostFields(postDTO);
+                selectedPost.updateImage(saveUrl.toString());
+                postFoundRepository.save(selectedPost);
+
+                return "OK";
+            } else {
             return null;
         }
     }
