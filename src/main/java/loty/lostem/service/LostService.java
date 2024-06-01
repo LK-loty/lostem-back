@@ -201,10 +201,11 @@ public class LostService {
     }
 
     public PostLostInfoDTO postToDTO(PostLost post) {
+        List<String> imgList = Arrays.asList(post.getImages().split(", "));
         return PostLostInfoDTO.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
-                .images(post.getImages())
+                .images(imgList)
                 .date(post.getDate())
                 .area(post.getArea())
                 .place(post.getPlace())

@@ -224,10 +224,11 @@ public class FoundService {
 
 
     public PostFoundInfoDTO postToDTO(PostFound post) {
+        List<String> imgList = Arrays.asList(post.getImages().split(", "));
         return PostFoundInfoDTO.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
-                .images(post.getImages())
+                .images(imgList)
                 .date(post.getDate())
                 .area(post.getArea())
                 .place(post.getPlace())

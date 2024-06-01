@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 public class PostLostInfoDTO {
     private Long postId;
     private String title;
-    private String images;
+    private List<String> images;
     private String category;
     private LocalDateTime date;
     private String area;
