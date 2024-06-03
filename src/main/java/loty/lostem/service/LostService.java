@@ -165,6 +165,14 @@ public class LostService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
         if (selectedPost.getUser().getUserId().equals(userId)) {
+
+            String[] existingUrl = selectedPost.getImages().split(", ");
+            if (!(selectedPost.getImages().equals("https://lostem-upload.s3.amazonaws.com/itemBasic.png") || selectedPost.getImages().isEmpty())) {
+                for (String deleteImg : existingUrl) {
+                    imageService.deleteImageFromS3(deleteImg);
+                }
+            }
+
             selectedPost.deletePost(selectedPost);
             postLostRepository.save(selectedPost);
             return "OK";

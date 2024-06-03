@@ -1,7 +1,6 @@
 package loty.lostem.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -9,8 +8,6 @@ import loty.lostem.dto.PostFoundDTO;
 import loty.lostem.dto.PostStateDTO;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -118,7 +115,7 @@ public class PostFound {
 
     public void deletePost(PostFound postFound) {
         this.title = "삭제된 게시물입니다.";
-        this.images = " "; // 기본 이미지 주소
+        this.images = "https://lostem-upload.s3.amazonaws.com/itemBasic.png";
         this.category = " ";
         this.date = null;
         this.area = " ";
