@@ -3,10 +3,12 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import loty.lostem.dto.LoginDTO;
 import loty.lostem.dto.MailAuthDTO;
 import loty.lostem.entity.User;
 import loty.lostem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
@@ -19,55 +21,86 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class UserAuthService {
-    private static final String AUTH_CODE_PREFIX = "AuthCode ";
-
     private final UserRepository userRepository;
 
     private final MailService mailService;
-
     private final RedisService redisService;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private static final String AUTH_CODE_PREFIX = "AuthCode ";
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
 
-    public void sendCodeToEmail(MailAuthDTO toEmailDTO) {
-        String email = this.checkDuplicatedEmail(toEmailDTO.getEmail());
-        if (email.equals(toEmailDTO.getEmail())) {
+    public String sendCodeToEmail(MailAuthDTO toEmailDTO) {
             String authCode = this.createCode();
             toEmailDTO.setAuthCode(authCode);
 
             mailService.sendEmail(toEmailDTO);
             redisService.setValues(AUTH_CODE_PREFIX + toEmailDTO.getEmail(), authCode, Duration.ofMillis(authCodeExpirationMillis));
             log.info("인증코드 : " + authCode);
-        } else {
-            log.info("중복된 이메일이 존재합니다");
-        }
+            return "OK";
     }
 
     public String validateEmail(MailAuthDTO mailAuthDTO) {
-        String email = this.checkDuplicatedEmail(mailAuthDTO.getEmail());
         String code = mailAuthDTO.getAuthCode();
 
-        if (email.equals(mailAuthDTO.getEmail())) {
-            String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
-            boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(code);
+        String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + mailAuthDTO.getEmail());
+        boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(code);
 
-            if (authResult) {
-                return "OK";
+        if (authResult) {
+            return "OK";
+        } else {
+            return "Fail";
+        }
+    }
+
+    @Transactional
+    public String findUser(MailAuthDTO mailAuthDTO) {
+        String username = this.findUsername(mailAuthDTO.getEmail());
+
+        if (username != null) {
+            String check = validateEmail(mailAuthDTO);
+
+            if (check.equals("OK")) {
+                StringBuilder foundName = new StringBuilder(username.substring(0, 2));
+                for (int i = 0; i < username.length() - 2; i++) {
+                    foundName.append("*");
+                }
+                return foundName.toString();
             } else {
                 return "Fail";
             }
+        } else {
+            return "No user";
         }
-        return "Other user";
     }
 
-    private String checkDuplicatedEmail(String email) {
+    @Transactional
+    public String resetPassword(LoginDTO loginDTO) {
+        Optional<User> user = userRepository.findByUsername(loginDTO.getUsername());
+        if (user.isPresent()) {
+            User selectedUser = user.get();
+            String encoded = bCryptPasswordEncoder.encode(loginDTO.getPassword());
+            selectedUser.updatePassword(encoded);
+            userRepository.save(selectedUser);
+
+            return "OK";
+        } else {
+            return null;
+        }
+    }
+
+
+
+    private String findUsername(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
-            return user.get().getEmail();
+            return user.get().getUsername();
         } else {
-            return email;
+            return null;
         }
     }
 

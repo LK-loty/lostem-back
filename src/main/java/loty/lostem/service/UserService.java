@@ -3,15 +3,12 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.*;
-import loty.lostem.entity.RefreshToken;
 import loty.lostem.entity.User;
 import loty.lostem.repository.RefreshTokenRepository;
 import loty.lostem.repository.UserRepository;
 import loty.lostem.security.UserRole;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.SecureRandom;
@@ -36,26 +33,6 @@ public class UserService {
         User created = User.createUser(userDTO);
         userRepository.save(created);
         return userDTO;
-    }
-
-    @Transactional
-    public String findUser(AStringDTO phone) {
-        User user = userRepository.findByPhone(phone.getWord())
-                .orElseThrow(() -> new IllegalArgumentException("No data for provided phone"));
-        return user.getUsername();
-    }
-
-    @Transactional
-    public LoginDTO resetPassword(LoginDTO loginDTO) {
-        User selectedUser = userRepository.findByUsername(loginDTO.getUsername())
-                        .orElseThrow(() -> new IllegalArgumentException("No data for provided username"));
-
-        String encoded = bCryptPasswordEncoder.encode(loginDTO.getPassword());
-
-        selectedUser.updatePassword(encoded);
-        userRepository.save(selectedUser);
-
-        return LoginDTO.builder().build();
     }
 
     public String checkUsername(String username) {

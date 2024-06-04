@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.*;
-import loty.lostem.service.S3ImageService;
 import loty.lostem.service.TokenService;
 import loty.lostem.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +21,6 @@ public class UserController {
     public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userDTO) {
         userService.createUser(userDTO);
         return ResponseEntity.ok("회원가입 완료");
-    }
-
-    // find, pw >> 본인 인증 먼저 하고 나서
-
-    @PostMapping("/find") // 이메일 보내면 인증코드 확인 후 아이디랑 200 같이
-    public ResponseEntity<String> findUsername(@Valid @RequestBody AStringDTO phone) {
-        String username = userService.findUser(phone);
-        return ResponseEntity.ok(username);
-    }
-
-    @PostMapping("/reset") // 이메일 인증 후
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody LoginDTO loginDTO) {
-        userService.resetPassword(loginDTO);
-        return ResponseEntity.ok("비밀번호 재설정 완료");
     }
 
     @GetMapping("/check")
