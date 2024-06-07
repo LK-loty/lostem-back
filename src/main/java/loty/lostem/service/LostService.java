@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,14 +32,12 @@ public class LostService {
                 .orElseThrow(() -> new IllegalArgumentException("No user found for the provided id"));
         PostLost created = PostLost.createPost(postLostDTO, user);
 
-        String saveUrl = null;
+        List<String> saveUrl = new ArrayList<>();
         if (images != null && images.length > 0) {
-            List<String> urls = new ArrayList<>();
             for (MultipartFile image : images) {
                 String url = imageService.upload(image, "lost");
-                urls.add(url);
+                saveUrl.add(url);
             }
-            saveUrl = String.join(", ", urls);
         }
 
         if (saveUrl == null || saveUrl.isEmpty()) {
@@ -97,11 +94,11 @@ public class LostService {
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
 
         if (writer.getUserId().equals(selectedPost.getUser().getUserId())) {
-            StringBuilder saveUrl = new StringBuilder();
-            String[] existingUrl = selectedPost.getImages().split(", ");
+            List<String> saveUrl = new ArrayList<>();
+            List<String> existingUrl = selectedPost.getImages();
 
             if ((postDTO.getImages().isEmpty() || postDTO.getImages() == null)) {
-                if (!(selectedPost.getImages().equals("https://lostem-upload.s3.amazonaws.com/itemBasic.png") || selectedPost.getImages().isEmpty())) {
+                if (!(selectedPost.getImages().contains("https://lostem-upload.s3.amazonaws.com/itemBasic.png")) || selectedPost.getImages().isEmpty()) {
                     for (String deleteImg : existingUrl) {
                         imageService.deleteImageFromS3(deleteImg);
                     }
@@ -110,33 +107,32 @@ public class LostService {
                 if (images != null && images.length > 0) {
                     for (MultipartFile image : images) {
                         String url = imageService.upload(image, "lost");
-                        saveUrl.append(url).append(", ");
+                        saveUrl.add(url);
                     }
                 } else {
-                    saveUrl.append("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
+                    saveUrl.add("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
                 }
 
             } else {
-                String[] containUrl = postDTO.getImages().split(", ");
-                List<String> containList = Arrays.asList(containUrl);
+                List<String> containList = postDTO.getImages();
                 for (String deleteImage : existingUrl) {
                     if (!containList.contains(deleteImage)) {
                         imageService.deleteImageFromS3(deleteImage);
                     } else {
-                        saveUrl.append(deleteImage).append(", ");
+                        saveUrl.add(deleteImage);
                     }
                 }
 
                 if (images != null && images.length > 0) {
                     for (MultipartFile image : images) {
                         String url = imageService.upload(image, "lost");
-                        saveUrl.append(url).append(", ");
+                        saveUrl.add(url);
                     }
                 }
             }
 
             selectedPost.updatePostFields(postDTO);
-            selectedPost.updateImage(saveUrl.toString());
+            selectedPost.updateImage(saveUrl);
             postLostRepository.save(selectedPost);
 
             return "OK";
@@ -166,8 +162,8 @@ public class LostService {
 
         if (selectedPost.getUser().getUserId().equals(userId)) {
 
-            String[] existingUrl = selectedPost.getImages().split(", ");
-            if (!(selectedPost.getImages().equals("https://lostem-upload.s3.amazonaws.com/itemBasic.png") || selectedPost.getImages().isEmpty())) {
+            List<String> existingUrl = selectedPost.getImages();
+            if (!(selectedPost.getImages().contains("https://lostem-upload.s3.amazonaws.com/itemBasic.png")) || selectedPost.getImages().isEmpty()) {
                 for (String deleteImg : existingUrl) {
                     imageService.deleteImageFromS3(deleteImg);
                 }
@@ -209,7 +205,7 @@ public class LostService {
     }
 
     public PostLostInfoDTO postToDTO(PostLost post) {
-        List<String> imgList = Arrays.asList(post.getImages().split(", "));
+        List<String> imgList = post.getImages();
         return PostLostInfoDTO.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
@@ -226,11 +222,11 @@ public class LostService {
     }
 
     public PostLostListDTO listToDTO(PostLost post) {
-        String[] image = post.getImages().split(", ");
+        List<String> image = post.getImages();
         return PostLostListDTO.builder()
                 .postId(post.getPostId())
                 .title(post.getTitle())
-                .image(image[0])
+                .image(image.get(0))
                 .area(post.getArea())
                 .time(post.getTime())
                 .build();

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class PostLostDTO {
     @Size(max = 20)
     private String title;  // 제목
 
-    private String images;  // 이미지 url
+    private List<String> images;  // 이미지 url
 
     @NotNull
     @Size(max = 10)

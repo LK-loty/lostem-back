@@ -8,6 +8,8 @@ import loty.lostem.dto.PostFoundDTO;
 import loty.lostem.dto.PostStateDTO;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -28,8 +30,10 @@ public class PostFound {
     @Size(max = 20)
     private String title;
 
+    @Convert(converter = StringArrayConverter.class)
     @Column
-    private String images;
+    @Size(max = 450)
+    private List<String> images;
 
     @Column
     @NotNull
@@ -102,20 +106,20 @@ public class PostFound {
     }
 
     public void setBasicImage() {
-        this.images = "https://lostem-upload.s3.amazonaws.com/itemBasic.png";
+        this.images = Collections.singletonList("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
     }
 
     public void updatePostState(PostStateDTO postStateDTO) {
         this.state = postStateDTO.getState();
     }
 
-    public void updateImage(String images) {
+    public void updateImage(List<String> images) {
         this.images = images;
     }
 
     public void deletePost(PostFound postFound) {
         this.title = "삭제된 게시물입니다.";
-        this.images = "https://lostem-upload.s3.amazonaws.com/itemBasic.png";
+        this.images = Collections.singletonList("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
         this.category = " ";
         this.date = null;
         this.area = " ";

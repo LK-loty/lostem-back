@@ -100,24 +100,24 @@ public class KeywordService {
     }
 
     public KeywordListDTO listToDTO(PostFound post) {
-        String[] image = post.getImages().split(", ");
+        List<String> image = post.getImages();
         return KeywordListDTO.builder()
                 .postId(post.getPostId())
                 .type("Found")
                 .title(post.getTitle())
-                .image(image[0])
+                .image(image.get(0))
                 .area(post.getArea())
                 .time(post.getTime())
                 .build();
     }
 
     public KeywordListDTO listToDTO(PostLost post) {
-        String[] image = post.getImages().split(", ");
+        List<String> image = post.getImages();
         return KeywordListDTO.builder()
                 .postId(post.getPostId())
                 .type("Lost")
                 .title(post.getTitle())
-                .image(image[0])
+                .image(image.get(0))
                 .area(post.getArea())
                 .time(post.getTime())
                 .build();

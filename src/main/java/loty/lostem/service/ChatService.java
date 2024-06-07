@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -323,7 +322,7 @@ public class ChatService {
             ChatPostInfoDTO postInfoDTO = ChatPostInfoDTO.builder()
                     .postType("lost")
                     .postId(post.getPostId())
-                    .image(post.getImages())
+                    .image(post.getImages().get(0))
                     .title(post.getTitle())
                     .state(post.getState())
                     .build();
@@ -335,7 +334,7 @@ public class ChatService {
             ChatPostInfoDTO postInfoDTO = ChatPostInfoDTO.builder()
                     .postType("found")
                     .postId(post.getPostId())
-                    .image(post.getImages())
+                    .image(post.getImages().get(0))
                     .title(post.getTitle())
                     .state(post.getState())
                     .build();
