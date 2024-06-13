@@ -98,7 +98,7 @@ public class FoundService {
                 List<String> existingUrl = selectedPost.getImages();
 
                 // 기존 이미지 제거
-                if ((postDTO.getImages().isEmpty() || postDTO.getImages() == null)) {
+                if ((postDTO.getImages() == null || postDTO.getImages().isEmpty())) {
                     if (!(selectedPost.getImages().contains("https://lostem-upload.s3.amazonaws.com/itemBasic.png")) || selectedPost.getImages().isEmpty()) {
                         for (String deleteImg : existingUrl) {
                             imageService.deleteImageFromS3(deleteImg);

@@ -97,7 +97,7 @@ public class LostService {
             List<String> saveUrl = new ArrayList<>();
             List<String> existingUrl = selectedPost.getImages();
 
-            if ((postDTO.getImages().isEmpty() || postDTO.getImages() == null)) {
+            if ((postDTO.getImages() == null || postDTO.getImages().isEmpty())) {
                 if (!(selectedPost.getImages().contains("https://lostem-upload.s3.amazonaws.com/itemBasic.png")) || selectedPost.getImages().isEmpty()) {
                     for (String deleteImg : existingUrl) {
                         imageService.deleteImageFromS3(deleteImg);
