@@ -78,7 +78,12 @@ public class UserService {
             return null;
         }
 
-        if ((!userDTO.getProfile().equals(selectedUser.getProfile()))) { // 이미지 변경 있을 경우에만
+        if (userDTO.getProfile() == null) {
+            if (image != null && !image.isEmpty()) {
+                String url = imageService.upload(image, "user");
+                selectedUser.updateProfile(url);
+            }
+        } else {
             String deleteImg = selectedUser.getProfile();
             imageService.deleteImageFromS3(deleteImg);
 
