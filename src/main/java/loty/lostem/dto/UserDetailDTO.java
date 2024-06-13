@@ -15,4 +15,5 @@ public class UserDetailDTO {
     private String phone;
     private String email;
     private String nickname;
+    private String profile;
 }

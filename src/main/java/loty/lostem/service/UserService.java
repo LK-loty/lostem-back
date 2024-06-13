@@ -155,6 +155,7 @@ public class UserService {
                 .username(user.getUsername())
                 .phone(user.getPhone())
                 .email(user.getEmail())
+                .profile(user.getProfile())
                 .build();
     }
 
