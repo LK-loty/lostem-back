@@ -78,19 +78,18 @@ public class UserService {
             return null;
         }
 
-        if (userDTO.getProfile() == null) {
-            if (image != null && !image.isEmpty()) {
-                String url = imageService.upload(image, "user");
-                selectedUser.updateProfile(url);
+        if (image != null && !image.isEmpty()) { // 이미지 변경
+            if (!selectedUser.getProfile().equals("https://lostem-upload.s3.amazonaws.com/userBasic.png")) {
+                imageService.deleteImageFromS3(selectedUser.getProfile());
             }
-        } else {
-            String deleteImg = selectedUser.getProfile();
-            imageService.deleteImageFromS3(deleteImg);
 
-            if (image != null && !image.isEmpty()) {
-                String url = imageService.upload(image, "user");
-                selectedUser.updateProfile(url);
-            } else { // 기본 이미지로 변경
+            String url = imageService.upload(image, "user");
+            selectedUser.updateProfile(url);
+        } else {
+            if (userDTO.getProfile() == null || userDTO.getProfile().isEmpty()) { // 기본 이미지
+                if (!selectedUser.getProfile().equals("https://lostem-upload.s3.amazonaws.com/userBasic.png")) {
+                    imageService.deleteImageFromS3(selectedUser.getProfile());
+                }
                 selectedUser.updateProfileDefault();
             }
         }
