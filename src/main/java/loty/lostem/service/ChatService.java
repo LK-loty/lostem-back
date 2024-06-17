@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,6 +48,7 @@ public class ChatService {
                         .postId(post.getPostId())
                         .hostUserTag(host.getTag())
                         .guestUserTag(guest.getTag())
+                        .leaveUser(new ArrayList<>(Arrays.asList("0")))
                         .build();
                 roomRepository.save(createdRoom);
 
@@ -99,7 +101,8 @@ public class ChatService {
             User user = userOptional.get();
             String userTag = user.getTag();
 
-            chatRooms = roomRepository.findByHostUserTagOrGuestUserTag(userTag);
+            //chatRooms = roomRepository.findByHostUserTagOrGuestUserTag(userTag);
+            chatRooms = roomRepository.findByHostUserTagOrGuestUserTagAndNotInLeaveUser(userTag);
         }
 
         List<ChatRoomListDTO> chatRoomListDTOS = new ArrayList<>();
@@ -359,6 +362,18 @@ public class ChatService {
                 .hostUserTag(host.getTag())
                 .guestUserTag(guest.getTag())
                 .build();
+    }
+
+    public String leaveRoom(Long roomId, String userTag) {
+        User user = userRepository.findByTag(userTag).get();
+
+        ChatRoom chatRoom = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("No data"));
+
+        chatRoom.setLeaveUser(user.getTag());
+
+        roomRepository.save(chatRoom);
+        return "OK";
     }
 
     public ChatRoomListDTO sendChatData(Long roomId, String userTag, ChatRoomInfoDTO roomInfoDTO) {

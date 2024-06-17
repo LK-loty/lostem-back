@@ -6,13 +6,11 @@ import loty.lostem.chat.MessageType;
 import loty.lostem.dto.*;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.ChatService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -58,6 +56,8 @@ public class MessageController {
 
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), chatRoomListDTO);
             simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), chatRoomListDTO);
+
+            chatService.leaveRoom(roomIdDTO.getRoomId(), userTag);
 
             log.info("채팅방 퇴장 알림을 보냅니다.");
         }

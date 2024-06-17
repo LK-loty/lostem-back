@@ -150,4 +150,21 @@ public class ChatController {
         List<ChatMessageInfoDTO> messages = chatService.getAllMessages(roomId);
         return ResponseEntity.ok(messages);
     }
+
+    @DeleteMapping("/room/leave")
+    public ResponseEntity<String> leaveRoom(@RequestHeader("Authorization") String authorization, @RequestBody ChatRoomIdDTO roomIdDTO) {
+        String userTag;
+        String check = null;
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userTag = tokenProvider.getUserTag(token);
+                check = chatService.leaveRoom(roomIdDTO.getRoomId(), userTag);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        return ResponseEntity.ok().body("나가기 완료");
+    }
 }

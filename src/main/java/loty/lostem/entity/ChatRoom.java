@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,10 +41,21 @@ public class ChatRoom implements Serializable {
     @Column
     private String guestUserTag;
 
+    @Convert(converter = StringArrayConverter.class)
+    @Column
+    private List<String> leaveUser;
+
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> chatMessages;
 
 
+
+    public void setLeaveUser(String userTag) {
+        if (this.leaveUser.isEmpty() || this.leaveUser.contains("0")) {
+            this.leaveUser = new ArrayList<>();
+        }
+        this.leaveUser.add(userTag);
+    }
 
     /*public static ChatRoom createChatRoom(String hostUserTag, String guestUserTag) {
         return ChatRoom.builder()
