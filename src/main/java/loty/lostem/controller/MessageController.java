@@ -54,8 +54,13 @@ public class MessageController {
         if (chatRoomListDTO.getRoomId() != null || !chatRoomListDTO.equals("null")) {
             chatRoomListDTO.setMessageType(MessageType.LEAVE);
 
-            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), chatRoomListDTO);
-            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), chatRoomListDTO);
+            if (userTag.equals(roomInfoDTO.getGuestUserTag())) {
+                simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomInfoDTO.getRoomId(), chatRoomListDTO);
+                simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), chatRoomListDTO);
+            } else if (userTag.equals(roomInfoDTO.getHostUserTag())) {
+                simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomInfoDTO.getRoomId(), chatRoomListDTO);
+                simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), chatRoomListDTO);
+            }
 
             chatService.leaveRoom(roomIdDTO.getRoomId(), userTag);
 
