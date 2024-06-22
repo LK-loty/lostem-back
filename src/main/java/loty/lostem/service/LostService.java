@@ -55,7 +55,7 @@ public class LostService {
         PostLost selectPost = postLostRepository.findById(postId)
                 .orElse(null);
 
-        if (selectPost != null) {
+        if (selectPost != null && !(selectPost.getState().equals("삭제"))) {
             User user = userRepository.findById(selectPost.getUser().getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("No data found for user"));
 
