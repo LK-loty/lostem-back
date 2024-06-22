@@ -71,6 +71,9 @@ public class PostFound {
     private String storage;
 
     @Column
+    private String traderTag;
+
+    @Column
     private LocalDateTime time;
 
 
@@ -89,6 +92,7 @@ public class PostFound {
                 .time(LocalDateTime.now())
                 .category(postFoundDTO.getCategory())
                 .storage(postFoundDTO.getStorage())
+                .traderTag("0")
                 .build();
     }
 
@@ -109,12 +113,16 @@ public class PostFound {
         this.images = Collections.singletonList("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
     }
 
+    public void updateImage(List<String> images) {
+        this.images = images;
+    }
+
     public void updatePostState(PostStateDTO postStateDTO) {
         this.state = postStateDTO.getState();
     }
 
-    public void updateImage(List<String> images) {
-        this.images = images;
+    public void setTraderTag(String traderTag) {
+        this.traderTag = traderTag;
     }
 
     public void deletePost(PostFound postFound) {

@@ -153,6 +153,10 @@ public class LostService {
             return null;
         }
 
+        if (stateDTO.getState().equals("해결완료")) {
+            selectedPost.setTraderTag(stateDTO.getTraderTag());
+        }
+
         selectedPost.updatePostState(stateDTO);
         postLostRepository.save(selectedPost);
         return "OK";
@@ -242,6 +246,7 @@ public class LostService {
                 .state(post.getState())
                 .time(post.getTime())
                 .category(post.getCategory())
+                .traderTag(post.getTraderTag())
                 .build();
     }
 

@@ -22,5 +22,6 @@ public class PostFoundInfoDTO {
     private String contents;
     private String state;
     private String storage;
+    private String traderTag;
     private LocalDateTime time;
 }

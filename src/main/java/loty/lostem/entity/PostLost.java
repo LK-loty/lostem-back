@@ -67,6 +67,9 @@ public class PostLost {
     private String state;
 
     @Column
+    private String traderTag;
+
+    @Column
     private LocalDateTime time;
 
 
@@ -84,6 +87,7 @@ public class PostLost {
                 .state("찾는중")
                 .time(LocalDateTime.now())
                 .category(postLostDTO.getCategory())
+                .traderTag("0")
                 .build();
     }
 
@@ -103,12 +107,16 @@ public class PostLost {
         this.images = Collections.singletonList("https://lostem-upload.s3.amazonaws.com/itemBasic.png");
     }
 
+    public void updateImage(List<String> images) {
+        this.images = images;
+    }
+
     public void updatePostState(PostStateDTO postStateDTO) {
         this.state = postStateDTO.getState();
     }
 
-    public void updateImage(List<String> images) {
-        this.images = images;
+    public void setTraderTag(String traderTag) {
+        this.traderTag = traderTag;
     }
 
     public void deletePost(PostLost postLost) {

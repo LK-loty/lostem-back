@@ -9,4 +9,5 @@ import lombok.*;
 public class PostStateDTO {
     private Long postId;
     private String state;
+    private String traderTag;
 }

@@ -156,6 +156,10 @@ public class FoundService {
             return null;
         }
 
+        if (stateDTO.getState().equals("해결완료")) {
+            selectedPost.setTraderTag(stateDTO.getTraderTag());
+        }
+
         selectedPost.updatePostState(stateDTO);
         postFoundRepository.save(selectedPost);
         return "OK";
@@ -249,6 +253,7 @@ public class FoundService {
                 .time(post.getTime())
                 .category(post.getCategory())
                 .storage(post.getStorage())
+                .traderTag(post.getTraderTag())
                 .build();
     }
 

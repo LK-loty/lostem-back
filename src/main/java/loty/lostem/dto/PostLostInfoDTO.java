@@ -21,5 +21,6 @@ public class PostLostInfoDTO {
     private String item;
     private String contents;
     private String state;
+    private String traderTag;
     private LocalDateTime time;
 }
