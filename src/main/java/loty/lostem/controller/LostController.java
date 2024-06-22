@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.*;
 import loty.lostem.service.LostService;
-import loty.lostem.service.S3ImageService;
 import loty.lostem.service.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -73,6 +71,23 @@ public class LostController {
             return ResponseEntity.ok(dtoList);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/read/chat")
+    public ResponseEntity<List<String>> chatUsers(HttpServletRequest request,
+                                                      @RequestParam Long postId) {
+        Long userId = tokenService.getUserId(request);
+        if (userId == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<String> userList = lostService.readChatUsers(userId, postId);
+
+        if (userList != null) {
+            return ResponseEntity.ok(userList);
+        } else {
+            return ResponseEntity.status(201).build();
         }
     }
 

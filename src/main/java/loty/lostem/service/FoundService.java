@@ -3,8 +3,10 @@ package loty.lostem.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import loty.lostem.dto.*;
+import loty.lostem.entity.ChatRoom;
 import loty.lostem.entity.PostFound;
 import loty.lostem.entity.User;
+import loty.lostem.repository.ChatRoomRepository;
 import loty.lostem.repository.PostFoundRepository;
 import loty.lostem.repository.UserRepository;
 import loty.lostem.search.FoundSpecification;
@@ -25,6 +27,7 @@ public class FoundService {
     private final PostFoundRepository postFoundRepository;
     private final UserRepository userRepository;
     private final S3ImageService imageService;
+    private final ChatRoomRepository roomRepository;
 
     @Transactional
     public String createPost(PostFoundDTO postFoundDTO, Long userId, MultipartFile[] images) {
@@ -156,6 +159,27 @@ public class FoundService {
         selectedPost.updatePostState(stateDTO);
         postFoundRepository.save(selectedPost);
         return "OK";
+    }
+
+    public List<String> readChatUsers(Long userId, Long postId) {
+        List<ChatRoom> chatRooms = roomRepository.findByPostTypeAndPostId("found", postId);
+
+        PostFound post = postFoundRepository.findById(postId).get();
+        if (userId.equals(post.getUser().getUserId())) {
+
+            List<String> userList = new ArrayList<>();
+            if (chatRooms != null) {
+                for (ChatRoom chatRoom : chatRooms) {
+                    userList.add(chatRoom.getGuestUserTag());
+                }
+
+                return userList;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     @Transactional
