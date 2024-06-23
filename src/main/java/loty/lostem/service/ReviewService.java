@@ -52,10 +52,8 @@ public class ReviewService {
 
                     updateStar(trader.getTag(), reviewDTO.getStar());
                     return "OK";
-                } else return null;
-            } else { // 아님 못씀
-                return null;
-            }
+                } else return "Fail";
+            } else return "Fail";
         } else if (reviewDTO.getPostType().equals("found")) {
             PostFound post = foundRepository.findById(reviewDTO.getPostId())
                     .orElse(null);
@@ -79,12 +77,10 @@ public class ReviewService {
 
                     updateStar(trader.getTag(), reviewDTO.getStar());
                     return "OK";
-                } else return null;
-            } else {
-                return null;
-            }
+                } else return "Fail";
+            } else return "Fail";
         } else
-            return null;
+            return "Fail";
     }
 
     // 상세 보기는 지원하지 않음. 전체 목록만
@@ -103,7 +99,7 @@ public class ReviewService {
             reviewRepository.deleteById(reviewId);
             return "OK";
         } else {
-            return null;
+            return "Fail";
         }
     }
 

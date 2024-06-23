@@ -140,7 +140,7 @@ public class LostService {
 
             return "OK";
         } else {
-            return null;
+            return "Fail";
         }
     }
 
@@ -150,7 +150,7 @@ public class LostService {
                 .orElseThrow(()-> new IllegalArgumentException("No data found for the provided id"));
 
         if (!userId.equals(selectedPost.getUser().getUserId())) {
-            return null;
+            return "Fail";
         }
 
         if (stateDTO.getState().equals("해결완료")) {
@@ -201,7 +201,7 @@ public class LostService {
             postLostRepository.save(selectedPost);
             return "OK";
         } else {
-            return null;
+            return "Fail";
         }
     }
 

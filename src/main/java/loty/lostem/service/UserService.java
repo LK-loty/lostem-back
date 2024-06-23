@@ -75,7 +75,7 @@ public class UserService {
         User selectedUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No data found for the provided id"));
         if (selectedUser.getName().equals("알 수 없음")) {
-            return null;
+            return "Fail";
         }
 
         if (image != null && !image.isEmpty()) { // 이미지 변경
@@ -125,7 +125,8 @@ public class UserService {
             System.out.println(password  +  "이런 상태");
             return "OK";
         } else {
-            throw new IllegalArgumentException("Incorrect password");
+            //throw new IllegalArgumentException("Incorrect password");
+            return "Fail";
         }
     }
 

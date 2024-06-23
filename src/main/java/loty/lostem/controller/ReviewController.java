@@ -9,11 +9,9 @@ import loty.lostem.dto.ReviewReturnDTO;
 import loty.lostem.jwt.TokenProvider;
 import loty.lostem.service.ReviewService;
 import loty.lostem.service.TokenService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +33,7 @@ public class ReviewController {
         if (check.equals("OK")) {
             return ResponseEntity.ok("평가글 생성 완료");
         } else {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(201).body("평가글을 작성할 수 없는 사람입니다.");
         }
     }
 
