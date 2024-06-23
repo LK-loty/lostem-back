@@ -283,6 +283,11 @@ public class ChatService {
             return null;
         }
 
+        User self = userRepository.findById(userId).get();
+        if (chatRoom.getLeaveUser().contains(self.getTag())) {
+            return null;
+        }
+
         User host = userRepository.findByTag(chatRoom.getHostUserTag())
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
         User guest = userRepository.findByTag(chatRoom.getGuestUserTag())
