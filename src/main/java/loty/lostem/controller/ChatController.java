@@ -7,6 +7,7 @@ import loty.lostem.service.ChatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -94,7 +95,11 @@ public class ChatController {
             }
         }
 
-        return ResponseEntity.ok(chatRoomListDTO);
+        if (chatRoomListDTO != null) {
+            return ResponseEntity.ok(chatRoomListDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/get/post")
@@ -145,10 +150,26 @@ public class ChatController {
 
     // 채팅방 채팅 내역
     @GetMapping("/get/room/{roomId}")
-    public ResponseEntity<List<ChatMessageInfoDTO>> getMessages(@PathVariable Long roomId) {
-        // 채팅방에서의 모든 메시지를 가져오는 요청을 서비스에 전달하여 처리
-        List<ChatMessageInfoDTO> messages = chatService.getAllMessages(roomId);
-        return ResponseEntity.ok(messages);
+    public ResponseEntity<List<ChatMessageInfoDTO>> getMessages(@RequestHeader("Authorization") String authorization, @PathVariable Long roomId) {
+        String userTag;
+        List<ChatMessageInfoDTO> messages = new ArrayList<>();
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            try {
+                String token = authorization.substring(7);
+                userTag = tokenProvider.getUserTag(token);
+
+                messages = chatService.getAllMessages(userTag, roomId);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        if (messages != null) {
+            return ResponseEntity.ok(messages);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/room/leave")

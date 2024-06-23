@@ -267,16 +267,21 @@ public class ChatService {
                             .build();
                     chatRoomListDTOS.add(chatRoomListDTO);
                 }
+                return chatRoomListDTOS;
             }
-            return chatRoomListDTOS;
         }
         return null;
     }
 
     // 특정 채팅방 정보만. 메시지는 아직 >> 같이?? 채팅방 위에 게시물 정보 같이 전달(채팅방 정보)
     public ChatRoomSelectedDTO selectRoom(Long roomId, Long userId) {
-        ChatRoom chatRoom = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        Optional<ChatRoom> optionalChatRoom = roomRepository.findById(roomId);
+        ChatRoom chatRoom = null;
+        if (optionalChatRoom.isPresent()) {
+            chatRoom = optionalChatRoom.get();
+        } else {
+            return null;
+        }
 
         User host = userRepository.findByTag(chatRoom.getHostUserTag())
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
@@ -315,6 +320,8 @@ public class ChatService {
                     .tag(tag)
                     .build();
             selectedDTO.setCounterpart(userInfoDTO);
+        } else {
+            return null;
         }
 
         if (chatRoom.getPostType().equals("lost")) {
@@ -349,8 +356,13 @@ public class ChatService {
     }
 
     public ChatRoomInfoDTO socketRoom(Long roomId) {
-        ChatRoom chatRoom = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("No data"));
+        Optional<ChatRoom> optionalChatRoom = roomRepository.findById(roomId);
+        ChatRoom chatRoom = null;
+        if (optionalChatRoom.isPresent()) {
+            chatRoom = optionalChatRoom.get();
+        } else {
+            return null;
+        }
 
         User host = userRepository.findByTag(chatRoom.getHostUserTag())
                 .orElseThrow(() -> new IllegalArgumentException("No data"));
@@ -394,6 +406,8 @@ public class ChatService {
             profile = user.getProfile();
             nickname = user.getNickname();
             tag = user.getTag();
+        } else {
+            return null;
         }
         ChatUserInfoDTO userInfoDTO = ChatUserInfoDTO.builder()
                 .profile(profile)
@@ -429,6 +443,8 @@ public class ChatService {
         } else if (sender.getTag().equals(chatRoom.getGuestUserTag())) {
             receiver = userRepository.findByTag(chatRoom.getHostUserTag())
                     .orElseThrow(() -> new IllegalArgumentException("No receiver"));
+        } else {
+            return null;
         }
 
         ChatMessage newMessage = ChatMessage.createChatMessage(chatMessageDTO, chatRoom, sender.getTag());
@@ -440,10 +456,23 @@ public class ChatService {
 
 
     // 채팅방의 모든 메시지 가져오기. dto 재사용이라 바꿀 필요 있음
-    public List<ChatMessageInfoDTO> getAllMessages(Long roomId) { // 쿼리 작성 필요
-        return messageRepository.findByChatRoom_RoomId(roomId).stream()
-                .map(this::InfoMsgToDTO)
-                .collect(Collectors.toList());
+    public List<ChatMessageInfoDTO> getAllMessages(String userTag, Long roomId) { // 쿼리 작성 필요
+        Optional<ChatRoom> optionalChatRoom = roomRepository.findById(roomId);
+
+        ChatRoom chatRoom = null;
+        if (optionalChatRoom.isPresent()) {
+            chatRoom = optionalChatRoom.get();
+        } else {
+            return null;
+        }
+
+        if (userTag.equals(chatRoom.getGuestUserTag()) || userTag.equals(chatRoom.getHostUserTag())) {
+            return messageRepository.findByChatRoom_RoomId(roomId).stream()
+                    .map(this::InfoMsgToDTO)
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
     }
 
 

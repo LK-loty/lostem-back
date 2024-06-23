@@ -30,7 +30,7 @@ public class MessageController {
         ChatRoomInfoDTO roomInfoDTO = chatService.socketRoom(roomIdDTO.getRoomId());
         ChatRoomListDTO chatRoomListDTO = chatService.sendChatData(roomIdDTO.getRoomId(), userTag, roomInfoDTO);
 
-        if (roomInfoDTO.getRoomId() != null || !roomInfoDTO.equals("null")) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
+        if (roomInfoDTO.getRoomId() != null || chatRoomListDTO != null) {  // ChatMessageDTO.MessageType.ENTER.equals(messageDTO.getType())
             //ChatRoomDTO roomDTO = chatService.createRoom(messageDTO, userId);
             chatRoomListDTO.setMessageType(MessageType.ENTER);
 
@@ -51,7 +51,7 @@ public class MessageController {
         ChatRoomInfoDTO roomInfoDTO = chatService.socketRoom(roomIdDTO.getRoomId());
         ChatRoomListDTO chatRoomListDTO = chatService.sendChatData(roomIdDTO.getRoomId(), userTag, roomInfoDTO);
 
-        if (chatRoomListDTO.getRoomId() != null || !chatRoomListDTO.equals("null")) {
+        if (roomInfoDTO.getRoomId() != null || chatRoomListDTO != null) {
             chatRoomListDTO.setMessageType(MessageType.LEAVE);
 
             if (userTag.equals(roomInfoDTO.getGuestUserTag())) {
@@ -88,13 +88,16 @@ public class MessageController {
 
         ChatRoomInfoDTO roomInfoDTO = chatService.socketRoom(messageDTO.getRoomId());
         ChatMessageInfoDTO createdDTO = chatService.createMessage(messageDTO, userId);
-        createdDTO.setMessageType(MessageType.TALK);
 
-        simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomInfoDTO.getRoomId(), createdDTO);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), createdDTO);
-        simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), createdDTO);
+        if (roomInfoDTO.getRoomId() != null || createdDTO != null) {
+            createdDTO.setMessageType(MessageType.TALK);
+
+            simpMessageSendingOperations.convertAndSend("/sub/chat/room/" + roomInfoDTO.getRoomId(), createdDTO);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getHostUserTag(), createdDTO);
+            simpMessageSendingOperations.convertAndSend("/sub/chat/list/" + roomInfoDTO.getGuestUserTag(), createdDTO);
         /*// Redis를 통해 메시지를 발행하여 채팅방의 특정 토픽에 메시지 전송
         redisTemplate.convertAndSend("/topic/public", chatMessage);*/
+        }
     }
 
     /*@MessageMapping("/chat/{roomId}")
