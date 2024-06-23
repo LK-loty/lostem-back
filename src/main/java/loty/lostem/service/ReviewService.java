@@ -36,21 +36,25 @@ public class ReviewService {
                 return "NO DATA";
             }
 
-            if (!self.getTag().equals(post.getUser().getTag())) { // 요청자가 글쓴이가 아닐 때 (태그 없음)
+            if (self.getTag().equals(post.getTraderTag())) { // 거래자일 때
                 Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), self.getNickname(), "거래자");
                 reviewRepository.save(created);
 
                 updateStar(post.getUser().getTag(), reviewDTO.getStar());
                 return "OK";
-            } else {
-                User user = userRepository.findByTag(reviewDTO.getTag())
+            } else if (self.getUserId().equals(post.getUser().getUserId())) { // 글쓴이일 때
+                User trader = userRepository.findByTag(reviewDTO.getTag())
                         .orElseThrow(() -> new IllegalArgumentException("No user"));
 
-                Review created = Review.createReview(reviewDTO, user, self.getTag(), self.getNickname(), "작성자");
-                reviewRepository.save(created);
+                if (trader.getTag().equals(post.getTraderTag())) { // 거래자 확인
+                    Review created = Review.createReview(reviewDTO, trader, self.getTag(), self.getNickname(), "작성자");
+                    reviewRepository.save(created);
 
-                updateStar(user.getTag(), reviewDTO.getStar());
-                return "OK";
+                    updateStar(trader.getTag(), reviewDTO.getStar());
+                    return "OK";
+                } else return null;
+            } else { // 아님 못씀
+                return null;
             }
         } else if (reviewDTO.getPostType().equals("found")) {
             PostFound post = foundRepository.findById(reviewDTO.getPostId())
@@ -59,21 +63,25 @@ public class ReviewService {
                 return "NO DATA";
             }
 
-            if (!self.getTag().equals(post.getUser().getTag())) {
+            if (self.getTag().equals(post.getTraderTag())) {
                 Review created = Review.createReview(reviewDTO, post.getUser(), self.getTag(), self.getNickname(), "거래자");
                 reviewRepository.save(created);
 
                 updateStar(post.getUser().getTag(), reviewDTO.getStar());
                 return "OK";
-            } else {
-                User user = userRepository.findByTag(reviewDTO.getTag())
+            } else if (self.getUserId().equals(post.getUser().getUserId())) {
+                User trader = userRepository.findByTag(reviewDTO.getTag())
                         .orElseThrow(() -> new IllegalArgumentException("No user"));
 
-                Review created = Review.createReview(reviewDTO, user, self.getTag(), self.getNickname(), "작성자");
-                reviewRepository.save(created);
+                if (trader.getTag().equals(post.getTraderTag())) {
+                    Review created = Review.createReview(reviewDTO, trader, self.getTag(), self.getNickname(), "작성자");
+                    reviewRepository.save(created);
 
-                updateStar(user.getTag(), reviewDTO.getStar());
-                return "OK";
+                    updateStar(trader.getTag(), reviewDTO.getStar());
+                    return "OK";
+                } else return null;
+            } else {
+                return null;
             }
         } else
             return null;
