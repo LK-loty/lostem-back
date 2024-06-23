@@ -35,13 +35,25 @@ public class UserAuthService {
 
 
     public String sendCodeToEmail(MailAuthDTO toEmailDTO) {
-            String authCode = this.createCode();
-            toEmailDTO.setAuthCode(authCode);
+        String authCode = this.createCode();
+        toEmailDTO.setAuthCode(authCode);
 
-            mailService.sendEmail(toEmailDTO);
-            redisService.setValues(AUTH_CODE_PREFIX + toEmailDTO.getEmail(), authCode, Duration.ofMillis(authCodeExpirationMillis));
-            log.info("인증코드 : " + authCode);
+        mailService.sendEmail(toEmailDTO);
+        redisService.setValues(AUTH_CODE_PREFIX + toEmailDTO.getEmail(), authCode, Duration.ofMillis(authCodeExpirationMillis));
+        log.info("인증코드 : " + authCode);
+        return "OK";
+    }
+
+    public String sendAfterCheck(MailAuthDTO mailAuthDTO) {
+        System.out.println("여기까진");
+        if (this.findUsername(mailAuthDTO.getEmail()) == null) {
+            this.sendCodeToEmail(mailAuthDTO);
+            System.out.println("완료");
             return "OK";
+        } else {
+            System.out.println("실패");
+            return "No user";
+        }
     }
 
     public String validateEmail(MailAuthDTO mailAuthDTO) {

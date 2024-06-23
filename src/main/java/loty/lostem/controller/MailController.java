@@ -38,6 +38,17 @@ public class MailController {
         }
     }
 
+    @PostMapping("/sign")
+    public ResponseEntity<String> singUpAuth(@RequestBody MailAuthDTO mailAuthDTO) {
+        String check = userAuthService.sendAfterCheck(mailAuthDTO);
+        
+        if (check.equals("OK")) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return ResponseEntity.status(201).body("이메일이 이미 존재합니다");
+        }
+    }
+
     @PostMapping("/find") // 이메일 보내면 인증코드 확인 후 아이디랑 200 같이
     public ResponseEntity<String> findUsername(@Valid @RequestBody MailAuthDTO mailAuthDTO) {
         String username = userAuthService.findUser(mailAuthDTO);
