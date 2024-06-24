@@ -32,7 +32,6 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("No guest"));
 
         if (messageDTO.getPostType().equals("lost")) {
-            log.info("lost 게시글");
             PostLost post = lostRepository.findById(messageDTO.getPostId())
                     .orElseThrow(() -> new IllegalArgumentException("No post"));
             User host = userRepository.findById(post.getUser().getUserId())
@@ -41,8 +40,6 @@ public class ChatService {
             Optional<ChatRoom> chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("lost", messageDTO.getPostId(), guest.getTag());
 
             if (chatRoom.isEmpty()) {
-                log.info("채팅방을 생성합니다");
-
                 ChatRoom createdRoom = ChatRoom.builder()
                         .postType("lost")
                         .postId(post.getPostId())
@@ -62,7 +59,6 @@ public class ChatService {
             }
         }
         else if (messageDTO.getPostType().equals("found")){
-            log.info("found 게시물");
             PostFound post = foundRepository.findById(messageDTO.getPostId())
                     .orElseThrow(() -> new IllegalArgumentException("No post"));
             User host = userRepository.findById(post.getUser().getUserId())
@@ -71,12 +67,12 @@ public class ChatService {
             Optional<ChatRoom> chatRoom = roomRepository.findByPostTypeAndPostIdAndGuestUserTag("found", messageDTO.getPostId(), guest.getTag());
 
             if (chatRoom.isEmpty()) {
-                log.info("채팅방을 생성합니다.");
                 ChatRoom createdRoom = ChatRoom.builder()
                         .postType("found")
                         .postId(post.getPostId())
                         .hostUserTag(host.getTag())
                         .guestUserTag(guest.getTag())
+                        .leaveUser(new ArrayList<>(Arrays.asList("0")))
                         .build();
                 roomRepository.save(createdRoom);
 
