@@ -292,6 +292,7 @@ public class ChatService {
         ChatRoomInfoDTO roomInfoDTO = ChatRoomInfoDTO.builder()
                 .hostUserTag(host.getTag())
                 .guestUserTag(guest.getTag())
+                .leaveUserTag(chatRoom.getLeaveUser())
                 .build();
 
         ChatRoomSelectedDTO selectedDTO = ChatRoomSelectedDTO.builder()
@@ -337,6 +338,10 @@ public class ChatService {
                     .title(post.getTitle())
                     .state(post.getState())
                     .build();
+            if (post.getState().equals("해결완료") &&
+                    (chatRoom.getGuestUserTag().equals(post.getTraderTag()) || chatRoom.getHostUserTag().equals(post.getTraderTag()))) {
+                postInfoDTO.setTraderTag(post.getTraderTag());
+            }
             selectedDTO.setPostData(postInfoDTO);
         } else if (chatRoom.getPostType().equals("found")) {
             PostFound post = foundRepository.findById(chatRoom.getPostId())
@@ -349,6 +354,10 @@ public class ChatService {
                     .title(post.getTitle())
                     .state(post.getState())
                     .build();
+            if (post.getState().equals("해결완료") &&
+                    (chatRoom.getGuestUserTag().equals(post.getTraderTag()) || chatRoom.getHostUserTag().equals(post.getTraderTag()))) {
+                postInfoDTO.setTraderTag(post.getTraderTag());
+            }
             selectedDTO.setPostData(postInfoDTO);
         }
         // 이전 대화 목록 추가

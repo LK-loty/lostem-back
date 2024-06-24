@@ -11,4 +11,9 @@ public class ChatPostInfoDTO {
     private String image;
     private String title;
     private String state;
+    private String traderTag;
+
+    public void setTraderTag(String traderTag) {
+        this.traderTag = traderTag;
+    }
 }
