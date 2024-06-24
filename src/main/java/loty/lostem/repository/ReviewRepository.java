@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByUser_TagOrderByTimeDesc(String tag);
+
+    Optional<Review> findByReviewedUserTagAndPostTypeAndPostId(String tag, String postType, Long postId);
 }

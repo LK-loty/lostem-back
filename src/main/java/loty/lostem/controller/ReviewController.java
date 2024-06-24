@@ -32,6 +32,8 @@ public class ReviewController {
         String check = reviewService.createReview(reviewDTO, userId);
         if (check.equals("OK")) {
             return ResponseEntity.ok("평가글 생성 완료");
+        } else if (check.equals("Existing")) {
+            return ResponseEntity.status(201).body("이미 평가글을 작성했습니다.");
         } else {
             return ResponseEntity.status(201).body("평가글을 작성할 수 없는 사람입니다.");
         }

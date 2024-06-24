@@ -27,14 +27,26 @@ public class Review {
     @NotNull
     private String reviewedUserTag; // 리뷰를 해준 사용자
 
+    @Column
+    @NotNull
     private String reviewedNickname;
 
+    @Column
+    @NotNull
     private String role; // 글쓴이 || 거래자
 
     @Column
     @NotNull
     @Size(max = 100)
     private String contents;
+
+    @Column
+    @NotNull
+    private String postType;
+
+    @Column
+    @NotNull
+    private Long postId;
 
     @Column
     @NotNull
@@ -47,6 +59,8 @@ public class Review {
                 .reviewedNickname(nickname)
                 .role(role)
                 .contents(reviewDTO.getContents())
+                .postType(reviewDTO.getPostType())
+                .postId(reviewDTO.getPostId())
                 .time(LocalDateTime.now())
                 .build();
     }
