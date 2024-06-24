@@ -162,16 +162,24 @@ public class LostService {
         return "OK";
     }
 
-    public List<String> readChatUsers(Long userId, Long postId) {
+    public List<UserSimpleDTO> readChatUsers(Long userId, Long postId) {
         List<ChatRoom> chatRooms = roomRepository.findByPostTypeAndPostId("lost", postId);
 
         PostLost post = postLostRepository.findById(postId).get();
         if (userId.equals(post.getUser().getUserId())) {
 
-            List<String> userList = new ArrayList<>();
+            List<UserSimpleDTO> userList = new ArrayList<>();
             if (chatRooms != null) {
                 for (ChatRoom chatRoom : chatRooms) {
-                    userList.add(chatRoom.getGuestUserTag());
+                    String tag = chatRoom.getGuestUserTag();
+                    String nickname = userRepository.findByTag(tag).get().getNickname();
+
+                    UserSimpleDTO dto = UserSimpleDTO.builder()
+                            .nickname(nickname)
+                            .tag(tag)
+                            .build();
+
+                    userList.add(dto);
                 }
 
                 return userList;

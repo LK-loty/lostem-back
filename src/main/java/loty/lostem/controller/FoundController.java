@@ -75,14 +75,14 @@ public class FoundController {
     }
 
     @GetMapping("/read/chat")
-    public ResponseEntity<List<String>> chatUsers(HttpServletRequest request,
+    public ResponseEntity<List<UserSimpleDTO>> chatUsers(HttpServletRequest request,
                                                   @RequestParam Long postId) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
         }
 
-        List<String> userList = foundService.readChatUsers(userId, postId);
+        List<UserSimpleDTO> userList = foundService.readChatUsers(userId, postId);
 
         if (userList != null) {
             return ResponseEntity.ok(userList);
