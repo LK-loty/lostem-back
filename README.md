@@ -9,7 +9,7 @@
 
 
 ## ERD 데이터 모델링
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/31bd35ac-4afc-4271-9338-bfcf8ad5eb6c/48b6ed65-aedd-43b4-bb5b-d84ab2dbbdb9/Untitled.png)
+![image](https://github.com/LK-loty/lostem-back/assets/110155447/c22dc942-270e-48bb-8d24-7b510971f000)
 
 
 ## 프로젝트 구조
