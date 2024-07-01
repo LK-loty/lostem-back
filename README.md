@@ -1,11 +1,12 @@
 # lostem-back
 ## 소개
-로스템 프로젝트의 서버 부분입니다.
+로스템 프로젝트의 서버 부분입니다.  
 
 
 ## 기술 스택 및 라이브러리
 - 기술 스택 : Java, Spring Boot, MySQL, Postman, Git, GitHub, AWS EC2, AWS RDS, AWS S3
-- 라이브러리 : Spring Web, Spring Data JPA, Lombok, Spring Security, JWT
+- 라이브러리 : Spring Web, Spring Data JPA, Lombok, Spring Security, JWT  
+  
 
 
 ## ERD 데이터 모델링
@@ -22,8 +23,10 @@
 
 ## 시작 및 실행
 1. 프로젝트를 클론합니다.
-- 요구사항
-  Java 17 이상, Spring Boot 3.1 이상
+- 요구사항  
+  Java 17 이상, Spring Boot 3.1 이상, MySQL 8.0  
+  AWS S3 생성 및 권한이 부여된 키
+  
 2. 루트 디렉터리 또는 src/main/resource 아래에 다음과 같은 application.yml 설정 파일을 작성합니다.
 ```
 spring:
