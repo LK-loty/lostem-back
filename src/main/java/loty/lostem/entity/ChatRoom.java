@@ -51,8 +51,10 @@ public class ChatRoom implements Serializable {
 
 
     public void setLeaveUser(String userTag) {
-        if (this.leaveUser.isEmpty() || this.leaveUser.contains("0")) {
+        if (this.leaveUser == null || this.getLeaveUser().contains("")) {
             this.leaveUser = new ArrayList<>();
+        } else if (!(this.leaveUser instanceof ArrayList)) {
+            this.leaveUser = new ArrayList<>(this.leaveUser);
         }
         this.leaveUser.add(userTag);
     }

@@ -45,7 +45,7 @@ public class ChatService {
                         .postId(post.getPostId())
                         .hostUserTag(host.getTag())
                         .guestUserTag(guest.getTag())
-                        .leaveUser(new ArrayList<>(Arrays.asList("0")))
+                        .leaveUser(new ArrayList<>())
                         .build();
                 roomRepository.save(createdRoom);
 
@@ -72,7 +72,7 @@ public class ChatService {
                         .postId(post.getPostId())
                         .hostUserTag(host.getTag())
                         .guestUserTag(guest.getTag())
-                        .leaveUser(new ArrayList<>(Arrays.asList("0")))
+                        .leaveUser(new ArrayList<>())
                         .build();
                 roomRepository.save(createdRoom);
 
@@ -294,6 +294,10 @@ public class ChatService {
                 .guestUserTag(guest.getTag())
                 .leaveUserTag(chatRoom.getLeaveUser())
                 .build();
+
+        if (chatRoom.getLeaveUser().contains("")) {
+            roomInfoDTO.setTags(null);
+        }
 
         ChatRoomSelectedDTO selectedDTO = ChatRoomSelectedDTO.builder()
                 .roomInfoDTO(roomInfoDTO)

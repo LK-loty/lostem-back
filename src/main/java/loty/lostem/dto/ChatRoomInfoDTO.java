@@ -14,8 +14,7 @@ public class ChatRoomInfoDTO {
 
     private List<String> leaveUserTag;
 
-    public void setTags(String hostUserTag, String guestUserTag) {
-        this.hostUserTag = hostUserTag;
-        this.guestUserTag = guestUserTag;
+    public void setTags(List<String> leaveUserTag) {
+        this.leaveUserTag = leaveUserTag;
     }
 }
