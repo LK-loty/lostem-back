@@ -74,7 +74,7 @@ public class FoundController {
         }
     }
 
-    @GetMapping("/read/chat/{postId}")
+    @GetMapping("/chat/{postId}")
     public ResponseEntity<List<UserSimpleDTO>> chatUsers(HttpServletRequest request,
                                                   @PathVariable Long postId) {
         Long userId = tokenService.getUserId(request);
