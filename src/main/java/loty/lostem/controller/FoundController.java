@@ -64,8 +64,8 @@ public class FoundController {
         return ResponseEntity.ok(listDTOS);
     }
 
-    @GetMapping("/read/user") // 사용자 관련 글 목록
-    public ResponseEntity<List<PostFoundInfoDTO>> userPost(@RequestParam String tag) {
+    @GetMapping("/read/user/{tag}") // 사용자 관련 글 목록
+    public ResponseEntity<List<PostFoundInfoDTO>> userPost(@PathVariable String tag) {
         List<PostFoundInfoDTO> dtoList = foundService.userPost(tag);
         if (dtoList != null) {
             return ResponseEntity.ok(dtoList);
@@ -74,9 +74,9 @@ public class FoundController {
         }
     }
 
-    @GetMapping("/read/chat")
+    @GetMapping("/read/chat/{postId}")
     public ResponseEntity<List<UserSimpleDTO>> chatUsers(HttpServletRequest request,
-                                                  @RequestParam Long postId) {
+                                                  @PathVariable Long postId) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
@@ -124,8 +124,8 @@ public class FoundController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(HttpServletRequest request, @Valid @PathVariable Long id) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> delete(HttpServletRequest request, @Valid @RequestParam Long id) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();

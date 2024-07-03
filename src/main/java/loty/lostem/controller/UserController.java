@@ -33,8 +33,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/preview")
-    public ResponseEntity<UserPreviewDTO> userPreview(@RequestParam String tag) {
+    @GetMapping("/preview/{tag}")
+    public ResponseEntity<UserPreviewDTO> userPreview(@PathVariable String tag) {
         UserPreviewDTO userPreviewDTO = userService.previewUser(tag);
 
         if (userPreviewDTO != null) {

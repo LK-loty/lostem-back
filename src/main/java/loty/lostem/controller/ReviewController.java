@@ -35,12 +35,12 @@ public class ReviewController {
         } else if (check.equals("Existing")) {
             return ResponseEntity.status(201).body("이미 평가글을 작성했습니다.");
         } else {
-            return ResponseEntity.status(201).body("평가글을 작성할 수 없는 사람입니다.");
+            return ResponseEntity.status(202).body("평가글을 작성할 수 없는 사람입니다.");
         }
     }
 
-    @GetMapping("/read")
-    public ResponseEntity<List<ReviewReturnDTO>> userReview(@RequestParam String tag) {
+    @GetMapping("/read/{tag}")
+    public ResponseEntity<List<ReviewReturnDTO>> userReview(@PathVariable String tag) {
         List<ReviewReturnDTO> dtoList = reviewService.readReview(tag);
         if (dtoList != null) {
             return ResponseEntity.ok(dtoList);
@@ -49,8 +49,8 @@ public class ReviewController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteReview(HttpServletRequest request, @Valid @PathVariable Long id) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteReview(HttpServletRequest request, @Valid @RequestParam Long id) {
         String userTag = tokenProvider.getUserTag(request.getHeader("Authorization"));
         if (userTag == null) {
             return ResponseEntity.badRequest().build();

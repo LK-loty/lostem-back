@@ -64,8 +64,8 @@ public class LostController {
         return ResponseEntity.ok(listDTOS);
     }
 
-    @GetMapping("/read/user") // 사용자 관련 글 목록
-    public ResponseEntity<List<PostLostInfoDTO>> userPost(@RequestParam String tag) {
+    @GetMapping("/read/user/{tag}") // 사용자 관련 글 목록
+    public ResponseEntity<List<PostLostInfoDTO>> userPost(@PathVariable String tag) {
         List<PostLostInfoDTO> dtoList = lostService.userPost(tag);
         if (dtoList != null) {
             return ResponseEntity.ok(dtoList);
@@ -74,9 +74,9 @@ public class LostController {
         }
     }
 
-    @GetMapping("/read/chat")
+    @GetMapping("/read/chat/{postId}")
     public ResponseEntity<List<UserSimpleDTO>> chatUsers(HttpServletRequest request,
-                                                      @RequestParam Long postId) {
+                                                      @PathVariable Long postId) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.notFound().build();
@@ -124,8 +124,8 @@ public class LostController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(HttpServletRequest request, @Valid @PathVariable Long id) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> delete(HttpServletRequest request, @Valid @RequestParam Long id) {
         Long userId = tokenService.getUserId(request);
         if (userId == null) {
             return ResponseEntity.badRequest().build();
