@@ -13,11 +13,6 @@
 ![image](https://github.com/LK-loty/lostem-back/assets/110155447/a919621e-987a-4be9-85c5-bc0ec55aceab)
 
 
-
-## 프로젝트 구조
-
-
-
 ## API 명세서
 API 명세서는 [이곳](./api_doc.pdf)에서 확인할 수 있습니다.
 
