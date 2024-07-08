@@ -14,6 +14,7 @@ import loty.lostem.repository.ReviewRepository;
 import loty.lostem.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -98,9 +99,23 @@ public class ReviewService {
 
     // 상세 보기는 지원하지 않음. 전체 목록만
     public List<ReviewReturnDTO> readReview(String tag) {
-        return reviewRepository.findByUser_TagOrderByTimeDesc(tag).stream()
-                .map(this::reviewToDTO)
-                .collect(Collectors.toList());
+        List<Review> reviews = reviewRepository.findByUser_TagOrderByTimeDesc(tag);
+
+        List<ReviewReturnDTO> reviewReturnDTOS = new ArrayList<>();
+        for (Review review : reviews) {
+            User reviewedUser = userRepository.findByTag(review.getReviewedUserTag()).get();
+            ReviewReturnDTO reviewReturnDTO = ReviewReturnDTO.builder()
+                    .reviewedUserTag(review.getReviewedUserTag())
+                    .reviewedNickname(reviewedUser.getNickname())
+                    .profile(reviewedUser.getProfile())
+                    .role(review.getRole())
+                    .contents(review.getContents())
+                    .time(review.getTime())
+                    .build();
+            reviewReturnDTOS.add(reviewReturnDTO);
+        }
+
+        return reviewReturnDTOS;
     }
 
     @Transactional
@@ -122,17 +137,5 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalArgumentException("No user"));
         user.updateStar(star);
         userRepository.save(user);
-    }
-
-
-
-    public ReviewReturnDTO reviewToDTO(Review review) {
-        return ReviewReturnDTO.builder()
-                .reviewedUserTag(review.getReviewedUserTag())
-                .reviewedNickname(review.getReviewedNickname())
-                .role(review.getRole())
-                .contents(review.getContents())
-                .time(review.getTime())
-                .build();
     }
 }

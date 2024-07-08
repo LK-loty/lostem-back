@@ -15,6 +15,7 @@ public class ReviewReturnDTO {
     private String reviewedNickname;
 
     private String role; // 작성자 || 거래자
+    private String profile;
 
     @Size(max = 100)
     private String contents;  // 내용

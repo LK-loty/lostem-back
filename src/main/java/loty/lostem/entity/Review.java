@@ -29,10 +29,6 @@ public class Review {
 
     @Column
     @NotNull
-    private String reviewedNickname;
-
-    @Column
-    @NotNull
     private String role; // 글쓴이 || 거래자
 
     @Column
@@ -56,7 +52,6 @@ public class Review {
         return Review.builder()
                 .user(user)
                 .reviewedUserTag(tag)
-                .reviewedNickname(nickname)
                 .role(role)
                 .contents(reviewDTO.getContents())
                 .postType(reviewDTO.getPostType())
