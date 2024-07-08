@@ -1,6 +1,6 @@
 # lostem-server
 ## 소개
-로스템 프로젝트의 서버 부분입니다.  
+로스템 프로젝트의 서버 부분입니다. API와 배포 부분을 다루고 있습니다.
 
 
 ## 기술 스택 및 라이브러리
@@ -10,11 +10,7 @@
 
 
 ## ERD 데이터 모델링
-![image](https://github.com/LK-loty/lostem-back/assets/110155447/c22dc942-270e-48bb-8d24-7b510971f000)
-
-
-## 프로젝트 구조
-
+![image](https://github.com/LK-loty/lostem-back/assets/110155447/a919621e-987a-4be9-85c5-bc0ec55aceab)
 
 
 ## API 명세서
