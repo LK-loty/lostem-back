@@ -10,7 +10,8 @@
 
 
 ## ERD 데이터 모델링
-![image](https://github.com/LK-loty/lostem-back/assets/110155447/a919621e-987a-4be9-85c5-bc0ec55aceab)
+![image](https://github.com/LK-loty/lostem-back/assets/110155447/4c078892-d41c-4458-bc7d-1d18dddd5a0c)
+
 
 
 ## API 명세서
