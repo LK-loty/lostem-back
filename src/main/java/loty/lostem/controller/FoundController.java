@@ -48,6 +48,8 @@ public class FoundController {
             return ResponseEntity.notFound().build();
         }
 
+        System.out.println("test");
+
         PostFoundDetailsDTO dto = foundService.readPost(id);
         if (dto != null) {
             return ResponseEntity.ok(dto);
